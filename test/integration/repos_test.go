@@ -178,7 +178,7 @@ func TestRepositories_List(t *testing.T) {
 		t.Fatalf("Repositories.List('google') with Sort opt returned error: %v", err)
 	}
 	for i, repo := range repos {
-		if i > 0 && (*repos[i-1].CreatedAt).Time.Before((*repo.CreatedAt).Time) {
+		if i > 0 && repos[i-1].CreatedAt.Time.Before(repo.CreatedAt.Time) {
 			t.Fatalf("Repositories.List('google') with default descending Sort returned incorrect order")
 		}
 	}

@@ -13,6 +13,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -226,7 +227,7 @@ func TestRepositoriesService_CreateRelease(t *testing.T) {
 
 	mux.HandleFunc("/repos/o/r/releases", func(w http.ResponseWriter, r *http.Request) {
 		v := new(repositoryReleaseRequest)
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 
 		testMethod(t, r, "POST")
 		want := &repositoryReleaseRequest{
@@ -291,7 +292,7 @@ func TestRepositoriesService_EditRelease(t *testing.T) {
 
 	mux.HandleFunc("/repos/o/r/releases/1", func(w http.ResponseWriter, r *http.Request) {
 		v := new(repositoryReleaseRequest)
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 
 		testMethod(t, r, "PATCH")
 		want := &repositoryReleaseRequest{
@@ -547,7 +548,7 @@ func TestRepositoriesService_EditReleaseAsset(t *testing.T) {
 
 	mux.HandleFunc("/repos/o/r/releases/assets/1", func(w http.ResponseWriter, r *http.Request) {
 		v := new(ReleaseAsset)
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 
 		testMethod(t, r, "PATCH")
 		if !cmp.Equal(v, input) {
@@ -667,21 +668,21 @@ func TestRepositoriesService_UploadReleaseAsset(t *testing.T) {
 
 	for key, test := range uploadTests {
 		releaseEndpoint := fmt.Sprintf("/repos/o/r/releases/%d/assets", key)
+		content := "Upload me !\n"
 		mux.HandleFunc(releaseEndpoint, func(w http.ResponseWriter, r *http.Request) {
 			testMethod(t, r, "POST")
 			testHeader(t, r, "Content-Type", test.expectedMediaType)
 			testHeader(t, r, "Content-Length", "12")
 			testFormValues(t, r, test.expectedFormValues)
-			testBody(t, r, "Upload me !\n")
+			testBody(t, r, content)
 
 			fmt.Fprintf(w, `{"id":1}`)
 		})
 
-		file, dir, err := openTestFile(test.fileName, "Upload me !\n")
-		if err != nil {
-			t.Fatalf("Unable to create temp file: %v", err)
-		}
-		defer os.RemoveAll(dir)
+		filename := filepath.Join(t.TempDir(), test.fileName)
+		assertNilError(t, os.WriteFile(filename, []byte(content), 0o600))
+		file, err := os.Open(filename)
+		assertNilError(t, err)
 
 		ctx := context.Background()
 		asset, _, err := client.Repositories.UploadReleaseAsset(ctx, "o", "r", int64(key), test.uploadOpts, file)

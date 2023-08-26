@@ -352,7 +352,7 @@ func (s *RepositoriesService) DownloadReleaseAsset(ctx context.Context, owner, r
 	}
 
 	if err := CheckResponse(resp); err != nil {
-		resp.Body.Close()
+		_ = resp.Body.Close()
 		return nil, "", err
 	}
 
@@ -360,7 +360,7 @@ func (s *RepositoriesService) DownloadReleaseAsset(ctx context.Context, owner, r
 }
 
 func (s *RepositoriesService) downloadReleaseAssetFromURL(ctx context.Context, followRedirectsClient *http.Client, url string) (rc io.ReadCloser, err error) {
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", url, http.NoBody)
 	if err != nil {
 		return nil, err
 	}
@@ -371,7 +371,7 @@ func (s *RepositoriesService) downloadReleaseAssetFromURL(ctx context.Context, f
 		return nil, err
 	}
 	if err := CheckResponse(resp); err != nil {
-		resp.Body.Close()
+		_ = resp.Body.Close()
 		return nil, err
 	}
 	return resp.Body, nil

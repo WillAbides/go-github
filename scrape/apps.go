@@ -113,7 +113,7 @@ type OAuthApp struct {
 type AppManifest struct {
 	// The name of the GitHub App.
 	Name *string `json:"name,omitempty"`
-	//Required. The homepage of your GitHub App.
+	// Required. The homepage of your GitHub App.
 	URL *string `json:"url,omitempty"`
 	// Required. The configuration of the GitHub App's webhook.
 	HookAttributes map[string]string `json:"hook_attributes,omitempty"`

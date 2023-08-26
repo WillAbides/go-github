@@ -232,9 +232,11 @@ func (s *PullRequestsService) CreateReview(ctx context.Context, owner, repo stri
 	}
 
 	// Detect which style of review comment is being used.
-	if isCF, err := review.isComfortFadePreview(); err != nil {
+	isCF, err := review.isComfortFadePreview()
+	if err != nil {
 		return nil, nil, err
-	} else if isCF {
+	}
+	if isCF {
 		// If the review comments are using the comfort fade preview fields,
 		// then pass the comfort fade header.
 		req.Header.Set("Accept", mediaTypeMultiLineCommentsPreview)

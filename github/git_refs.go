@@ -50,7 +50,7 @@ type updateRefRequest struct {
 // GetRef fetches a single reference in a repository.
 //
 // GitHub API docs: https://docs.github.com/en/rest/git/refs#get-a-reference
-func (s *GitService) GetRef(ctx context.Context, owner string, repo string, ref string) (*Reference, *Response, error) {
+func (s *GitService) GetRef(ctx context.Context, owner, repo, ref string) (*Reference, *Response, error) {
 	ref = strings.TrimPrefix(ref, "refs/")
 	u := fmt.Sprintf("repos/%v/%v/git/ref/%v", owner, repo, refURLEscape(ref))
 	req, err := s.client.NewRequest("GET", u, nil)
@@ -117,7 +117,7 @@ func (s *GitService) ListMatchingRefs(ctx context.Context, owner, repo string, o
 // CreateRef creates a new ref in a repository.
 //
 // GitHub API docs: https://docs.github.com/en/rest/git/refs#create-a-reference
-func (s *GitService) CreateRef(ctx context.Context, owner string, repo string, ref *Reference) (*Reference, *Response, error) {
+func (s *GitService) CreateRef(ctx context.Context, owner, repo string, ref *Reference) (*Reference, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/git/refs", owner, repo)
 	req, err := s.client.NewRequest("POST", u, &createRefRequest{
 		// back-compat with previous behavior that didn't require 'refs/' prefix
@@ -140,7 +140,7 @@ func (s *GitService) CreateRef(ctx context.Context, owner string, repo string, r
 // UpdateRef updates an existing ref in a repository.
 //
 // GitHub API docs: https://docs.github.com/en/rest/git/refs#update-a-reference
-func (s *GitService) UpdateRef(ctx context.Context, owner string, repo string, ref *Reference, force bool) (*Reference, *Response, error) {
+func (s *GitService) UpdateRef(ctx context.Context, owner, repo string, ref *Reference, force bool) (*Reference, *Response, error) {
 	refPath := strings.TrimPrefix(*ref.Ref, "refs/")
 	u := fmt.Sprintf("repos/%v/%v/git/refs/%v", owner, repo, refURLEscape(refPath))
 	req, err := s.client.NewRequest("PATCH", u, &updateRefRequest{
@@ -163,7 +163,7 @@ func (s *GitService) UpdateRef(ctx context.Context, owner string, repo string, r
 // DeleteRef deletes a ref from a repository.
 //
 // GitHub API docs: https://docs.github.com/en/rest/git/refs#delete-a-reference
-func (s *GitService) DeleteRef(ctx context.Context, owner string, repo string, ref string) (*Response, error) {
+func (s *GitService) DeleteRef(ctx context.Context, owner, repo, ref string) (*Response, error) {
 	ref = strings.TrimPrefix(ref, "refs/")
 	u := fmt.Sprintf("repos/%v/%v/git/refs/%v", owner, repo, refURLEscape(ref))
 	req, err := s.client.NewRequest("DELETE", u, nil)

@@ -17,7 +17,7 @@ import (
 )
 
 func TestPublicKey_UnmarshalJSON(t *testing.T) {
-	var testCases = map[string]struct {
+	testCases := map[string]struct {
 		data          []byte
 		wantPublicKey PublicKey
 		wantErr       bool
@@ -182,8 +182,8 @@ func TestActionsService_ListRepoSecrets(t *testing.T) {
 	want := &Secrets{
 		TotalCount: 4,
 		Secrets: []*Secret{
-			{Name: "A", CreatedAt: Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)}, UpdatedAt: Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)}},
-			{Name: "B", CreatedAt: Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)}, UpdatedAt: Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)}},
+			{Name: "A", CreatedAt: Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)}, UpdatedAt: Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)}},
+			{Name: "B", CreatedAt: Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)}, UpdatedAt: Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)}},
 		},
 	}
 	if !cmp.Equal(secrets, want) {
@@ -222,8 +222,8 @@ func TestActionsService_GetRepoSecret(t *testing.T) {
 
 	want := &Secret{
 		Name:      "NAME",
-		CreatedAt: Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)},
-		UpdatedAt: Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)},
+		CreatedAt: Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)},
+		UpdatedAt: Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)},
 	}
 	if !cmp.Equal(secret, want) {
 		t.Errorf("Actions.GetRepoSecret returned %+v, want %+v", secret, want)
@@ -398,8 +398,8 @@ func TestActionsService_GetOrgSecret(t *testing.T) {
 
 	want := &Secret{
 		Name:                    "NAME",
-		CreatedAt:               Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)},
-		UpdatedAt:               Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)},
+		CreatedAt:               Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)},
+		UpdatedAt:               Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)},
 		Visibility:              "selected",
 		SelectedRepositoriesURL: "https://api.github.com/orgs/octo-org/actions/secrets/SUPER_SECRET/repositories",
 	}
@@ -691,8 +691,8 @@ func TestActionsService_ListEnvSecrets(t *testing.T) {
 	want := &Secrets{
 		TotalCount: 4,
 		Secrets: []*Secret{
-			{Name: "A", CreatedAt: Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)}, UpdatedAt: Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)}},
-			{Name: "B", CreatedAt: Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)}, UpdatedAt: Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)}},
+			{Name: "A", CreatedAt: Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)}, UpdatedAt: Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)}},
+			{Name: "B", CreatedAt: Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)}, UpdatedAt: Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)}},
 		},
 	}
 	if !cmp.Equal(secrets, want) {
@@ -731,8 +731,8 @@ func TestActionsService_GetEnvSecret(t *testing.T) {
 
 	want := &Secret{
 		Name:      "secret",
-		CreatedAt: Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)},
-		UpdatedAt: Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)},
+		CreatedAt: Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)},
+		UpdatedAt: Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)},
 	}
 	if !cmp.Equal(secret, want) {
 		t.Errorf("Actions.GetEnvSecret returned %+v, want %+v", secret, want)
@@ -860,7 +860,8 @@ func TestSecrets_Marshal(t *testing.T) {
 				CreatedAt:               Timestamp{referenceTime},
 				UpdatedAt:               Timestamp{referenceTime},
 				Visibility:              "v",
-				SelectedRepositoriesURL: "s"},
+				SelectedRepositoriesURL: "s",
+			},
 		},
 	}
 

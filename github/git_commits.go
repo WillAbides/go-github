@@ -70,7 +70,7 @@ func (c CommitAuthor) String() string {
 // GetCommit fetches the Commit object for a given SHA.
 //
 // GitHub API docs: https://docs.github.com/en/rest/git/commits#get-a-commit
-func (s *GitService) GetCommit(ctx context.Context, owner string, repo string, sha string) (*Commit, *Response, error) {
+func (s *GitService) GetCommit(ctx context.Context, owner, repo, sha string) (*Commit, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/git/commits/%v", owner, repo, sha)
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
@@ -104,7 +104,7 @@ type createCommit struct {
 // the authenticated user’s information and the current date.
 //
 // GitHub API docs: https://docs.github.com/en/rest/git/commits#create-a-commit
-func (s *GitService) CreateCommit(ctx context.Context, owner string, repo string, commit *Commit) (*Commit, *Response, error) {
+func (s *GitService) CreateCommit(ctx context.Context, owner, repo string, commit *Commit) (*Commit, *Response, error) {
 	if commit == nil {
 		return nil, nil, fmt.Errorf("commit must be provided")
 	}
@@ -192,8 +192,11 @@ func createSignatureMessage(commit *createCommit) (string, error) {
 	}
 
 	// There needs to be a double newline after committer
-	message = append(message, fmt.Sprintf("committer %s <%s> %d %s\n", committer.GetName(), committer.GetEmail(), committer.GetDate().Unix(), committer.GetDate().Format("-0700")))
-	message = append(message, *commit.Message)
+	message = append(
+		message,
+		fmt.Sprintf("committer %s <%s> %d %s\n", committer.GetName(), committer.GetEmail(), committer.GetDate().Unix(), committer.GetDate().Format("-0700")),
+		*commit.Message,
+	)
 
 	return strings.Join(message, "\n"), nil
 }

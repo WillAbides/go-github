@@ -174,7 +174,7 @@ func (s *RepositoriesService) GetCommit(ctx context.Context, owner, repo, sha st
 // GetCommitRaw fetches the specified commit in raw (diff or patch) format.
 //
 // GitHub API docs: https://docs.github.com/en/rest/commits/commits#get-a-commit
-func (s *RepositoriesService) GetCommitRaw(ctx context.Context, owner string, repo string, sha string, opts RawOptions) (string, *Response, error) {
+func (s *RepositoriesService) GetCommitRaw(ctx context.Context, owner, repo, sha string, opts RawOptions) (string, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/commits/%v", owner, repo, sha)
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
@@ -228,7 +228,7 @@ func (s *RepositoriesService) GetCommitSHA1(ctx context.Context, owner, repo, re
 // CompareCommits compares a range of commits with each other.
 //
 // GitHub API docs: https://docs.github.com/en/rest/commits/commits#compare-two-commits
-func (s *RepositoriesService) CompareCommits(ctx context.Context, owner, repo string, base, head string, opts *ListOptions) (*CommitsComparison, *Response, error) {
+func (s *RepositoriesService) CompareCommits(ctx context.Context, owner, repo, base, head string, opts *ListOptions) (*CommitsComparison, *Response, error) {
 	escapedBase := url.QueryEscape(base)
 	escapedHead := url.QueryEscape(head)
 

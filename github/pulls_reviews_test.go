@@ -365,7 +365,7 @@ func TestPullRequestsService_CreateReview(t *testing.T) {
 
 	mux.HandleFunc("/repos/o/r/pulls/1/reviews", func(w http.ResponseWriter, r *http.Request) {
 		v := new(PullRequestReviewRequest)
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 
 		testMethod(t, r, "POST")
 		if !cmp.Equal(v, input) {
@@ -431,7 +431,8 @@ func TestPullRequestsService_CreateReview_badReview(t *testing.T) {
 			Path:     &path,
 			Body:     &body,
 			Position: &pos1,
-		}}}
+		}},
+	}
 
 	_, _, err := client.PullRequests.CreateReview(ctx, "o", "r", 1, badReview)
 	if err == nil {
@@ -468,7 +469,7 @@ func TestPullRequestsService_CreateReview_addHeader(t *testing.T) {
 
 	mux.HandleFunc("/repos/o/r/pulls/1/reviews", func(w http.ResponseWriter, r *http.Request) {
 		v := new(PullRequestReviewRequest)
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 
 		testMethod(t, r, "POST")
 		if !cmp.Equal(v, input) {
@@ -532,7 +533,7 @@ func TestPullRequestsService_SubmitReview(t *testing.T) {
 
 	mux.HandleFunc("/repos/o/r/pulls/1/reviews/1/events", func(w http.ResponseWriter, r *http.Request) {
 		v := new(PullRequestReviewRequest)
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 
 		testMethod(t, r, "POST")
 		if !cmp.Equal(v, input) {
@@ -585,7 +586,7 @@ func TestPullRequestsService_DismissReview(t *testing.T) {
 
 	mux.HandleFunc("/repos/o/r/pulls/1/reviews/1/dismissals", func(w http.ResponseWriter, r *http.Request) {
 		v := new(PullRequestReviewDismissalRequest)
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 
 		testMethod(t, r, "PUT")
 		if !cmp.Equal(v, input) {

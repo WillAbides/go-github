@@ -65,7 +65,7 @@ func TestActionsService_GenerateOrgJITConfig(t *testing.T) {
 
 	mux.HandleFunc("/orgs/o/actions/runners/generate-jitconfig", func(w http.ResponseWriter, r *http.Request) {
 		v := new(GenerateJITConfigRequest)
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 
 		testMethod(t, r, "POST")
 		if !cmp.Equal(v, input) {
@@ -109,7 +109,7 @@ func TestActionsService_GenerateRepoJITConfig(t *testing.T) {
 
 	mux.HandleFunc("/repos/o/r/actions/runners/generate-jitconfig", func(w http.ResponseWriter, r *http.Request) {
 		v := new(GenerateJITConfigRequest)
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 
 		testMethod(t, r, "POST")
 		if !cmp.Equal(v, input) {
@@ -160,9 +160,11 @@ func TestActionsService_CreateRegistrationToken(t *testing.T) {
 		t.Errorf("Actions.CreateRegistrationToken returned error: %v", err)
 	}
 
-	want := &RegistrationToken{Token: String("LLBF3JGZDX3P5PMEXLND6TS6FCWO6"),
+	want := &RegistrationToken{
+		Token: String("LLBF3JGZDX3P5PMEXLND6TS6FCWO6"),
 		ExpiresAt: &Timestamp{time.Date(2020, time.January, 22, 12, 13, 35,
-			123000000, time.UTC)}}
+			123000000, time.UTC)},
+	}
 	if !cmp.Equal(token, want) {
 		t.Errorf("Actions.CreateRegistrationToken returned %+v, want %+v", token, want)
 	}
@@ -381,9 +383,11 @@ func TestActionsService_CreateOrganizationRegistrationToken(t *testing.T) {
 		t.Errorf("Actions.CreateRegistrationToken returned error: %v", err)
 	}
 
-	want := &RegistrationToken{Token: String("LLBF3JGZDX3P5PMEXLND6TS6FCWO6"),
+	want := &RegistrationToken{
+		Token: String("LLBF3JGZDX3P5PMEXLND6TS6FCWO6"),
 		ExpiresAt: &Timestamp{time.Date(2020, time.January, 22, 12, 13, 35,
-			123000000, time.UTC)}}
+			123000000, time.UTC)},
+	}
 	if !cmp.Equal(token, want) {
 		t.Errorf("Actions.CreateRegistrationToken returned %+v, want %+v", token, want)
 	}

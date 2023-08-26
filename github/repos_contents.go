@@ -189,8 +189,8 @@ func (s *RepositoriesService) DownloadContentsWithMeta(ctx context.Context, owne
 }
 
 // GetContents can return either the metadata and content of a single file
-// (when path references a file) or the metadata of all the files and/or
-// subdirectories of a directory (when path references a directory). To make it
+// (when filepath references a regular file) or the metadata of all the files and/or
+// subdirectories of a directory (when filepath references a directory). To make it
 // easy to distinguish between both result types and to mimic the API as much
 // as possible, both result types will be returned but only one will contain a
 // value and the other will be nil.
@@ -199,12 +199,12 @@ func (s *RepositoriesService) DownloadContentsWithMeta(ctx context.Context, owne
 // to appear anywhere in the "path" or this method will return an error.
 //
 // GitHub API docs: https://docs.github.com/en/rest/repos/contents#get-repository-content
-func (s *RepositoriesService) GetContents(ctx context.Context, owner, repo, path string, opts *RepositoryContentGetOptions) (fileContent *RepositoryContent, directoryContent []*RepositoryContent, resp *Response, err error) {
-	if strings.Contains(path, "..") {
+func (s *RepositoriesService) GetContents(ctx context.Context, owner, repo, filepath string, opts *RepositoryContentGetOptions) (fileContent *RepositoryContent, directoryContent []*RepositoryContent, resp *Response, err error) {
+	if strings.Contains(filepath, "..") {
 		return nil, nil, nil, ErrPathForbidden
 	}
 
-	escapedPath := (&url.URL{Path: strings.TrimSuffix(path, "/")}).String()
+	escapedPath := (&url.URL{Path: strings.TrimSuffix(filepath, "/")}).String()
 	u := fmt.Sprintf("repos/%s/%s/contents/%s", owner, repo, escapedPath)
 	u, err = addOptions(u, opts)
 	if err != nil {
@@ -239,8 +239,8 @@ func (s *RepositoriesService) GetContents(ctx context.Context, owner, repo, path
 // the commit and file metadata.
 //
 // GitHub API docs: https://docs.github.com/en/rest/repos/contents#create-or-update-file-contents
-func (s *RepositoriesService) CreateFile(ctx context.Context, owner, repo, path string, opts *RepositoryContentFileOptions) (*RepositoryContentResponse, *Response, error) {
-	u := fmt.Sprintf("repos/%s/%s/contents/%s", owner, repo, path)
+func (s *RepositoriesService) CreateFile(ctx context.Context, owner, repo, filepath string, opts *RepositoryContentFileOptions) (*RepositoryContentResponse, *Response, error) {
+	u := fmt.Sprintf("repos/%s/%s/contents/%s", owner, repo, filepath)
 	req, err := s.client.NewRequest("PUT", u, opts)
 	if err != nil {
 		return nil, nil, err
@@ -259,8 +259,8 @@ func (s *RepositoriesService) CreateFile(ctx context.Context, owner, repo, path 
 // commit and file metadata. Requires the blob SHA of the file being updated.
 //
 // GitHub API docs: https://docs.github.com/en/rest/repos/contents#create-or-update-file-contents
-func (s *RepositoriesService) UpdateFile(ctx context.Context, owner, repo, path string, opts *RepositoryContentFileOptions) (*RepositoryContentResponse, *Response, error) {
-	u := fmt.Sprintf("repos/%s/%s/contents/%s", owner, repo, path)
+func (s *RepositoriesService) UpdateFile(ctx context.Context, owner, repo, filepath string, opts *RepositoryContentFileOptions) (*RepositoryContentResponse, *Response, error) {
+	u := fmt.Sprintf("repos/%s/%s/contents/%s", owner, repo, filepath)
 	req, err := s.client.NewRequest("PUT", u, opts)
 	if err != nil {
 		return nil, nil, err
@@ -279,8 +279,8 @@ func (s *RepositoriesService) UpdateFile(ctx context.Context, owner, repo, path 
 // Requires the blob SHA of the file to be deleted.
 //
 // GitHub API docs: https://docs.github.com/en/rest/repos/contents#delete-a-file
-func (s *RepositoriesService) DeleteFile(ctx context.Context, owner, repo, path string, opts *RepositoryContentFileOptions) (*RepositoryContentResponse, *Response, error) {
-	u := fmt.Sprintf("repos/%s/%s/contents/%s", owner, repo, path)
+func (s *RepositoriesService) DeleteFile(ctx context.Context, owner, repo, filepath string, opts *RepositoryContentFileOptions) (*RepositoryContentResponse, *Response, error) {
+	u := fmt.Sprintf("repos/%s/%s/contents/%s", owner, repo, filepath)
 	req, err := s.client.NewRequest("DELETE", u, opts)
 	if err != nil {
 		return nil, nil, err

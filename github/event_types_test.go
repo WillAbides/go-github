@@ -7939,7 +7939,6 @@ func TestRepositoryDispatchEvent_Marshal(t *testing.T) {
 		Branch:        String("b"),
 		ClientPayload: jsonMsg,
 		Repo: &Repository{
-
 			ID:   Int64(1),
 			URL:  String("s"),
 			Name: String("n"),

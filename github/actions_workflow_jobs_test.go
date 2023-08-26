@@ -37,8 +37,8 @@ func TestActionsService_ListWorkflowJobs(t *testing.T) {
 	want := &Jobs{
 		TotalCount: Int(4),
 		Jobs: []*WorkflowJob{
-			{ID: Int64(399444496), RunID: Int64(29679449), StartedAt: &Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)}, CompletedAt: &Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)}},
-			{ID: Int64(399444497), RunID: Int64(29679449), StartedAt: &Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)}, CompletedAt: &Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)}},
+			{ID: Int64(399444496), RunID: Int64(29679449), StartedAt: &Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)}, CompletedAt: &Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)}},
+			{ID: Int64(399444497), RunID: Int64(29679449), StartedAt: &Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)}, CompletedAt: &Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)}},
 		},
 	}
 	if !cmp.Equal(jobs, want) {
@@ -80,8 +80,8 @@ func TestActionsService_ListWorkflowJobs_Filter(t *testing.T) {
 	want := &Jobs{
 		TotalCount: Int(4),
 		Jobs: []*WorkflowJob{
-			{ID: Int64(399444496), RunID: Int64(29679449), StartedAt: &Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)}, CompletedAt: &Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)}},
-			{ID: Int64(399444497), RunID: Int64(29679449), StartedAt: &Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)}, CompletedAt: &Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)}},
+			{ID: Int64(399444496), RunID: Int64(29679449), StartedAt: &Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)}, CompletedAt: &Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)}},
+			{ID: Int64(399444497), RunID: Int64(29679449), StartedAt: &Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)}, CompletedAt: &Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)}},
 		},
 	}
 	if !cmp.Equal(jobs, want) {
@@ -106,8 +106,8 @@ func TestActionsService_GetWorkflowJobByID(t *testing.T) {
 
 	want := &WorkflowJob{
 		ID:          Int64(399444496),
-		StartedAt:   &Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)},
-		CompletedAt: &Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)},
+		StartedAt:   &Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)},
+		CompletedAt: &Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)},
 	}
 	if !cmp.Equal(job, want) {
 		t.Errorf("Actions.GetWorkflowJobByID returned %+v, want %+v", job, want)
@@ -138,7 +138,7 @@ func TestActionsService_GetWorkflowJobLogs(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	url, resp, err := client.Actions.GetWorkflowJobLogs(ctx, "o", "r", 399444496, true)
+	u, resp, err := client.Actions.GetWorkflowJobLogs(ctx, "o", "r", 399444496, true)
 	if err != nil {
 		t.Errorf("Actions.GetWorkflowJobLogs returned error: %v", err)
 	}
@@ -146,8 +146,8 @@ func TestActionsService_GetWorkflowJobLogs(t *testing.T) {
 		t.Errorf("Actions.GetWorkflowJobLogs returned status: %d, want %d", resp.StatusCode, http.StatusFound)
 	}
 	want := "http://github.com/a"
-	if url.String() != want {
-		t.Errorf("Actions.GetWorkflowJobLogs returned %+v, want %+v", url.String(), want)
+	if u.String() != want {
+		t.Errorf("Actions.GetWorkflowJobLogs returned %+v, want %+v", u.String(), want)
 	}
 
 	const methodName = "GetWorkflowJobLogs"
@@ -199,7 +199,7 @@ func TestActionsService_GetWorkflowJobLogs_StatusMovedPermanently_followRedirect
 	})
 
 	ctx := context.Background()
-	url, resp, err := client.Actions.GetWorkflowJobLogs(ctx, "o", "r", 399444496, true)
+	u, resp, err := client.Actions.GetWorkflowJobLogs(ctx, "o", "r", 399444496, true)
 	if err != nil {
 		t.Errorf("Actions.GetWorkflowJobLogs returned error: %v", err)
 	}
@@ -209,8 +209,8 @@ func TestActionsService_GetWorkflowJobLogs_StatusMovedPermanently_followRedirect
 	}
 
 	want := "http://github.com/a"
-	if url.String() != want {
-		t.Errorf("Actions.GetWorkflowJobLogs returned %+v, want %+v", url.String(), want)
+	if u.String() != want {
+		t.Errorf("Actions.GetWorkflowJobLogs returned %+v, want %+v", u.String(), want)
 	}
 }
 

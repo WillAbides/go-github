@@ -36,8 +36,8 @@ func TestActionsService_ListWorkflows(t *testing.T) {
 	want := &Workflows{
 		TotalCount: Int(4),
 		Workflows: []*Workflow{
-			{ID: Int64(72844), CreatedAt: &Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)}, UpdatedAt: &Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)}},
-			{ID: Int64(72845), CreatedAt: &Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)}, UpdatedAt: &Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)}},
+			{ID: Int64(72844), CreatedAt: &Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)}, UpdatedAt: &Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)}},
+			{ID: Int64(72845), CreatedAt: &Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)}, UpdatedAt: &Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)}},
 		},
 	}
 	if !cmp.Equal(workflows, want) {
@@ -76,8 +76,8 @@ func TestActionsService_GetWorkflowByID(t *testing.T) {
 
 	want := &Workflow{
 		ID:        Int64(72844),
-		CreatedAt: &Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)},
-		UpdatedAt: &Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)},
+		CreatedAt: &Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)},
+		UpdatedAt: &Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)},
 	}
 	if !cmp.Equal(workflow, want) {
 		t.Errorf("Actions.GetWorkflowByID returned %+v, want %+v", workflow, want)
@@ -115,8 +115,8 @@ func TestActionsService_GetWorkflowByFileName(t *testing.T) {
 
 	want := &Workflow{
 		ID:        Int64(72844),
-		CreatedAt: &Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)},
-		UpdatedAt: &Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)},
+		CreatedAt: &Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)},
+		UpdatedAt: &Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)},
 	}
 	if !cmp.Equal(workflow, want) {
 		t.Errorf("Actions.GetWorkflowByFileName returned %+v, want %+v", workflow, want)
@@ -243,7 +243,7 @@ func TestActionsService_CreateWorkflowDispatchEventByID(t *testing.T) {
 	}
 	mux.HandleFunc("/repos/o/r/actions/workflows/72844/dispatches", func(w http.ResponseWriter, r *http.Request) {
 		var v CreateWorkflowDispatchEventRequest
-		json.NewDecoder(r.Body).Decode(&v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(&v))
 
 		testMethod(t, r, "POST")
 		if !cmp.Equal(v, event) {
@@ -287,7 +287,7 @@ func TestActionsService_CreateWorkflowDispatchEventByFileName(t *testing.T) {
 	}
 	mux.HandleFunc("/repos/o/r/actions/workflows/main.yml/dispatches", func(w http.ResponseWriter, r *http.Request) {
 		var v CreateWorkflowDispatchEventRequest
-		json.NewDecoder(r.Body).Decode(&v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(&v))
 
 		testMethod(t, r, "POST")
 		if !cmp.Equal(v, event) {

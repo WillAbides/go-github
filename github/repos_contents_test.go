@@ -515,8 +515,10 @@ func TestRepositoriesService_GetContents_Directory(t *testing.T) {
 	if err != nil {
 		t.Errorf("Repositories.GetContents returned error: %v", err)
 	}
-	want := []*RepositoryContent{{Type: String("dir"), Name: String("lib"), Path: String("lib")},
-		{Type: String("file"), Name: String("LICENSE"), Size: Int(20678), Path: String("LICENSE")}}
+	want := []*RepositoryContent{
+		{Type: String("dir"), Name: String("lib"), Path: String("lib")},
+		{Type: String("file"), Name: String("LICENSE"), Size: Int(20678), Path: String("LICENSE")},
+	}
 	if !cmp.Equal(directoryContents, want) {
 		t.Errorf("Repositories.GetContents_Directory returned %+v, want %+v", directoryContents, want)
 	}
@@ -689,7 +691,7 @@ func TestRepositoriesService_GetArchiveLink(t *testing.T) {
 		http.Redirect(w, r, "http://github.com/a", http.StatusFound)
 	})
 	ctx := context.Background()
-	url, resp, err := client.Repositories.GetArchiveLink(ctx, "o", "r", Tarball, &RepositoryContentGetOptions{Ref: "yo"}, true)
+	u, resp, err := client.Repositories.GetArchiveLink(ctx, "o", "r", Tarball, &RepositoryContentGetOptions{Ref: "yo"}, true)
 	if err != nil {
 		t.Errorf("Repositories.GetArchiveLink returned error: %v", err)
 	}
@@ -697,8 +699,8 @@ func TestRepositoriesService_GetArchiveLink(t *testing.T) {
 		t.Errorf("Repositories.GetArchiveLink returned status: %d, want %d", resp.StatusCode, http.StatusFound)
 	}
 	want := "http://github.com/a"
-	if url.String() != want {
-		t.Errorf("Repositories.GetArchiveLink returned %+v, want %+v", url.String(), want)
+	if u.String() != want {
+		t.Errorf("Repositories.GetArchiveLink returned %+v, want %+v", u.String(), want)
 	}
 
 	const methodName = "GetArchiveLink"
@@ -745,7 +747,7 @@ func TestRepositoriesService_GetArchiveLink_StatusMovedPermanently_followRedirec
 		http.Redirect(w, r, "http://github.com/a", http.StatusFound)
 	})
 	ctx := context.Background()
-	url, resp, err := client.Repositories.GetArchiveLink(ctx, "o", "r", Tarball, &RepositoryContentGetOptions{}, true)
+	u, resp, err := client.Repositories.GetArchiveLink(ctx, "o", "r", Tarball, &RepositoryContentGetOptions{}, true)
 	if err != nil {
 		t.Errorf("Repositories.GetArchiveLink returned error: %v", err)
 	}
@@ -753,8 +755,8 @@ func TestRepositoriesService_GetArchiveLink_StatusMovedPermanently_followRedirec
 		t.Errorf("Repositories.GetArchiveLink returned status: %d, want %d", resp.StatusCode, http.StatusFound)
 	}
 	want := "http://github.com/a"
-	if url.String() != want {
-		t.Errorf("Repositories.GetArchiveLink returned %+v, want %+v", url.String(), want)
+	if u.String() != want {
+		t.Errorf("Repositories.GetArchiveLink returned %+v, want %+v", u.String(), want)
 	}
 }
 

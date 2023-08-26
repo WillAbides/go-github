@@ -219,7 +219,7 @@ type IssueListByRepoOptions struct {
 // ListByRepo lists the issues for the specified repository.
 //
 // GitHub API docs: https://docs.github.com/en/rest/issues/issues#list-repository-issues
-func (s *IssuesService) ListByRepo(ctx context.Context, owner string, repo string, opts *IssueListByRepoOptions) ([]*Issue, *Response, error) {
+func (s *IssuesService) ListByRepo(ctx context.Context, owner, repo string, opts *IssueListByRepoOptions) ([]*Issue, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/issues", owner, repo)
 	u, err := addOptions(u, opts)
 	if err != nil {
@@ -246,7 +246,7 @@ func (s *IssuesService) ListByRepo(ctx context.Context, owner string, repo strin
 // Get a single issue.
 //
 // GitHub API docs: https://docs.github.com/en/rest/issues/issues#get-an-issue
-func (s *IssuesService) Get(ctx context.Context, owner string, repo string, number int) (*Issue, *Response, error) {
+func (s *IssuesService) Get(ctx context.Context, owner, repo string, number int) (*Issue, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/issues/%d", owner, repo, number)
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
@@ -268,7 +268,7 @@ func (s *IssuesService) Get(ctx context.Context, owner string, repo string, numb
 // Create a new issue on the specified repository.
 //
 // GitHub API docs: https://docs.github.com/en/rest/issues/issues#create-an-issue
-func (s *IssuesService) Create(ctx context.Context, owner string, repo string, issue *IssueRequest) (*Issue, *Response, error) {
+func (s *IssuesService) Create(ctx context.Context, owner, repo string, issue *IssueRequest) (*Issue, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/issues", owner, repo)
 	req, err := s.client.NewRequest("POST", u, issue)
 	if err != nil {
@@ -287,7 +287,7 @@ func (s *IssuesService) Create(ctx context.Context, owner string, repo string, i
 // Edit (update) an issue.
 //
 // GitHub API docs: https://docs.github.com/en/rest/issues/issues#update-an-issue
-func (s *IssuesService) Edit(ctx context.Context, owner string, repo string, number int, issue *IssueRequest) (*Issue, *Response, error) {
+func (s *IssuesService) Edit(ctx context.Context, owner, repo string, number int, issue *IssueRequest) (*Issue, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/issues/%d", owner, repo, number)
 	req, err := s.client.NewRequest("PATCH", u, issue)
 	if err != nil {
@@ -338,7 +338,7 @@ type LockIssueOptions struct {
 // Lock an issue's conversation.
 //
 // GitHub API docs: https://docs.github.com/en/rest/issues/issues#lock-an-issue
-func (s *IssuesService) Lock(ctx context.Context, owner string, repo string, number int, opts *LockIssueOptions) (*Response, error) {
+func (s *IssuesService) Lock(ctx context.Context, owner, repo string, number int, opts *LockIssueOptions) (*Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/issues/%d/lock", owner, repo, number)
 	req, err := s.client.NewRequest("PUT", u, opts)
 	if err != nil {
@@ -351,7 +351,7 @@ func (s *IssuesService) Lock(ctx context.Context, owner string, repo string, num
 // Unlock an issue's conversation.
 //
 // GitHub API docs: https://docs.github.com/en/rest/issues/issues#unlock-an-issue
-func (s *IssuesService) Unlock(ctx context.Context, owner string, repo string, number int) (*Response, error) {
+func (s *IssuesService) Unlock(ctx context.Context, owner, repo string, number int) (*Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/issues/%d/lock", owner, repo, number)
 	req, err := s.client.NewRequest("DELETE", u, nil)
 	if err != nil {

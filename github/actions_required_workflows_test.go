@@ -49,7 +49,6 @@ func TestActionsService_ListOrgRequiredWorkflows(t *testing.T) {
 	opts := &ListOptions{Page: 2, PerPage: 2}
 	ctx := context.Background()
 	jobs, _, err := client.Actions.ListOrgRequiredWorkflows(ctx, "o", opts)
-
 	if err != nil {
 		t.Errorf("Actions.ListOrgRequiredWorkflows returned error: %v", err)
 	}
@@ -168,7 +167,6 @@ func TestActionsService_GetRequiredWorkflowByID(t *testing.T) {
 	})
 	ctx := context.Background()
 	jobs, _, err := client.Actions.GetRequiredWorkflowByID(ctx, "o", 12345)
-
 	if err != nil {
 		t.Errorf("Actions.GetRequiredWorkflowByID returned error: %v", err)
 	}
@@ -225,7 +223,6 @@ func TestActionsService_UpdateRequiredWorkflow(t *testing.T) {
 	ctx := context.Background()
 
 	requiredWokflow, _, err := client.Actions.UpdateRequiredWorkflow(ctx, "o", 12345, input)
-
 	if err != nil {
 		t.Errorf("Actions.UpdateRequiredWorkflow returned error: %v", err)
 	}
@@ -270,7 +267,6 @@ func TestActionsService_DeleteRequiredWorkflow(t *testing.T) {
 	})
 	ctx := context.Background()
 	_, err := client.Actions.DeleteRequiredWorkflow(ctx, "o", 12345)
-
 	if err != nil {
 		t.Errorf("Actions.DeleteRequiredWorkflow returned error: %v", err)
 	}
@@ -303,7 +299,6 @@ func TestActionsService_ListRequiredWorkflowSelectedRepos(t *testing.T) {
 	opts := &ListOptions{Page: 2, PerPage: 2}
 	ctx := context.Background()
 	jobs, _, err := client.Actions.ListRequiredWorkflowSelectedRepos(ctx, "o", 12345, opts)
-
 	if err != nil {
 		t.Errorf("Actions.ListRequiredWorkflowSelectedRepositories returned error: %v", err)
 	}
@@ -343,7 +338,6 @@ func TestActionsService_SetRequiredWorkflowSelectedRepos(t *testing.T) {
 	})
 	ctx := context.Background()
 	_, err := client.Actions.SetRequiredWorkflowSelectedRepos(ctx, "o", 12345, SelectedRepoIDs{32, 91})
-
 	if err != nil {
 		t.Errorf("Actions.SetRequiredWorkflowSelectedRepositories returned error: %v", err)
 	}
@@ -368,7 +362,6 @@ func TestActionsService_AddRepoToRequiredWorkflow(t *testing.T) {
 	})
 	ctx := context.Background()
 	_, err := client.Actions.AddRepoToRequiredWorkflow(ctx, "o", 12345, 32)
-
 	if err != nil {
 		t.Errorf("Actions.AddRepoToRequiredWorkflow returned error: %v", err)
 	}
@@ -393,7 +386,6 @@ func TestActionsService_RemoveRepoFromRequiredWorkflow(t *testing.T) {
 	})
 	ctx := context.Background()
 	_, err := client.Actions.RemoveRepoFromRequiredWorkflow(ctx, "o", 12345, 32)
-
 	if err != nil {
 		t.Errorf("Actions.RemoveRepoFromRequiredWorkflow returned error: %v", err)
 	}
@@ -439,7 +431,6 @@ func TestActionsService_ListRepoRequiredWorkflows(t *testing.T) {
 	opts := &ListOptions{Page: 2, PerPage: 2}
 	ctx := context.Background()
 	jobs, _, err := client.Actions.ListRepoRequiredWorkflows(ctx, "o", "r", opts)
-
 	if err != nil {
 		t.Errorf("Actions.ListRepoRequiredWorkflows returned error: %v", err)
 	}

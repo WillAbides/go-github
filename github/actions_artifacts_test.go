@@ -277,7 +277,7 @@ func TestActionsSerivice_DownloadArtifact(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	url, resp, err := client.Actions.DownloadArtifact(ctx, "o", "r", 1, true)
+	u, resp, err := client.Actions.DownloadArtifact(ctx, "o", "r", 1, true)
 	if err != nil {
 		t.Errorf("Actions.DownloadArtifact returned error: %v", err)
 	}
@@ -286,8 +286,8 @@ func TestActionsSerivice_DownloadArtifact(t *testing.T) {
 	}
 
 	want := "https://github.com/artifact"
-	if url.String() != want {
-		t.Errorf("Actions.DownloadArtifact returned %+v, want %+v", url.String(), want)
+	if u.String() != want {
+		t.Errorf("Actions.DownloadArtifact returned %+v, want %+v", u.String(), want)
 	}
 
 	const methodName = "DownloadArtifact"
@@ -355,7 +355,7 @@ func TestActionsService_DownloadArtifact_StatusMovedPermanently_followRedirects(
 	})
 
 	ctx := context.Background()
-	url, resp, err := client.Actions.DownloadArtifact(ctx, "o", "r", 1, true)
+	u, resp, err := client.Actions.DownloadArtifact(ctx, "o", "r", 1, true)
 	if err != nil {
 		t.Errorf("Actions.DownloadArtifact return error: %v", err)
 	}
@@ -363,8 +363,8 @@ func TestActionsService_DownloadArtifact_StatusMovedPermanently_followRedirects(
 		t.Errorf("Actions.DownloadArtifact return status %d, want %d", resp.StatusCode, http.StatusFound)
 	}
 	want := "http://github.com/artifact"
-	if url.String() != want {
-		t.Errorf("Actions.DownloadArtifact returned %+v, want %+v", url.String(), want)
+	if u.String() != want {
+		t.Errorf("Actions.DownloadArtifact returned %+v, want %+v", u.String(), want)
 	}
 }
 

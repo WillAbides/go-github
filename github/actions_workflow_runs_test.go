@@ -37,8 +37,8 @@ func TestActionsService_ListWorkflowRunsByID(t *testing.T) {
 	want := &WorkflowRuns{
 		TotalCount: Int(4),
 		WorkflowRuns: []*WorkflowRun{
-			{ID: Int64(399444496), RunNumber: Int(296), CreatedAt: &Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)}, UpdatedAt: &Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)}},
-			{ID: Int64(399444497), RunNumber: Int(296), CreatedAt: &Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)}, UpdatedAt: &Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)}},
+			{ID: Int64(399444496), RunNumber: Int(296), CreatedAt: &Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)}, UpdatedAt: &Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)}},
+			{ID: Int64(399444497), RunNumber: Int(296), CreatedAt: &Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)}, UpdatedAt: &Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)}},
 		},
 	}
 	if !cmp.Equal(runs, want) {
@@ -80,8 +80,8 @@ func TestActionsService_ListWorkflowRunsFileName(t *testing.T) {
 	want := &WorkflowRuns{
 		TotalCount: Int(4),
 		WorkflowRuns: []*WorkflowRun{
-			{ID: Int64(399444496), RunNumber: Int(296), CreatedAt: &Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)}, UpdatedAt: &Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)}},
-			{ID: Int64(399444497), RunNumber: Int(296), CreatedAt: &Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)}, UpdatedAt: &Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)}},
+			{ID: Int64(399444496), RunNumber: Int(296), CreatedAt: &Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)}, UpdatedAt: &Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)}},
+			{ID: Int64(399444497), RunNumber: Int(296), CreatedAt: &Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)}, UpdatedAt: &Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)}},
 		},
 	}
 	if !cmp.Equal(runs, want) {
@@ -121,8 +121,8 @@ func TestActionsService_GetWorkflowRunByID(t *testing.T) {
 	want := &WorkflowRun{
 		ID:        Int64(399444496),
 		RunNumber: Int(296),
-		CreatedAt: &Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)},
-		UpdatedAt: &Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)},
+		CreatedAt: &Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)},
+		UpdatedAt: &Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)},
 	}
 
 	if !cmp.Equal(runs, want) {
@@ -165,8 +165,8 @@ func TestActionsService_GetWorkflowRunAttempt(t *testing.T) {
 		ID:         Int64(399444496),
 		RunNumber:  Int(296),
 		RunAttempt: Int(3),
-		CreatedAt:  &Timestamp{time.Date(2019, time.January, 02, 15, 04, 05, 0, time.UTC)},
-		UpdatedAt:  &Timestamp{time.Date(2020, time.January, 02, 15, 04, 05, 0, time.UTC)},
+		CreatedAt:  &Timestamp{time.Date(2019, time.January, 2, 15, 4, 5, 0, time.UTC)},
+		UpdatedAt:  &Timestamp{time.Date(2020, time.January, 2, 15, 4, 5, 0, time.UTC)},
 	}
 
 	if !cmp.Equal(runs, want) {
@@ -198,7 +198,7 @@ func TestActionsService_GetWorkflowRunAttemptLogs(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	url, resp, err := client.Actions.GetWorkflowRunAttemptLogs(ctx, "o", "r", 399444496, 2, true)
+	u, resp, err := client.Actions.GetWorkflowRunAttemptLogs(ctx, "o", "r", 399444496, 2, true)
 	if err != nil {
 		t.Errorf("Actions.GetWorkflowRunAttemptLogs returned error: %v", err)
 	}
@@ -206,8 +206,8 @@ func TestActionsService_GetWorkflowRunAttemptLogs(t *testing.T) {
 		t.Errorf("Actions.GetWorkflowRunAttemptLogs returned status: %d, want %d", resp.StatusCode, http.StatusFound)
 	}
 	want := "http://github.com/a"
-	if url.String() != want {
-		t.Errorf("Actions.GetWorkflowRunAttemptLogs returned %+v, want %+v", url.String(), want)
+	if u.String() != want {
+		t.Errorf("Actions.GetWorkflowRunAttemptLogs returned %+v, want %+v", u.String(), want)
 	}
 
 	const methodName = "GetWorkflowRunAttemptLogs"
@@ -250,7 +250,7 @@ func TestActionsService_GetWorkflowRunAttemptLogs_StatusMovedPermanently_followR
 	})
 
 	ctx := context.Background()
-	url, resp, err := client.Actions.GetWorkflowRunAttemptLogs(ctx, "o", "r", 399444496, 2, true)
+	u, resp, err := client.Actions.GetWorkflowRunAttemptLogs(ctx, "o", "r", 399444496, 2, true)
 	if err != nil {
 		t.Errorf("Actions.GetWorkflowRunAttemptLogs returned error: %v", err)
 	}
@@ -260,8 +260,8 @@ func TestActionsService_GetWorkflowRunAttemptLogs_StatusMovedPermanently_followR
 	}
 
 	want := "http://github.com/a"
-	if url.String() != want {
-		t.Errorf("Actions.GetWorkflowRunAttemptLogs returned %+v, want %+v", url.String(), want)
+	if u.String() != want {
+		t.Errorf("Actions.GetWorkflowRunAttemptLogs returned %+v, want %+v", u.String(), want)
 	}
 
 	const methodName = "GetWorkflowRunAttemptLogs"
@@ -397,7 +397,7 @@ func TestActionsService_GetWorkflowRunLogs(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	url, resp, err := client.Actions.GetWorkflowRunLogs(ctx, "o", "r", 399444496, true)
+	u, resp, err := client.Actions.GetWorkflowRunLogs(ctx, "o", "r", 399444496, true)
 	if err != nil {
 		t.Errorf("Actions.GetWorkflowRunLogs returned error: %v", err)
 	}
@@ -405,8 +405,8 @@ func TestActionsService_GetWorkflowRunLogs(t *testing.T) {
 		t.Errorf("Actions.GetWorkflowRunLogs returned status: %d, want %d", resp.StatusCode, http.StatusFound)
 	}
 	want := "http://github.com/a"
-	if url.String() != want {
-		t.Errorf("Actions.GetWorkflowRunLogs returned %+v, want %+v", url.String(), want)
+	if u.String() != want {
+		t.Errorf("Actions.GetWorkflowRunLogs returned %+v, want %+v", u.String(), want)
 	}
 
 	const methodName = "GetWorkflowRunLogs"
@@ -449,7 +449,7 @@ func TestActionsService_GetWorkflowRunLogs_StatusMovedPermanently_followRedirect
 	})
 
 	ctx := context.Background()
-	url, resp, err := client.Actions.GetWorkflowRunLogs(ctx, "o", "r", 399444496, true)
+	u, resp, err := client.Actions.GetWorkflowRunLogs(ctx, "o", "r", 399444496, true)
 	if err != nil {
 		t.Errorf("Actions.GetWorkflowJobLogs returned error: %v", err)
 	}
@@ -459,8 +459,8 @@ func TestActionsService_GetWorkflowRunLogs_StatusMovedPermanently_followRedirect
 	}
 
 	want := "http://github.com/a"
-	if url.String() != want {
-		t.Errorf("Actions.GetWorkflowJobLogs returned %+v, want %+v", url.String(), want)
+	if u.String() != want {
+		t.Errorf("Actions.GetWorkflowJobLogs returned %+v, want %+v", u.String(), want)
 	}
 
 	const methodName = "GetWorkflowRunLogs"
@@ -1247,7 +1247,7 @@ func TestActionService_PendingDeployments(t *testing.T) {
 
 	mux.HandleFunc("/repos/o/r/actions/runs/399444496/pending_deployments", func(w http.ResponseWriter, r *http.Request) {
 		v := new(PendingDeploymentsRequest)
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 
 		testMethod(t, r, "POST")
 		if !cmp.Equal(v, input) {

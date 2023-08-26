@@ -159,7 +159,7 @@ func TestValidatePayload_FormPost(t *testing.T) {
 }
 
 func TestValidatePayload_InvalidContentType(t *testing.T) {
-	req, err := http.NewRequest("POST", "http://localhost/event", nil)
+	req, err := http.NewRequest("POST", "http://localhost/event", http.NoBody)
 	if err != nil {
 		t.Fatalf("NewRequest: %v", err)
 	}
@@ -193,7 +193,7 @@ func TestValidatePayload_NoSecretKey(t *testing.T) {
 // badReader satisfies io.Reader but always returns an error.
 type badReader struct{}
 
-func (b *badReader) Read(p []byte) (int, error) {
+func (b *badReader) Read(_ []byte) (int, error) {
 	return 0, errors.New("bad reader")
 }
 
@@ -221,7 +221,7 @@ func TestValidatePayload_BadRequestBody(t *testing.T) {
 }
 
 func TestValidatePayload_InvalidContentTypeParams(t *testing.T) {
-	req, err := http.NewRequest("POST", "http://localhost/event", nil)
+	req, err := http.NewRequest("POST", "http://localhost/event", http.NoBody)
 	if err != nil {
 		t.Fatalf("NewRequest: %v", err)
 	}
@@ -232,7 +232,7 @@ func TestValidatePayload_InvalidContentTypeParams(t *testing.T) {
 }
 
 func TestValidatePayload_ValidContentTypeParams(t *testing.T) {
-	var requestBody = `{"yo":true}`
+	requestBody := `{"yo":true}`
 	buf := bytes.NewBufferString(requestBody)
 
 	req, err := http.NewRequest("POST", "http://localhost/event", buf)
@@ -562,7 +562,7 @@ func TestValidatePayloadFromBody_UnsupportedContentType(t *testing.T) {
 
 func TestDeliveryID(t *testing.T) {
 	id := "8970a780-244e-11e7-91ca-da3aabcb9793"
-	req, err := http.NewRequest("POST", "http://localhost", nil)
+	req, err := http.NewRequest("POST", "http://localhost", http.NoBody)
 	if err != nil {
 		t.Fatalf("DeliveryID: %v", err)
 	}

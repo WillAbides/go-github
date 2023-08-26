@@ -102,7 +102,7 @@ func TestProjectsService_UpdateProject(t *testing.T) {
 		testHeader(t, r, "Accept", mediaTypeProjectsPreview)
 
 		v := &ProjectOptions{}
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 		if !cmp.Equal(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
@@ -284,7 +284,7 @@ func TestProjectsService_CreateProjectColumn(t *testing.T) {
 		testHeader(t, r, "Accept", mediaTypeProjectsPreview)
 
 		v := &ProjectColumnOptions{}
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 		if !cmp.Equal(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
@@ -329,7 +329,7 @@ func TestProjectsService_UpdateProjectColumn(t *testing.T) {
 		testHeader(t, r, "Accept", mediaTypeProjectsPreview)
 
 		v := &ProjectColumnOptions{}
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 		if !cmp.Equal(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
@@ -400,7 +400,7 @@ func TestProjectsService_MoveProjectColumn(t *testing.T) {
 		testHeader(t, r, "Accept", mediaTypeProjectsPreview)
 
 		v := &ProjectColumnMoveOptions{}
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 		if !cmp.Equal(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
@@ -432,13 +432,15 @@ func TestProjectsService_ListProjectCards(t *testing.T) {
 		testHeader(t, r, "Accept", mediaTypeProjectsPreview)
 		testFormValues(t, r, values{
 			"archived_state": "all",
-			"page":           "2"})
+			"page":           "2",
+		})
 		fmt.Fprint(w, `[{"id":1}]`)
 	})
 
 	opt := &ProjectCardListOptions{
 		ArchivedState: String("all"),
-		ListOptions:   ListOptions{Page: 2}}
+		ListOptions:   ListOptions{Page: 2},
+	}
 	ctx := context.Background()
 	cards, _, err := client.Projects.ListProjectCards(ctx, 1, opt)
 	if err != nil {
@@ -515,7 +517,7 @@ func TestProjectsService_CreateProjectCard(t *testing.T) {
 		testHeader(t, r, "Accept", mediaTypeProjectsPreview)
 
 		v := &ProjectCardOptions{}
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 		if !cmp.Equal(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
@@ -563,7 +565,7 @@ func TestProjectsService_UpdateProjectCard(t *testing.T) {
 		testHeader(t, r, "Accept", mediaTypeProjectsPreview)
 
 		v := &ProjectCardOptions{}
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 		if !cmp.Equal(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
@@ -634,7 +636,7 @@ func TestProjectsService_MoveProjectCard(t *testing.T) {
 		testHeader(t, r, "Accept", mediaTypeProjectsPreview)
 
 		v := &ProjectCardMoveOptions{}
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 		if !cmp.Equal(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
@@ -670,7 +672,7 @@ func TestProjectsService_AddProjectCollaborator(t *testing.T) {
 		testHeader(t, r, "Accept", mediaTypeProjectsPreview)
 
 		v := &ProjectCollaboratorOptions{}
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 		if !cmp.Equal(v, opt) {
 			t.Errorf("Request body = %+v, want %+v", v, opt)
 		}

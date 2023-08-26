@@ -866,7 +866,6 @@ func TestOrganizationsService_UpdateOrganizationRuleset(t *testing.T) {
 			NewCreationRule(),
 		},
 	})
-
 	if err != nil {
 		t.Errorf("Organizations.UpdateOrganizationRuleset returned error: %v", err)
 	}

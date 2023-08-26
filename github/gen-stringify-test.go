@@ -250,7 +250,7 @@ func (t *templateData) addMapType(receiverType, fieldName string) {
 
 func (t *templateData) addIdent(x *ast.Ident, receiverType, fieldName string) {
 	var zeroValue string
-	var namedStruct = false
+	namedStruct := false
 	switch x.String() {
 	case "int":
 		zeroValue = "0"
@@ -274,7 +274,7 @@ func (t *templateData) addIdent(x *ast.Ident, receiverType, fieldName string) {
 
 func (t *templateData) addIdentPtr(x *ast.Ident, receiverType, fieldName string) {
 	var zeroValue string
-	var namedStruct = false
+	namedStruct := false
 	switch x.String() {
 	case "int":
 		zeroValue = "Int(0)"
@@ -298,7 +298,7 @@ func (t *templateData) addIdentPtr(x *ast.Ident, receiverType, fieldName string)
 
 func (t *templateData) addIdentSlice(x *ast.Ident, receiverType, fieldName string) {
 	var zeroValue string
-	var namedStruct = false
+	namedStruct := false
 	switch x.String() {
 	case "int":
 		zeroValue = "[]int{0}"
@@ -351,15 +351,15 @@ func (t *templateData) dump() error {
 	}
 
 	logf("Writing %v...", t.filename)
-	if err := os.Chmod(t.filename, 0644); err != nil {
+	if err := os.Chmod(t.filename, 0o644); err != nil {
 		return fmt.Errorf("os.Chmod(%q, 0644): %v", t.filename, err)
 	}
 
-	if err := os.WriteFile(t.filename, clean, 0444); err != nil {
+	if err := os.WriteFile(t.filename, clean, 0o444); err != nil {
 		return err
 	}
 
-	if err := os.Chmod(t.filename, 0444); err != nil {
+	if err := os.Chmod(t.filename, 0o444); err != nil {
 		return fmt.Errorf("os.Chmod(%q, 0444): %v", t.filename, err)
 	}
 

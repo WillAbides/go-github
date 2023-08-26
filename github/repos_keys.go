@@ -15,7 +15,7 @@ import (
 // ListKeys lists the deploy keys for a repository.
 //
 // GitHub API docs: https://docs.github.com/en/rest/deploy-keys#list-deploy-keys
-func (s *RepositoriesService) ListKeys(ctx context.Context, owner string, repo string, opts *ListOptions) ([]*Key, *Response, error) {
+func (s *RepositoriesService) ListKeys(ctx context.Context, owner, repo string, opts *ListOptions) ([]*Key, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/keys", owner, repo)
 	u, err := addOptions(u, opts)
 	if err != nil {
@@ -39,7 +39,7 @@ func (s *RepositoriesService) ListKeys(ctx context.Context, owner string, repo s
 // GetKey fetches a single deploy key.
 //
 // GitHub API docs: https://docs.github.com/en/rest/deploy-keys#get-a-deploy-key
-func (s *RepositoriesService) GetKey(ctx context.Context, owner string, repo string, id int64) (*Key, *Response, error) {
+func (s *RepositoriesService) GetKey(ctx context.Context, owner, repo string, id int64) (*Key, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/keys/%v", owner, repo, id)
 
 	req, err := s.client.NewRequest("GET", u, nil)
@@ -59,7 +59,7 @@ func (s *RepositoriesService) GetKey(ctx context.Context, owner string, repo str
 // CreateKey adds a deploy key for a repository.
 //
 // GitHub API docs: https://docs.github.com/en/rest/deploy-keys#create-a-deploy-key
-func (s *RepositoriesService) CreateKey(ctx context.Context, owner string, repo string, key *Key) (*Key, *Response, error) {
+func (s *RepositoriesService) CreateKey(ctx context.Context, owner, repo string, key *Key) (*Key, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/keys", owner, repo)
 
 	req, err := s.client.NewRequest("POST", u, key)
@@ -79,7 +79,7 @@ func (s *RepositoriesService) CreateKey(ctx context.Context, owner string, repo 
 // DeleteKey deletes a deploy key.
 //
 // GitHub API docs: https://docs.github.com/en/rest/deploy-keys#delete-a-deploy-key
-func (s *RepositoriesService) DeleteKey(ctx context.Context, owner string, repo string, id int64) (*Response, error) {
+func (s *RepositoriesService) DeleteKey(ctx context.Context, owner, repo string, id int64) (*Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/keys/%v", owner, repo, id)
 
 	req, err := s.client.NewRequest("DELETE", u, nil)

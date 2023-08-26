@@ -37,7 +37,9 @@ func TestIssuesService_List_all(t *testing.T) {
 	})
 
 	opt := &IssueListOptions{
-		"all", "closed", []string{"a", "b"}, "updated", "asc",
+		"all", "closed",
+		[]string{"a", "b"},
+		"updated", "asc",
 		time.Date(2002, time.February, 10, 15, 30, 0, 0, time.UTC),
 		ListOptions{Page: 1, PerPage: 2},
 	}
@@ -160,7 +162,9 @@ func TestIssuesService_ListByRepo(t *testing.T) {
 	})
 
 	opt := &IssueListByRepoOptions{
-		"*", "closed", "a", "c", "m", []string{"a", "b"}, "updated", "asc",
+		"*", "closed", "a", "c", "m",
+		[]string{"a", "b"},
+		"updated", "asc",
 		time.Date(2002, time.February, 10, 15, 30, 0, 0, time.UTC),
 		ListOptions{0, 0},
 	}
@@ -265,7 +269,7 @@ func TestIssuesService_Create(t *testing.T) {
 
 	mux.HandleFunc("/repos/o/r/issues", func(w http.ResponseWriter, r *http.Request) {
 		v := new(IssueRequest)
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 
 		testMethod(t, r, "POST")
 		if !cmp.Equal(v, input) {
@@ -318,7 +322,7 @@ func TestIssuesService_Edit(t *testing.T) {
 
 	mux.HandleFunc("/repos/o/r/issues/1", func(w http.ResponseWriter, r *http.Request) {
 		v := new(IssueRequest)
-		json.NewDecoder(r.Body).Decode(v)
+		assertNilError(t, json.NewDecoder(r.Body).Decode(v))
 
 		testMethod(t, r, "PATCH")
 		if !cmp.Equal(v, input) {

@@ -15,7 +15,6 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"os"
-	"path"
 	"reflect"
 	"strconv"
 	"strings"
@@ -60,38 +59,11 @@ func setup() (client *Client, mux *http.ServeMux, serverURL string, teardown fun
 	// client is the GitHub client being tested and is
 	// configured to use test server.
 	client = NewClient(nil)
-	url, _ := url.Parse(server.URL + baseURLPath + "/")
-	client.BaseURL = url
-	client.UploadURL = url
+	u, _ := url.Parse(server.URL + baseURLPath + "/")
+	client.BaseURL = u
+	client.UploadURL = u
 
 	return client, mux, server.URL, server.Close
-}
-
-// openTestFile creates a new file with the given name and content for testing.
-// In order to ensure the exact file name, this function will create a new temp
-// directory, and create the file in that directory. It is the caller's
-// responsibility to remove the directory and its contents when no longer needed.
-func openTestFile(name, content string) (file *os.File, dir string, err error) {
-	dir, err = os.MkdirTemp("", "go-github")
-	if err != nil {
-		return nil, dir, err
-	}
-
-	file, err = os.OpenFile(path.Join(dir, name), os.O_RDWR|os.O_CREATE|os.O_EXCL, 0600)
-	if err != nil {
-		return nil, dir, err
-	}
-
-	fmt.Fprint(file, content)
-
-	// close and re-open the file to keep file.Stat() happy
-	file.Close()
-	file, err = os.Open(file.Name())
-	if err != nil {
-		return nil, dir, err
-	}
-
-	return file, dir, err
 }
 
 func testMethod(t *testing.T, r *http.Request, want string) {
@@ -110,13 +82,13 @@ func testFormValues(t *testing.T, r *http.Request, values values) {
 		want.Set(k, v)
 	}
 
-	r.ParseForm()
+	assertNilError(t, r.ParseForm())
 	if got := r.Form; !cmp.Equal(got, want) {
 		t.Errorf("Request parameters: %v, want %v", got, want)
 	}
 }
 
-func testHeader(t *testing.T, r *http.Request, header string, want string) {
+func testHeader(t *testing.T, r *http.Request, header, want string) {
 	t.Helper()
 	if got := r.Header.Get(header); got != want {
 		t.Errorf("Header.Get(%q) returned %q, want %q", header, got, want)
@@ -172,7 +144,7 @@ func testJSONMarshal(t *testing.T, v interface{}, want string) {
 
 // Test whether the v fields have the url tag and the parsing of v
 // produces query parameters that corresponds to the want string.
-func testAddURLOptions(t *testing.T, url string, v interface{}, want string) {
+func testAddURLOptions(t *testing.T, u string, v interface{}, want string) {
 	t.Helper()
 
 	vt := reflect.Indirect(reflect.ValueOf(v)).Type()
@@ -187,13 +159,13 @@ func testAddURLOptions(t *testing.T, url string, v interface{}, want string) {
 		}
 	}
 
-	got, err := addOptions(url, v)
+	got, err := addOptions(u, v)
 	if err != nil {
 		t.Errorf("Unable to add %#v as query parameters", v)
 	}
 
 	if got != want {
-		t.Errorf("addOptions(%q, %#v) returned %v, want %v", url, v, got, want)
+		t.Errorf("addOptions(%q, %#v) returned %v, want %v", u, v, got, want)
 	}
 }
 
@@ -274,6 +246,19 @@ func testErrorResponseForStatusCode(t *testing.T, code int) {
 	default:
 		t.Error("Unknown error response type")
 	}
+}
+
+func assertNilError(t *testing.T, err error) {
+	t.Helper()
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+}
+
+func assertWrite(t *testing.T, w io.Writer, data []byte) {
+	t.Helper()
+	_, err := w.Write(data)
+	assertNilError(t, err)
 }
 
 func TestNewClient(t *testing.T) {
@@ -810,10 +795,11 @@ func TestNewUploadRequest_errorForNoTrailingSlash(t *testing.T) {
 func TestResponse_populatePageValues(t *testing.T) {
 	r := http.Response{
 		Header: http.Header{
-			"Link": {`<https://api.github.com/?page=1>; rel="first",` +
-				` <https://api.github.com/?page=2>; rel="prev",` +
-				` <https://api.github.com/?page=4>; rel="next",` +
-				` <https://api.github.com/?page=5>; rel="last"`,
+			"Link": {
+				`<https://api.github.com/?page=1>; rel="first",` +
+					` <https://api.github.com/?page=2>; rel="prev",` +
+					` <https://api.github.com/?page=4>; rel="next",` +
+					` <https://api.github.com/?page=5>; rel="last"`,
 			},
 		},
 	}
@@ -839,10 +825,11 @@ func TestResponse_populatePageValues(t *testing.T) {
 func TestResponse_populateSinceValues(t *testing.T) {
 	r := http.Response{
 		Header: http.Header{
-			"Link": {`<https://api.github.com/?since=1>; rel="first",` +
-				` <https://api.github.com/?since=2>; rel="prev",` +
-				` <https://api.github.com/?since=4>; rel="next",` +
-				` <https://api.github.com/?since=5>; rel="last"`,
+			"Link": {
+				`<https://api.github.com/?since=1>; rel="first",` +
+					` <https://api.github.com/?since=2>; rel="prev",` +
+					` <https://api.github.com/?since=4>; rel="next",` +
+					` <https://api.github.com/?since=5>; rel="last"`,
 			},
 		},
 	}
@@ -868,10 +855,11 @@ func TestResponse_populateSinceValues(t *testing.T) {
 func TestResponse_SinceWithPage(t *testing.T) {
 	r := http.Response{
 		Header: http.Header{
-			"Link": {`<https://api.github.com/?since=2021-12-04T10%3A43%3A42Z&page=1>; rel="first",` +
-				` <https://api.github.com/?since=2021-12-04T10%3A43%3A42Z&page=2>; rel="prev",` +
-				` <https://api.github.com/?since=2021-12-04T10%3A43%3A42Z&page=4>; rel="next",` +
-				` <https://api.github.com/?since=2021-12-04T10%3A43%3A42Z&page=5>; rel="last"`,
+			"Link": {
+				`<https://api.github.com/?since=2021-12-04T10%3A43%3A42Z&page=1>; rel="first",` +
+					` <https://api.github.com/?since=2021-12-04T10%3A43%3A42Z&page=2>; rel="prev",` +
+					` <https://api.github.com/?since=2021-12-04T10%3A43%3A42Z&page=4>; rel="next",` +
+					` <https://api.github.com/?since=2021-12-04T10%3A43%3A42Z&page=5>; rel="last"`,
 			},
 		},
 	}
@@ -937,9 +925,10 @@ func TestResponse_cursorPagination(t *testing.T) {
 func TestResponse_beforeAfterPagination(t *testing.T) {
 	r := http.Response{
 		Header: http.Header{
-			"Link": {`<https://api.github.com/?after=a1b2c3&before=>; rel="next",` +
-				` <https://api.github.com/?after=&before=>; rel="first",` +
-				` <https://api.github.com/?after=&before=d4e5f6>; rel="prev",`,
+			"Link": {
+				`<https://api.github.com/?after=a1b2c3&before=>; rel="next",` +
+					` <https://api.github.com/?after=&before=>; rel="first",` +
+					` <https://api.github.com/?after=&before=d4e5f6>; rel="prev",`,
 			},
 		},
 	}
@@ -971,11 +960,12 @@ func TestResponse_beforeAfterPagination(t *testing.T) {
 func TestResponse_populatePageValues_invalid(t *testing.T) {
 	r := http.Response{
 		Header: http.Header{
-			"Link": {`<https://api.github.com/?page=1>,` +
-				`<https://api.github.com/?page=abc>; rel="first",` +
-				`https://api.github.com/?page=2; rel="prev",` +
-				`<https://api.github.com/>; rel="next",` +
-				`<https://api.github.com/?page=>; rel="last"`,
+			"Link": {
+				`<https://api.github.com/?page=1>,` +
+					`<https://api.github.com/?page=abc>; rel="first",` +
+					`https://api.github.com/?page=2; rel="prev",` +
+					`<https://api.github.com/>; rel="next",` +
+					`<https://api.github.com/?page=>; rel="last"`,
 			},
 		},
 	}
@@ -1010,11 +1000,12 @@ func TestResponse_populatePageValues_invalid(t *testing.T) {
 func TestResponse_populateSinceValues_invalid(t *testing.T) {
 	r := http.Response{
 		Header: http.Header{
-			"Link": {`<https://api.github.com/?since=1>,` +
-				`<https://api.github.com/?since=abc>; rel="first",` +
-				`https://api.github.com/?since=2; rel="prev",` +
-				`<https://api.github.com/>; rel="next",` +
-				`<https://api.github.com/?since=>; rel="last"`,
+			"Link": {
+				`<https://api.github.com/?since=1>,` +
+					`<https://api.github.com/?since=abc>; rel="first",` +
+					`https://api.github.com/?since=2; rel="prev",` +
+					`<https://api.github.com/>; rel="next",` +
+					`<https://api.github.com/?since=>; rel="last"`,
 			},
 		},
 	}
@@ -1062,7 +1053,8 @@ func TestDo(t *testing.T) {
 	req, _ := client.NewRequest("GET", ".", nil)
 	body := new(foo)
 	ctx := context.Background()
-	client.Do(ctx, req, body)
+	_, err := client.Do(ctx, req, body)
+	assertNilError(t, err)
 
 	want := &foo{"a"}
 	if !cmp.Equal(body, want) {
@@ -1171,7 +1163,7 @@ func TestDo_rateLimit(t *testing.T) {
 		t.Errorf("Client rate remaining = %v, want %v", got, want)
 	}
 	reset := time.Date(2013, time.July, 1, 17, 47, 53, 0, time.UTC)
-	if resp.Rate.Reset.UTC() != reset {
+	if !resp.Rate.Reset.UTC().Equal(reset) {
 		t.Errorf("Client rate reset = %v, want %v", resp.Rate.Reset, reset)
 	}
 }
@@ -1265,7 +1257,7 @@ func TestDo_rateLimit_errorResponse(t *testing.T) {
 		t.Errorf("Client rate remaining = %v, want %v", got, want)
 	}
 	reset := time.Date(2013, time.July, 1, 17, 47, 53, 0, time.UTC)
-	if resp.Rate.Reset.UTC() != reset {
+	if !resp.Rate.Reset.UTC().Equal(reset) {
 		t.Errorf("Client rate reset = %v, want %v", resp.Rate.Reset, reset)
 	}
 }
@@ -1305,7 +1297,7 @@ func TestDo_rateLimit_rateLimitError(t *testing.T) {
 		t.Errorf("rateLimitErr rate remaining = %v, want %v", got, want)
 	}
 	reset := time.Date(2013, time.July, 1, 17, 47, 53, 0, time.UTC)
-	if rateLimitErr.Rate.Reset.UTC() != reset {
+	if !rateLimitErr.Rate.Reset.UTC().Equal(reset) {
 		t.Errorf("rateLimitErr rate reset = %v, want %v", rateLimitErr.Rate.Reset.UTC(), reset)
 	}
 }
@@ -1337,11 +1329,14 @@ func TestDo_rateLimit_noNetworkCall(t *testing.T) {
 	// First request is made, and it makes the client aware of rate reset time being in the future.
 	req, _ := client.NewRequest("GET", "first", nil)
 	ctx := context.Background()
-	client.Do(ctx, req, nil)
+	_, err := client.Do(ctx, req, nil)
+	if err == nil {
+		t.Error("Expected error to be returned.")
+	}
 
 	// Second request should not cause a network call to be made, since client can predict a rate limit error.
 	req, _ = client.NewRequest("GET", "second", nil)
-	_, err := client.Do(ctx, req, nil)
+	_, err = client.Do(ctx, req, nil)
 
 	if madeNetworkCall {
 		t.Fatal("Network call was made, even though rate limit is known to still be exceeded.")
@@ -1360,7 +1355,7 @@ func TestDo_rateLimit_noNetworkCall(t *testing.T) {
 	if got, want := rateLimitErr.Rate.Remaining, 0; got != want {
 		t.Errorf("rateLimitErr rate remaining = %v, want %v", got, want)
 	}
-	if rateLimitErr.Rate.Reset.UTC() != reset {
+	if !rateLimitErr.Rate.Reset.UTC().Equal(reset) {
 		t.Errorf("rateLimitErr rate reset = %v, want %v", rateLimitErr.Rate.Reset.UTC(), reset)
 	}
 }
@@ -1394,11 +1389,14 @@ func TestDo_rateLimit_ignoredFromCache(t *testing.T) {
 	// First request is made so afterwards we can check the returned rate limit headers were ignored.
 	req, _ := client.NewRequest("GET", "first", nil)
 	ctx := context.Background()
-	client.Do(ctx, req, nil)
+	_, err := client.Do(ctx, req, nil)
+	if err == nil {
+		t.Error("Expected error to be returned.")
+	}
 
 	// Second request should not by hindered by rate limits.
 	req, _ = client.NewRequest("GET", "second", nil)
-	_, err := client.Do(ctx, req, nil)
+	_, err = client.Do(ctx, req, nil)
 
 	if err != nil {
 		t.Fatalf("Second request failed, even though the rate limits from the cache should've been ignored: %v", err)
@@ -2237,7 +2235,7 @@ func TestRateLimits(t *testing.T) {
 		SCIM: &Rate{
 			Limit:     9,
 			Remaining: 8,
-			Reset:     Timestamp{time.Date(2013, time.July, 1, 17, 48, 00, 0, time.UTC).Local()},
+			Reset:     Timestamp{time.Date(2013, time.July, 1, 17, 48, 0, 0, time.UTC).Local()},
 		},
 	}
 	if !cmp.Equal(rate, want) {
@@ -2368,7 +2366,7 @@ func TestRateLimits_overQuota(t *testing.T) {
 		SCIM: &Rate{
 			Limit:     9,
 			Remaining: 8,
-			Reset:     Timestamp{time.Date(2013, time.July, 1, 17, 48, 00, 0, time.UTC).Local()},
+			Reset:     Timestamp{time.Date(2013, time.July, 1, 17, 48, 0, 0, time.UTC).Local()},
 		},
 	}
 	if !cmp.Equal(rate, want) {
@@ -2464,7 +2462,8 @@ func TestUnauthenticatedRateLimitedTransport(t *testing.T) {
 	unauthedClient.BaseURL = client.BaseURL
 	req, _ := unauthedClient.NewRequest("GET", ".", nil)
 	ctx := context.Background()
-	unauthedClient.Do(ctx, req, nil)
+	_, err := unauthedClient.Do(ctx, req, nil)
+	assertNilError(t, err)
 }
 
 func TestUnauthenticatedRateLimitedTransport_missingFields(t *testing.T) {
@@ -2539,7 +2538,8 @@ func TestBasicAuthTransport(t *testing.T) {
 	basicAuthClient.BaseURL = client.BaseURL
 	req, _ := basicAuthClient.NewRequest("GET", ".", nil)
 	ctx := context.Background()
-	basicAuthClient.Do(ctx, req, nil)
+	_, err := basicAuthClient.Do(ctx, req, nil)
+	assertNilError(t, err)
 }
 
 func TestBasicAuthTransport_transport(t *testing.T) {

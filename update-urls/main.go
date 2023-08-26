@@ -59,7 +59,7 @@ var (
 	debugFile = flag.String("d", "", "Debug named file only")
 
 	fragmentIDStringRE   = regexp.MustCompile(`<h3 [^>]*id="`)
-	stripHTMLRE          = regexp.MustCompile(`<\/?[^>]+\/?>`)
+	stripHTMLRE          = regexp.MustCompile(`</?[^>]+/?>`)
 	condenseWhitespaceRE = regexp.MustCompile(`\s+`)
 
 	// skipMethods holds methods which are skipped because they do not have GitHub v3
@@ -122,14 +122,16 @@ var (
 
 type overrideFunc func(arg string) (httpMethod, url string)
 
-func logf(fmt string, args ...interface{}) {
+func logf(format string, args ...interface{}) {
 	if *verbose {
-		log.Printf(fmt, args...)
+		log.Printf(format, args...)
 	}
 }
 
-type servicesMap map[string]*Service
-type endpointsMap map[string]*Endpoint
+type (
+	servicesMap  map[string]*Service
+	endpointsMap map[string]*Endpoint
+)
 
 func main() {
 	flag.Parse()
@@ -172,8 +174,10 @@ func main() {
 	logf("Done.")
 }
 
-type usedHelpersMap map[string]bool
-type endpointsByFilenameMap map[string][]*Endpoint
+type (
+	usedHelpersMap         map[string]bool
+	endpointsByFilenameMap map[string][]*Endpoint
+)
 
 // FileRewriter read/writes files and converts AST token positions.
 type FileRewriter interface {
@@ -191,6 +195,7 @@ func (lfr *liveFileRewriter) Position(pos token.Pos) token.Position { return lfr
 func (lfr *liveFileRewriter) ReadFile(filename string) ([]byte, error) {
 	return os.ReadFile(filename)
 }
+
 func (lfr *liveFileRewriter) WriteFile(filename string, buf []byte, mode os.FileMode) error {
 	return os.WriteFile(filename, buf, mode)
 }
@@ -285,15 +290,12 @@ func validateRewriteURLs(usedHelpers usedHelpersMap, endpointsByFilename endpoin
 					endpoint.stdRefLines = nil
 				case len(endpoint.endpointComments) > 0:
 					lastCmt := endpoint.endpointComments[len(endpoint.endpointComments)-1]
-					// logf("lastCmt.Text=%q (len=%v)", lastCmt.Text, len(lastCmt.Text))
 					pos := fileRewriter.Position(lastCmt.Pos())
 					pos.Offset += len(lastCmt.Text)
 					line := "\n" + fmt.Sprintf(stdRefFmt, url)
 					if lastCmt.Text != "//" {
 						line = "\n//" + line // Add blank comment line before URL.
 					}
-					// logf("line=%q (len=%v)", line, len(line))
-					// logf("At byte offset %v: adding missing documentation:\n%q", pos.Offset, line)
 					fileEdits = append(fileEdits, &FileEdit{
 						pos:      pos,
 						fromText: "",
@@ -314,7 +316,7 @@ func validateRewriteURLs(usedHelpers usedHelpersMap, endpointsByFilename endpoin
 			log.Printf("Performing %v edits on file %v", len(fileEdits), filename)
 			b = performBufferEdits(b, fileEdits)
 
-			if err := fileRewriter.WriteFile(filename, b, 0644); err != nil {
+			if err := fileRewriter.WriteFile(filename, b, 0o644); err != nil {
 				log.Fatalf("WriteFile: %v", err)
 			}
 		}
@@ -443,7 +445,6 @@ func (rafi *realAstFileIterator) Reset() {
 		var count int
 		for _, pkg := range rafi.pkgs {
 			for filename, f := range pkg.Files {
-				// logf("Sending file #%v: %v to channel", count, filename)
 				rafi.ch <- &filenameAstFilePair{filename: filename, astFile: f}
 				count++
 			}
@@ -459,7 +460,6 @@ func (rafi *realAstFileIterator) Reset() {
 
 func (rafi *realAstFileIterator) Next() *filenameAstFilePair {
 	for pair := range rafi.ch {
-		// logf("Next: returning file %v", pair.filename)
 		return pair
 	}
 	return nil
@@ -474,7 +474,7 @@ func findAllServices(pkgs map[string]*ast.Package) servicesMap {
 			}
 
 			logf("Step 1 - Processing %v ...", filename)
-			if err := findClientServices(filename, f, services); err != nil {
+			if err := findClientServices(f, services); err != nil {
 				log.Fatal(err)
 			}
 		}
@@ -581,12 +581,14 @@ func (dc *documentCache) CacheDocFromInternet(urlWithID, filename string, pos to
 
 	logf("GET %q ...", fullURL)
 	time.Sleep(httpGetDelay)
+	//nolint:gosec // G107: Potential HTTP request made with variable url
 	resp, err := http.Get(fullURL)
 	check("Unable to get URL: %v: %v", fullURL, err)
 	switch resp.StatusCode {
 	case http.StatusTooManyRequests, http.StatusServiceUnavailable:
 		logf("Sleeping 60 seconds and trying again...")
 		time.Sleep(60 * time.Second)
+		//nolint:gosec // G107: Potential HTTP request made with variable url
 		resp, err = http.Get(fullURL)
 		check("Unable to get URL: %v: %v", fullURL, err)
 	case http.StatusOK:
@@ -602,7 +604,7 @@ func (dc *documentCache) CacheDocFromInternet(urlWithID, filename string, pos to
 	b, err := io.ReadAll(resp.Body)
 	check("Unable to read body of URL: %v, %v", url, err)
 	check("Unable to close body of URL: %v, %v", url, resp.Body.Close())
-	dc.apiDocs[url], err = parseWebPageEndpoints(string(b))
+	dc.apiDocs[url] = parseWebPageEndpoints(string(b))
 	check("Unable to parse web page endpoints: url: %v, filename: %v, err: %v", url, filename, err)
 	logf("Found %v web page fragment identifiers.", len(dc.apiDocs[url]))
 	if len(dc.apiDocs[url]) == 0 {
@@ -755,13 +757,9 @@ func processAST(filename string, f *ast.File, services servicesMap, endpoints en
 
 			receiverName := recv.Names[0].Name
 
-			logf("\n\nast.FuncDecl: %#v", *decl)       // Doc, Recv, Name, Type, Body
-			logf("ast.FuncDecl.Name: %#v", *decl.Name) // NamePos, Name, Obj(nil)
-			// logf("ast.FuncDecl.Recv: %#v", *decl.Recv)  // Opening, List, Closing
+			logf("\n\nast.FuncDecl: %#v", *decl)          // Doc, Recv, Name, Type, Body
+			logf("ast.FuncDecl.Name: %#v", *decl.Name)    // NamePos, Name, Obj(nil)
 			logf("ast.FuncDecl.Recv.List[0]: %#v", *recv) // Doc, Names, Type, Tag, Comment
-			// for i, name := range decl.Recv.List[0].Names {
-			// 	logf("recv.name[%v] = %v", i, name.Name)
-			// }
 			logf("recvType = %#v", recvType)
 			var enterpriseRefLines []*ast.Comment
 			var stdRefLines []*ast.Comment
@@ -770,9 +768,6 @@ func processAST(filename string, f *ast.File, services servicesMap, endpoints en
 				endpointComments = decl.Doc.List
 				for i, comment := range decl.Doc.List {
 					logf("doc.comment[%v] = %#v", i, *comment)
-					// if strings.Contains(comment.Text, enterpriseURL) {
-					// 	enterpriseRefLines = append(enterpriseRefLines, comment)
-					// } else
 					if strings.Contains(comment.Text, stdURL) {
 						stdRefLines = append(stdRefLines, comment)
 					}
@@ -796,7 +791,6 @@ func processAST(filename string, f *ast.File, services servicesMap, endpoints en
 				stdRefLines:        stdRefLines,
 				endpointComments:   endpointComments,
 			}
-			// ep.checkHTTPMethodOverride("")
 			endpoints[fullName] = ep
 			logf("endpoints[%q] = %#v", fullName, endpoints[fullName])
 			if ep.httpMethod == "" && (ep.helperMethod == "" || len(ep.urlFormats) == 0) {
@@ -839,16 +833,13 @@ func (b *bodyData) parseBody(body *ast.BlockStmt) error {
 			}
 			if hm != "" {
 				b.httpMethod = hm
-				// logf("parseBody: httpMethod=%v", b.httpMethod)
 			}
 			if hlp != "" {
 				b.helperMethod = hlp
 			}
 			b.assignments = append(b.assignments, asgn...)
-			// logf("assignments=%#v", b.assignments)
 			if b.urlVarName == "" && uvn != "" {
 				b.urlVarName = uvn
-				// logf("parseBody: urlVarName=%v", b.urlVarName)
 				// By the time the urlVarName is found, all assignments should
 				// have already taken place so that we can find the correct
 				// ones and determine the urlFormats.
@@ -898,18 +889,20 @@ func (b *bodyData) parseBody(body *ast.BlockStmt) error {
 							logf("found urlFormat: %v and helper method: %v, httpMethod: %v", b.urlFormats[0], b.helperMethod, b.httpMethod)
 						} else {
 							for _, lr := range b.assignments {
-								if lr.lhs == args[1] { // Multiple matches are possible. Loop over all assignments.
-									b.urlVarName = args[1]
-									b.urlFormats = append(b.urlFormats, lr.rhs)
-									b.helperMethod = funcName
-									switch b.helperMethod {
-									case "deleteReaction":
-										b.httpMethod = "DELETE"
-									default:
-										logf("WARNING: helper method %q not found", b.helperMethod)
-									}
-									logf("found urlFormat: %v and helper method: %v, httpMethod: %v", lr.rhs, b.helperMethod, b.httpMethod)
+								if lr.lhs != args[1] { // Multiple matches are possible. Loop over all assignments.
+									continue
 								}
+
+								b.urlVarName = args[1]
+								b.urlFormats = append(b.urlFormats, lr.rhs)
+								b.helperMethod = funcName
+								switch b.helperMethod {
+								case "deleteReaction":
+									b.httpMethod = "DELETE"
+								default:
+									logf("WARNING: helper method %q not found", b.helperMethod)
+								}
+								logf("found urlFormat: %v and helper method: %v, httpMethod: %v", lr.rhs, b.helperMethod, b.httpMethod)
 							}
 						}
 					}
@@ -1138,41 +1131,44 @@ func processCallExpr(expr *ast.CallExpr) (recv, funcName string, args []string) 
 }
 
 // findClientServices finds all go-github services from the Client struct.
-func findClientServices(filename string, f *ast.File, services servicesMap) error {
-	for _, decl := range f.Decls {
-		switch decl := decl.(type) {
-		case *ast.GenDecl:
-			if decl.Tok != token.TYPE || len(decl.Specs) != 1 {
-				continue
-			}
-			ts, ok := decl.Specs[0].(*ast.TypeSpec)
-			if !ok || decl.Doc == nil || ts.Name == nil || ts.Type == nil || ts.Name.Name != "Client" {
-				continue
-			}
-			st, ok := ts.Type.(*ast.StructType)
-			if !ok || st.Fields == nil || len(st.Fields.List) == 0 {
-				continue
-			}
-
-			for _, field := range st.Fields.List {
-				se, ok := field.Type.(*ast.StarExpr)
-				if !ok || se.X == nil || len(field.Names) != 1 {
-					continue
-				}
-				id, ok := se.X.(*ast.Ident)
-				if !ok {
-					continue
-				}
-				name := id.Name
-				if !strings.HasSuffix(name, "Service") {
-					continue
-				}
-
-				services[name] = &Service{serviceName: name}
-			}
-
-			return nil // Found all services in Client struct.
+func findClientServices(f *ast.File, services servicesMap) error {
+	for i := range f.Decls {
+		decl, ok := f.Decls[i].(*ast.GenDecl)
+		if !ok {
+			continue
 		}
+		if decl.Tok != token.TYPE || len(decl.Specs) != 1 {
+			continue
+		}
+		ts, ok := decl.Specs[0].(*ast.TypeSpec)
+		if !ok || decl.Doc == nil || ts.Name == nil || ts.Type == nil || ts.Name.Name != "Client" {
+			continue
+		}
+		st, ok := ts.Type.(*ast.StructType)
+		if !ok || st.Fields == nil || len(st.Fields.List) == 0 {
+			continue
+		}
+
+		for _, field := range st.Fields.List {
+			var se *ast.StarExpr
+			se, ok = field.Type.(*ast.StarExpr)
+			if !ok || se.X == nil || len(field.Names) != 1 {
+				continue
+			}
+			var id *ast.Ident
+			id, ok = se.X.(*ast.Ident)
+			if !ok {
+				continue
+			}
+			name := id.Name
+			if !strings.HasSuffix(name, "Service") {
+				continue
+			}
+
+			services[name] = &Service{serviceName: name}
+		}
+
+		return nil // Found all services in Client struct.
 	}
 
 	return fmt.Errorf("unable to find Client struct in github.go")
@@ -1196,7 +1192,7 @@ func endpointsEqual(a, b *Endpoint) bool {
 
 // parseWebPageEndpoints returns endpoint information, mapped by
 // web page fragment identifier.
-func parseWebPageEndpoints(buf string) (map[string][]*Endpoint, error) {
+func parseWebPageEndpoints(buf string) map[string][]*Endpoint {
 	result := map[string][]*Endpoint{}
 
 	// The GitHub v3 API web pages do not appear to be auto-generated
@@ -1259,7 +1255,7 @@ func parseWebPageEndpoints(buf string) (map[string][]*Endpoint, error) {
 		}
 	}
 
-	return result, nil
+	return result
 }
 
 func stripHTML(s string) string {
@@ -1318,9 +1314,6 @@ func parseEndpoint(s, method string) *Endpoint {
 	if v := strings.Index(s, "<"); v > len(method) && v < eol {
 		eol = v
 	}
-	// if v := strings.Index(s, "{"); v > len(method) && v < eol {
-	// 	eol = v
-	// }
 	path := strings.TrimSpace(s[len(method):eol])
 	path = strings.TrimPrefix(path, "{server}")
 	path = paramLegacyRE.ReplaceAllString(path, "%v")

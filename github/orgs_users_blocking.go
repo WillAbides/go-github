@@ -40,7 +40,7 @@ func (s *OrganizationsService) ListBlockedUsers(ctx context.Context, org string,
 // IsBlocked reports whether specified user is blocked from an organization.
 //
 // GitHub API docs: https://docs.github.com/en/rest/orgs/blocking#check-if-a-user-is-blocked-by-an-organization
-func (s *OrganizationsService) IsBlocked(ctx context.Context, org string, user string) (bool, *Response, error) {
+func (s *OrganizationsService) IsBlocked(ctx context.Context, org, user string) (bool, *Response, error) {
 	u := fmt.Sprintf("orgs/%v/blocks/%v", org, user)
 
 	req, err := s.client.NewRequest("GET", u, nil)
@@ -59,7 +59,7 @@ func (s *OrganizationsService) IsBlocked(ctx context.Context, org string, user s
 // BlockUser blocks specified user from an organization.
 //
 // GitHub API docs: https://docs.github.com/en/rest/orgs/blocking#block-a-user-from-an-organization
-func (s *OrganizationsService) BlockUser(ctx context.Context, org string, user string) (*Response, error) {
+func (s *OrganizationsService) BlockUser(ctx context.Context, org, user string) (*Response, error) {
 	u := fmt.Sprintf("orgs/%v/blocks/%v", org, user)
 
 	req, err := s.client.NewRequest("PUT", u, nil)
@@ -76,7 +76,7 @@ func (s *OrganizationsService) BlockUser(ctx context.Context, org string, user s
 // UnblockUser unblocks specified user from an organization.
 //
 // GitHub API docs: https://docs.github.com/en/rest/orgs/blocking#unblock-a-user-from-an-organization
-func (s *OrganizationsService) UnblockUser(ctx context.Context, org string, user string) (*Response, error) {
+func (s *OrganizationsService) UnblockUser(ctx context.Context, org, user string) (*Response, error) {
 	u := fmt.Sprintf("orgs/%v/blocks/%v", org, user)
 
 	req, err := s.client.NewRequest("DELETE", u, nil)

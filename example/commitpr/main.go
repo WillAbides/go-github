@@ -53,8 +53,10 @@ Example: README.md,main.go:github/examples/commitpr/main.go`)
 	authorEmail = flag.String("author-email", "", "Email of the author of the commit.")
 )
 
-var client *github.Client
-var ctx = context.Background()
+var (
+	client *github.Client
+	ctx    = context.Background()
+)
 
 // getRef returns the commit branch reference object if it exists or creates it
 // from the base branch before returning it.
@@ -133,7 +135,7 @@ func pushCommit(ref *github.Reference, tree *github.Tree) (err error) {
 
 	// Create the commit using the tree.
 	date := time.Now()
-	author := &github.CommitAuthor{Date: &github.Timestamp{date}, Name: authorName, Email: authorEmail}
+	author := &github.CommitAuthor{Date: &github.Timestamp{Time: date}, Name: authorName, Email: authorEmail}
 	commit := &github.Commit{Author: author, Message: commitMessage, Tree: tree, Parents: []*github.Commit{parent.Commit}}
 	newCommit, _, err := client.Git.CreateCommit(ctx, *sourceOwner, *sourceRepo, commit)
 	if err != nil {

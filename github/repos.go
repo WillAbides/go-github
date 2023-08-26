@@ -753,7 +753,7 @@ func (s *RepositoriesService) DisableAutomatedSecurityFixes(ctx context.Context,
 // ListContributors lists contributors for a repository.
 //
 // GitHub API docs: https://docs.github.com/en/rest/repos/repos#list-repository-contributors
-func (s *RepositoriesService) ListContributors(ctx context.Context, owner string, repository string, opts *ListContributorsOptions) ([]*Contributor, *Response, error) {
+func (s *RepositoriesService) ListContributors(ctx context.Context, owner, repository string, opts *ListContributorsOptions) ([]*Contributor, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/contributors", owner, repository)
 	u, err := addOptions(u, opts)
 	if err != nil {
@@ -784,7 +784,7 @@ func (s *RepositoriesService) ListContributors(ctx context.Context, owner string
 //	}
 //
 // GitHub API docs: https://docs.github.com/en/rest/repos/repos#list-repository-languages
-func (s *RepositoriesService) ListLanguages(ctx context.Context, owner string, repo string) (map[string]int, *Response, error) {
+func (s *RepositoriesService) ListLanguages(ctx context.Context, owner, repo string) (map[string]int, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/languages", owner, repo)
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
@@ -803,7 +803,7 @@ func (s *RepositoriesService) ListLanguages(ctx context.Context, owner string, r
 // ListTeams lists the teams for the specified repository.
 //
 // GitHub API docs: https://docs.github.com/en/rest/repos/repos#list-repository-teams
-func (s *RepositoriesService) ListTeams(ctx context.Context, owner string, repo string, opts *ListOptions) ([]*Team, *Response, error) {
+func (s *RepositoriesService) ListTeams(ctx context.Context, owner, repo string, opts *ListOptions) ([]*Team, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/teams", owner, repo)
 	u, err := addOptions(u, opts)
 	if err != nil {
@@ -835,7 +835,7 @@ type RepositoryTag struct {
 // ListTags lists tags for the specified repository.
 //
 // GitHub API docs: https://docs.github.com/en/rest/repos/repos#list-repository-tags
-func (s *RepositoriesService) ListTags(ctx context.Context, owner string, repo string, opts *ListOptions) ([]*RepositoryTag, *Response, error) {
+func (s *RepositoriesService) ListTags(ctx context.Context, owner, repo string, opts *ListOptions) ([]*RepositoryTag, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/tags", owner, repo)
 	u, err := addOptions(u, opts)
 	if err != nil {
@@ -1250,7 +1250,7 @@ type AutomatedSecurityFixes struct {
 // ListBranches lists branches for the specified repository.
 //
 // GitHub API docs: https://docs.github.com/en/rest/branches/branches#list-branches
-func (s *RepositoriesService) ListBranches(ctx context.Context, owner string, repo string, opts *BranchListOptions) ([]*Branch, *Response, error) {
+func (s *RepositoriesService) ListBranches(ctx context.Context, owner, repo string, opts *BranchListOptions) ([]*Branch, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/branches", owner, repo)
 	u, err := addOptions(u, opts)
 	if err != nil {

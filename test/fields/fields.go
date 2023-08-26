@@ -31,10 +31,6 @@ import (
 var (
 	client *github.Client
 
-	// auth indicates whether tests are being run with an OAuth token.
-	// Tests can use this flag to skip certain tests when run without auth.
-	auth bool
-
 	skipURLs = flag.Bool("skip_urls", false, "skip url fields")
 )
 
@@ -47,14 +43,13 @@ func main() {
 		client = github.NewClient(nil)
 	} else {
 		client = github.NewTokenClient(context.Background(), token)
-		auth = true
 	}
 
 	for _, tt := range []struct {
 		url string
 		typ interface{}
 	}{
-		//{"rate_limit", &github.RateLimits{}},
+		// {"rate_limit", &github.RateLimits{}},
 		{"users/octocat", &github.User{}},
 		{"user", &github.User{}},
 		{"users/willnorris/keys", &[]github.Key{}},

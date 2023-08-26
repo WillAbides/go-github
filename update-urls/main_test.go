@@ -53,7 +53,6 @@ func (ps *pipelineSetup) setup(t *testing.T, stripURLs, destroyReceiverPointers 
 				break
 			}
 		}
-		// log.Printf("Modified Go Source:\n%v", ps.originalGoSource)
 	}
 
 	if destroyReceiverPointers {
@@ -102,12 +101,10 @@ func (ps *pipelineSetup) validate(t *testing.T) {
 		t.Fatalf("Fail detected but not expected: %v", err)
 	}
 
-	// log.Printf("endpoints=%#v (%v)", endpoints, len(endpoints))
 	if len(endpoints) != ps.wantNumEndpoints {
 		t.Errorf("got %v endpoints, want %v", len(endpoints), ps.wantNumEndpoints)
 	}
 	usedHelpers, endpointsByFilename := resolveHelpersAndCacheDocs(endpoints, ps.docCache)
-	// log.Printf("endpointsByFilename=%#v (%v)", endpointsByFilename, len(endpointsByFilename[ps.filename]))
 	if len(endpointsByFilename[ps.filename]) != ps.wantNumEndpoints {
 		t.Errorf("got %v endpointsByFilename, want %v", len(endpointsByFilename[ps.filename]), ps.wantNumEndpoints)
 	}
@@ -127,7 +124,7 @@ func (ps *pipelineSetup) validate(t *testing.T) {
 			Eol:      "\n",
 		}
 		result, _ := difflib.GetContextDiffString(diff)
-		t.Errorf(strings.Replace(result, "\t", " ", -1))
+		t.Errorf(strings.ReplaceAll(result, "\t", " "))
 	}
 }
 
@@ -241,7 +238,6 @@ func (f *fakeDocCache) URLByMethodAndPath(methodAndPath string) (string, bool) {
 				key := fmt.Sprintf("%v %v", endpoint.httpMethod, urlFormat)
 				if key == methodAndPath {
 					url := fmt.Sprintf("%v#%v", f.baseURL, fragmentID)
-					// log.Printf("URLByMethodAndPath(%q) = (%q, true)", methodAndPath, url)
 					return url, true
 				}
 			}

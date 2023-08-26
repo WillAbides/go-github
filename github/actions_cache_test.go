@@ -139,6 +139,7 @@ func TestActionsService_DeleteCachesByKey_invalidRepo(t *testing.T) {
 	_, err := client.Actions.DeleteCachesByKey(ctx, "o", "%", "1", String("main"))
 	testURLParseError(t, err)
 }
+
 func TestActionsService_DeleteCachesByKey_notFound(t *testing.T) {
 	client, mux, _, teardown := setup()
 	defer teardown()

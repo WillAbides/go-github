@@ -24,7 +24,7 @@ type Blob struct {
 // GetBlob fetches a blob from a repo given a SHA.
 //
 // GitHub API docs: https://docs.github.com/en/rest/git/blobs#get-a-blob
-func (s *GitService) GetBlob(ctx context.Context, owner string, repo string, sha string) (*Blob, *Response, error) {
+func (s *GitService) GetBlob(ctx context.Context, owner, repo, sha string) (*Blob, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/git/blobs/%v", owner, repo, sha)
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
@@ -65,7 +65,7 @@ func (s *GitService) GetBlobRaw(ctx context.Context, owner, repo, sha string) ([
 // CreateBlob creates a blob object.
 //
 // GitHub API docs: https://docs.github.com/en/rest/git/blobs#create-a-blob
-func (s *GitService) CreateBlob(ctx context.Context, owner string, repo string, blob *Blob) (*Blob, *Response, error) {
+func (s *GitService) CreateBlob(ctx context.Context, owner, repo string, blob *Blob) (*Blob, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/git/blobs", owner, repo)
 	req, err := s.client.NewRequest("POST", u, blob)
 	if err != nil {
