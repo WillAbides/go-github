@@ -136,7 +136,10 @@ func main() {
 	fset := token.NewFileSet()
 
 	sourceFilter := func(fi os.FileInfo) bool {
-		return !strings.HasSuffix(fi.Name(), "_test.go") && !strings.HasPrefix(fi.Name(), skipPrefix)
+		return !strings.HasSuffix(fi.Name(), "_test.go") &&
+			!strings.HasPrefix(fi.Name(), skipPrefix) &&
+			!strings.HasSuffix(fi.Name(), "repos_hooks.go") &&
+			!strings.HasSuffix(fi.Name(), "actions_required_workflows.go")
 	}
 
 	if err := os.Chdir("./github"); err != nil {

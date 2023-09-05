@@ -1,0 +1,204 @@
+package internal
+
+import (
+	"fmt"
+	"net/url"
+	"os"
+	"strings"
+	"sync"
+
+	"gopkg.in/yaml.v3"
+)
+
+type OperationDesc struct {
+	Method           string `yaml:"method,omitempty"`
+	EndpointURL      string `yaml:"endpoint_url,omitempty"`
+	DocumentationURL string `yaml:"documentation_url,omitempty"`
+	Summary          string `yaml:"summary,omitempty"`
+}
+
+type Operation struct {
+	OpenAPI      OperationDesc `yaml:"openapi,omitempty"`
+	Override     OperationDesc `yaml:"override,omitempty"`
+	OpenAPIFiles []string      `yaml:"openapi_files,omitempty"`
+	GoMethods    []string      `yaml:"go_methods,omitempty"`
+}
+
+func (o *Operation) Method() string {
+	if o.Override.Method != "" {
+		return o.Override.Method
+	}
+	return o.OpenAPI.Method
+}
+
+func (o *Operation) EndpointURL() string {
+	if o.Override.EndpointURL != "" {
+		return o.Override.EndpointURL
+	}
+	return o.OpenAPI.EndpointURL
+}
+
+func (o *Operation) DocumentationURL() string {
+	if o.Override.DocumentationURL != "" {
+		return o.Override.DocumentationURL
+	}
+	return o.OpenAPI.DocumentationURL
+}
+
+func (o *Operation) Summary() string {
+	if o.Override.Summary != "" {
+		return o.Override.Summary
+	}
+	return o.OpenAPI.Summary
+}
+
+func (o *Operation) Less(other *Operation) bool {
+	if o.EndpointURL() != other.EndpointURL() {
+		return o.EndpointURL() < other.EndpointURL()
+	}
+	return o.Method() < other.Method()
+}
+
+// matchesOpenAPIDesc returns true if this is describing the same operation as desc
+// based on endpoint and method.
+func (o *Operation) matchesOpenAPIDesc(desc *OperationDesc) bool {
+	if o.Method() != desc.Method {
+		return false
+	}
+	return normalizedURL(o.EndpointURL()) == normalizedURL(desc.EndpointURL)
+}
+
+var normalizedURLs = map[string]string{}
+var normalizedURLsMu sync.Mutex
+
+// normalizedURL returns an endpoint with all templated path parameters replaced with *.
+func normalizedURL(u string) string {
+	normalizedURLsMu.Lock()
+	defer normalizedURLsMu.Unlock()
+	n, ok := normalizedURLs[u]
+	if ok {
+		return n
+	}
+	parts := strings.Split(u, "/")
+	for i, p := range parts {
+		if len(p) > 0 && p[0] == '{' {
+			parts[i] = "*"
+		}
+	}
+	n = strings.Join(parts, "/")
+	normalizedURLs[u] = n
+	return n
+}
+
+type Metadata struct {
+	Operations []*Operation `yaml:"operations,omitempty"`
+}
+
+func LoadMetadataFile(filename string, opFile *Metadata) (errOut error) {
+	f, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		e := f.Close()
+		if errOut == nil {
+			errOut = e
+		}
+	}()
+	return yaml.NewDecoder(f).Decode(opFile)
+}
+
+func (m *Metadata) SaveFile(filename string) (errOut error) {
+	f, err := os.Create(filename)
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		e := f.Close()
+		if errOut == nil {
+			errOut = e
+		}
+	}()
+	enc := yaml.NewEncoder(f)
+	enc.SetIndent(2)
+	return enc.Encode(m)
+}
+
+func (m *Metadata) AddOperation(filename string, desc *OperationDesc) {
+	update := func(op *Operation) {
+		if len(op.OpenAPIFiles) == 0 {
+			op.OpenAPIFiles = append(op.OpenAPIFiles, filename)
+			op.OpenAPI = *desc
+			return
+		}
+		// just append to files, but only add the first ghes file
+		if !strings.Contains(filename, "/ghes") {
+			op.OpenAPIFiles = append(op.OpenAPIFiles, filename)
+			return
+		}
+		for _, f := range op.OpenAPIFiles {
+			if strings.Contains(f, "/ghes") {
+				return
+			}
+		}
+		op.OpenAPIFiles = append(op.OpenAPIFiles, filename)
+	}
+	for _, op := range m.Operations {
+		if op.matchesOpenAPIDesc(desc) {
+			update(op)
+			return
+		}
+	}
+	m.Operations = append(m.Operations, &Operation{
+		OpenAPIFiles: []string{filename},
+		OpenAPI:      *desc,
+	})
+}
+
+func (m *Metadata) OperationsByDocURL(docURL string) *Operation {
+	wantIdx := urlIndex(docURL)
+	var found []*Operation
+	for _, op := range m.Operations {
+		hasIdx := urlIndex(op.DocumentationURL())
+		if hasIdx == wantIdx {
+			found = append(found, op)
+		}
+	}
+	switch len(found) {
+	case 0:
+		return nil
+	case 1:
+		return found[0]
+	}
+	fmt.Println("found multiple operations for", wantIdx)
+	for _, op := range found {
+		fmt.Println("  ", op.OpenAPI.EndpointURL, op.OpenAPI.Method)
+	}
+	return nil
+}
+
+func stripURLQuery(s string) string {
+	u, err := url.Parse(s)
+	if err != nil {
+		return ""
+	}
+	u.RawQuery = ""
+	return u.String()
+}
+
+// urlIndex returns the part of the path that comes after /rest/ followed by the fragment.
+func urlIndex(s string) string {
+	u, err := url.Parse(s)
+	if err != nil {
+		return ""
+	}
+	restIdx := strings.Index(u.Path, "/rest/")
+	if restIdx == -1 {
+		return ""
+	}
+	p := u.Path[restIdx+len("/rest/"):]
+	if strings.HasSuffix(p, "/") {
+		p = p[:len(p)-1]
+	}
+	return p + "#" + u.Fragment
+}

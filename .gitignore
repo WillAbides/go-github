@@ -1,6 +1,7 @@
 *.sh
 *.test
 coverage.out
+tmp/
 # intellij files
 .idea/
 vendor/
