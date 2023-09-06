@@ -15,7 +15,7 @@ import (
 
 type OpenapiFile struct {
 	Description  openapi3.T
-	Filename string
+	Filename     string
 	plan         string
 	planIdx      int
 	releaseMajor int
@@ -133,4 +133,3 @@ func GetDescriptions(ctx context.Context, client *github.Client, gitRef string) 
 	}
 	return files, nil
 }
-

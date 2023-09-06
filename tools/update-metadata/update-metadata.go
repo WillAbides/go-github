@@ -112,4 +112,3 @@ func run(ctx context.Context, opts options) error {
 	})
 	return opFile.SaveFile(opts.filename)
 }
-
