@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"slices"
+	"sort"
 	"strings"
 	"sync"
 
@@ -177,13 +179,16 @@ func (m *Metadata) OperationsByDocURL(docURL string) *Operation {
 	return nil
 }
 
-func stripURLQuery(s string) string {
-	u, err := url.Parse(s)
-	if err != nil {
-		return ""
+func (m *Metadata) DocLinksForMethod(method string) []string {
+	var links []string
+	for _, op := range m.Operations {
+		if !slices.Contains(op.GoMethods, method) {
+			continue
+		}
+		links = append(links, op.DocumentationURL())
 	}
-	u.RawQuery = ""
-	return u.String()
+	sort.Strings(links)
+	return links
 }
 
 // urlIndex returns the part of the path that comes after /rest/ followed by the fragment.

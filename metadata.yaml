@@ -1594,6 +1594,8 @@ operations:
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
+    go_methods:
+      - MarketplaceService.GetPlanAccountForAccount
   - openapi:
       method: GET
       endpoint_url: /marketplace_listing/stubbed/plans
@@ -1602,6 +1604,8 @@ operations:
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
+    go_methods:
+      - MarketplaceService.ListPlans
   - openapi:
       method: GET
       endpoint_url: /marketplace_listing/stubbed/plans/{plan_id}/accounts
@@ -1610,6 +1614,8 @@ operations:
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
+    go_methods:
+      - MarketplaceService.ListPlanAccountsForPlan
   - openapi:
       method: GET
       endpoint_url: /meta
