@@ -15,7 +15,6 @@ import (
 	"github.com/dave/dst"
 	"github.com/dave/dst/decorator"
 	"github.com/google/go-github/tools/internal"
-	"golang.org/x/sync/errgroup"
 )
 
 type options struct {
@@ -62,14 +61,13 @@ func run(opts options) error {
 	if ghPkg == nil {
 		return fmt.Errorf("no github package found in %s", opts.githubDir)
 	}
-	var eg errgroup.Group
 	for k := range ghPkg.Files {
-		f := ghPkg.Files[k]
-		eg.Go(func() error {
-			return updateFile2(fset, f, metadataFile)
-		})
+		err = updateFile(fset, ghPkg.Files[k], metadataFile)
+		if err != nil {
+			return err
+		}
 	}
-	return eg.Wait()
+	return nil
 }
 
 var (
@@ -77,7 +75,7 @@ var (
 	emptyLineRE = regexp.MustCompile(`^\s*(//\s*)$`)
 )
 
-func updateFile2(fset *token.FileSet, af *ast.File, m *internal.Metadata) (errOut error) {
+func updateFile(fset *token.FileSet, af *ast.File, m *internal.Metadata) (errOut error) {
 	filename := fset.Position(af.Pos()).Filename
 	df, err := decorator.DecorateFile(fset, af)
 	if err != nil {
