@@ -1,10 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
-	"go/parser"
-	"go/token"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -55,13 +54,22 @@ func run(opts options) error {
 	if err != nil {
 		return err
 	}
+	var content, updatedContent []byte
 	for _, fi := range dir {
 		if !strings.HasSuffix(fi.Name(), ".go") ||
-			strings.HasPrefix(fi.Name(), "gen-") ||
 			strings.HasSuffix(fi.Name(), "_test.go") {
 			continue
 		}
-		err = updateFile(filepath.Join(opts.githubDir, fi.Name()), &metadata)
+		filename := filepath.Join(opts.githubDir, fi.Name())
+		content, err = os.ReadFile(filename)
+		if err != nil {
+			return err
+		}
+		updatedContent, err = updateFile(content, &metadata)
+		if err != nil {
+			return err
+		}
+		err = os.WriteFile(filename, updatedContent, 0)
 		if err != nil {
 			return err
 		}
@@ -74,12 +82,17 @@ var (
 	emptyLineRE = regexp.MustCompile(`^\s*(//\s*)$`)
 )
 
-func updateFile(filename string, m *internal.Metadata) (errOut error) {
-	fset := token.NewFileSet()
-	df, err := decorator.ParseFile(fset, filename, nil, parser.ParseComments)
+func updateFile(b []byte, m *internal.Metadata) ([]byte, error) {
+	df, err := decorator.Parse(b)
 	if err != nil {
-		return err
+		return nil, err
 	}
+
+	// ignore files where package is not github
+	if df.Name.Name != "github" {
+		return b, nil
+	}
+
 	dst.Inspect(df, func(n dst.Node) bool {
 		d, ok := n.(*dst.FuncDecl)
 		if !ok ||
@@ -129,15 +142,10 @@ func updateFile(filename string, m *internal.Metadata) (errOut error) {
 		return true
 	})
 
-	outFile, err := os.Create(filename)
+	var buf bytes.Buffer
+	err = decorator.Fprint(&buf, df)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	defer func() {
-		e := outFile.Close()
-		if errOut == nil {
-			errOut = e
-		}
-	}()
-	return decorator.Fprint(outFile, df)
+	return buf.Bytes(), nil
 }
