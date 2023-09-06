@@ -27,10 +27,7 @@ func main() {
 	flag.StringVar(&opts.githubDir, "github-dir", "", `github directory (default: "<go-github-root>/github")`)
 	flag.Parse()
 	err := run(opts)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
-	}
+	internal.ExitErr(err)
 }
 
 func run(opts options) error {

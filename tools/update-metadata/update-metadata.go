@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/google/go-github/tools/internal"
 	"github.com/google/go-github/v55/github"
@@ -14,14 +15,31 @@ import (
 	"github.com/gregjones/httpcache/diskcache"
 )
 
+const description = `
+update-metadata updates the metadata.yaml file from the OpenAPI descriptions in https://github.com/github/rest-api-description.
+GITHUB_TOKEN must be set to a GitHub personal access token with the "public_repo" scope, and the working directory must within a go-github root.
+`
+
 func main() {
 	ctx := context.Background()
 	var workDir, cacheDir, ref, filename string
-	flag.StringVar(&ref, "ref", "main", `git ref`)
-	flag.StringVar(&filename, "filename", "", `filename (default: "<go-github-root>/operations.yaml")`)
-	flag.StringVar(&workDir, "C", ".", `work directory -- must be in a go-github root`)
-	flag.StringVar(&cacheDir, "cache-dir", "", `cache directory (default: "<go-github-root>/tmp/update-metadata/cache")`)
-	flag.Parse()
+	flagset := flag.NewFlagSet("update-metadata", flag.ExitOnError)
+	flagset.Usage = func() {
+		fmt.Fprintf(
+			flagset.Output(),
+			"Usage: %s [options]\n\n%s\n\nOptions:\n",
+			flagset.Name(),
+			strings.TrimSpace(description),
+		)
+		flagset.PrintDefaults()
+	}
+
+	flagset.StringVar(&ref, "ref", "main", `git ref`)
+	flagset.StringVar(&filename, "filename", "", `filename (default: "<go-github-root>/operations.yaml")`)
+	flagset.StringVar(&workDir, "C", ".", `working directory`)
+	flagset.StringVar(&cacheDir, "cache-dir", "", `cache directory (default: "<go-github-root>/tmp/update-metadata/cache")`)
+	err := flagset.Parse(os.Args[1:])
+	internal.ExitErr(err)
 
 	token := os.Getenv("GITHUB_TOKEN")
 	if token == "" {
