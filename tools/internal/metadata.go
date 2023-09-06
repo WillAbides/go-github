@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"context"
 	"fmt"
 	"net/url"
 	"os"
@@ -189,6 +190,36 @@ func (m *Metadata) DocLinksForMethod(method string) []string {
 	}
 	sort.Strings(links)
 	return links
+}
+
+func (m *Metadata) UpdateFromGithub(ctx context.Context, client ContentsClient, ref string) error {
+	descs, err := GetDescriptions(ctx, client, ref)
+	if err != nil {
+		return err
+	}
+	for _, op := range m.Operations {
+		op.OpenAPIFiles = op.OpenAPIFiles[:0]
+	}
+	for _, desc := range descs {
+		for p, pathItem := range desc.Description.Paths {
+			for method, op := range pathItem.Operations() {
+				docURL := ""
+				if op.ExternalDocs != nil {
+					docURL = op.ExternalDocs.URL
+				}
+				m.AddOperation(desc.Filename, &OperationDesc{
+					Method:           method,
+					EndpointURL:      p,
+					DocumentationURL: docURL,
+					Summary:          op.Summary,
+				})
+			}
+		}
+	}
+	sort.Slice(m.Operations, func(i, j int) bool {
+		return m.Operations[i].Less(m.Operations[j])
+	})
+	return nil
 }
 
 // urlIndex returns the part of the path that comes after /rest/ followed by the fragment.

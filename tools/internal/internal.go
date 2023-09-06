@@ -54,3 +54,11 @@ func isGoGithubRoot(dir string) (bool, error) {
 	}
 	return base == "github.com/google/go-github", nil
 }
+
+func ExitErr(err error) {
+	if err == nil {
+		return
+	}
+	fmt.Fprintf(os.Stderr, "error: %v\n", err)
+	os.Exit(1)
+}
