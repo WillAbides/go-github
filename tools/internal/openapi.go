@@ -13,6 +13,12 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+const (
+	descriptionsOwnerName = "github"
+	descriptionsRepoName  = "rest-api-description"
+	descriptionsPath      = "descriptions"
+)
+
 type OpenapiFile struct {
 	Description  openapi3.T
 	Filename     string
@@ -22,16 +28,16 @@ type OpenapiFile struct {
 	releaseMinor int
 }
 
-type ContentsClient interface {
+type contentsClient interface {
 	DownloadContents(ctx context.Context, owner, repo, filepath string, opts *github.RepositoryContentGetOptions) (io.ReadCloser, *github.Response, error)
 	GetContents(ctx context.Context, owner, repo, path string, opts *github.RepositoryContentGetOptions) (*github.RepositoryContent, []*github.RepositoryContent, *github.Response, error)
 }
 
-func (o *OpenapiFile) loadDescription(ctx context.Context, client ContentsClient, gitRef string) error {
+func (o *OpenapiFile) loadDescription(ctx context.Context, client contentsClient, gitRef string) error {
 	contents, resp, err := client.DownloadContents(
 		ctx,
-		"github",
-		"rest-api-description",
+		descriptionsOwnerName,
+		descriptionsRepoName,
 		o.Filename,
 		&github.RepositoryContentGetOptions{Ref: gitRef},
 	)
@@ -84,12 +90,12 @@ var dirPatterns = []*regexp.Regexp{
 //   - Directories that don't match any of the patterns in dirPatterns are removed.
 //   - Directories are sorted by the pattern that matched in the same order they appear in dirPatterns.
 //   - Directories are then sorted by major and minor version in descending order.
-func GetDescriptions(ctx context.Context, client ContentsClient, gitRef string) ([]*OpenapiFile, error) {
+func GetDescriptions(ctx context.Context, client contentsClient, gitRef string) ([]*OpenapiFile, error) {
 	_, dir, resp, err := client.GetContents(
 		ctx,
-		"github",
-		"rest-api-description",
-		"descriptions",
+		descriptionsOwnerName,
+		descriptionsRepoName,
+		descriptionsPath,
 		&github.RepositoryContentGetOptions{Ref: gitRef},
 	)
 	if err != nil {

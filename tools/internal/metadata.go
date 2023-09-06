@@ -192,7 +192,7 @@ func (m *Metadata) DocLinksForMethod(method string) []string {
 	return links
 }
 
-func (m *Metadata) UpdateFromGithub(ctx context.Context, client ContentsClient, ref string) error {
+func (m *Metadata) UpdateFromGithub(ctx context.Context, client contentsClient, ref string) error {
 	descs, err := GetDescriptions(ctx, client, ref)
 	if err != nil {
 		return err
