@@ -1,15 +1,19 @@
 package internal
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"net/url"
 	"os"
+	"regexp"
 	"slices"
 	"sort"
 	"strings"
 	"sync"
 
+	"github.com/dave/dst"
+	"github.com/dave/dst/decorator"
 	"gopkg.in/yaml.v3"
 )
 
@@ -220,6 +224,80 @@ func (m *Metadata) UpdateFromGithub(ctx context.Context, client contentsClient, 
 		return m.Operations[i].Less(m.Operations[j])
 	})
 	return nil
+}
+
+var (
+	docLineRE   = regexp.MustCompile(`(?i)\s*(//\s*)?GitHub\s+API\s+docs:`)
+	emptyLineRE = regexp.MustCompile(`^\s*(//\s*)$`)
+)
+
+// UpdateDocsLinks updates in the code comments in content with doc urls from metadata.
+func UpdateDocsLinks(metadata *Metadata, content []byte) ([]byte, error) {
+	df, err := decorator.Parse(content)
+	if err != nil {
+		return nil, err
+	}
+
+	// ignore files where package is not github
+	if df.Name.Name != "github" {
+		return content, nil
+	}
+
+	dst.Inspect(df, func(n dst.Node) bool {
+		d, ok := n.(*dst.FuncDecl)
+		if !ok ||
+			!d.Name.IsExported() ||
+			d.Recv == nil {
+			return true
+		}
+
+		// Get the method's receiver. It can be either an identifier or a pointer to an identifier.
+		// This assumes all receivers are named and we don't have something like: `func (Client) Foo()`.
+		methodName := d.Name.Name
+		receiverType := ""
+		switch x := d.Recv.List[0].Type.(type) {
+		case *dst.Ident:
+			receiverType = x.Name
+		case *dst.StarExpr:
+			receiverType = x.X.(*dst.Ident).Name
+		}
+
+		// create copy of comments without doc links
+		var starts []string
+		for _, s := range d.Decs.Start.All() {
+			if !docLineRE.MatchString(s) {
+				starts = append(starts, s)
+			}
+		}
+
+		// remove trailing empty lines
+		for len(starts) > 0 {
+			if !emptyLineRE.MatchString(starts[len(starts)-1]) {
+				break
+			}
+			starts = starts[:len(starts)-1]
+		}
+
+		docLinks := metadata.DocLinksForMethod(strings.Join([]string{receiverType, methodName}, "."))
+
+		// add an empty line before adding doc links
+		if len(docLinks) > 0 {
+			starts = append(starts, "//")
+		}
+
+		for _, dl := range docLinks {
+			starts = append(starts, fmt.Sprintf("// GitHub API docs: %s", dl))
+		}
+		d.Decs.Start.Replace(starts...)
+		return true
+	})
+
+	var buf bytes.Buffer
+	err = decorator.Fprint(&buf, df)
+	if err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
 }
 
 // urlIndex returns the part of the path that comes after /rest/ followed by the fragment.
