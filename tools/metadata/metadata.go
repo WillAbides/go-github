@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/alecthomas/kong"
 	"github.com/google/go-github/tools/internal"
@@ -12,9 +14,10 @@ import (
 )
 
 var helpVars = kong.Vars{
-	"update_help":   `Update metadata.yaml from OpenAPI descriptions in github.com/github/rest-api-description.`,
-	"format_help":   `Format metadata.yaml.`,
-	"validate_help": `Validate that metadata.yaml is consistent with source code.`,
+	"update_help":     `Update metadata.yaml from OpenAPI descriptions in github.com/github/rest-api-description.`,
+	"format_help":     `Format metadata.yaml.`,
+	"validate_help":   `Validate that metadata.yaml is consistent with source code.`,
+	"unused_ops_help": `List operations in metadata.yaml that don't have any associated go methods'.`,
 }
 
 type rootCmd struct {
@@ -25,6 +28,7 @@ type rootCmd struct {
 	UpdateUrls     updateUrlsCmd     `kong:"cmd,help='Update documentation URLs in the Go source files in the github directory to match the urls in the metadata file.'"`
 	Format         formatCmd         `kong:"cmd,help=${format_help}"`
 	Validate       validateCmd       `kong:"cmd,help=${validate_help}"`
+	UnusedOps      unusedOpsCmd      `kong:"cmd,help=${unused_ops_help}"`
 }
 
 func (c *rootCmd) metadata() (string, *internal.Metadata, error) {
@@ -124,6 +128,41 @@ func (c *updateUrlsCmd) Run(root *rootCmd) error {
 		return err
 	}
 	return internal.UpdateDocLinks(meta, githubDir)
+}
+
+type unusedOpsCmd struct{
+	Json bool `kong:"help='Output as JSON.'"`
+}
+
+func (c *unusedOpsCmd) Run(root *rootCmd) error {
+	_, meta, err := root.metadata()
+	if err != nil {
+		return err
+	}
+	var unused []*internal.Operation
+	for _, op := range meta.Operations {
+		if len(op.GoMethods) == 0 {
+			unused = append(unused, op)
+		}
+	}
+	if c.Json {
+		enc := json.NewEncoder(os.Stdout)
+		enc.SetIndent("", "  ")
+		return enc.Encode(unused)
+	}
+	fmt.Printf("Found %d unused operations\n", len(unused))
+	if len(unused) == 0 {
+		return nil
+	}
+	fmt.Println("")
+	for _, op := range unused {
+		fmt.Printf("%s %s\n", op.Method(), op.EndpointURL())
+		fmt.Printf("summary: %s\n", op.Summary())
+		fmt.Printf("plans:   %s\n", strings.Join(op.Plans(), ", "))
+		fmt.Printf("doc:     %s\n", op.DocumentationURL())
+		fmt.Println("")
+	}
+	return nil
 }
 
 func main() {

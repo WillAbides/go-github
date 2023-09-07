@@ -3,6 +3,7 @@ package internal
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/fs"
 	"net/url"
@@ -20,17 +21,57 @@ import (
 )
 
 type OperationDesc struct {
-	Method           string `yaml:"method,omitempty"`
-	EndpointURL      string `yaml:"endpoint_url,omitempty"`
-	DocumentationURL string `yaml:"documentation_url,omitempty"`
-	Summary          string `yaml:"summary,omitempty"`
+	Method           string `yaml:"method,omitempty" json:"method,omitempty"`
+	EndpointURL      string `yaml:"endpoint_url,omitempty" json:"endpoint_url,omitempty"`
+	DocumentationURL string `yaml:"documentation_url,omitempty" json:"documentation_url,omitempty"`
+	Summary          string `yaml:"summary,omitempty" json:"summary,omitempty"`
 }
 
 type Operation struct {
-	OpenAPI      OperationDesc `yaml:"openapi,omitempty"`
-	Override     OperationDesc `yaml:"override,omitempty"`
-	OpenAPIFiles []string      `yaml:"openapi_files,omitempty"`
-	GoMethods    []string      `yaml:"go_methods,omitempty"`
+	OpenAPI      OperationDesc `yaml:"openapi,omitempty" json:"openapi,omitempty"`
+	Override     OperationDesc `yaml:"override,omitempty" json:"override,omitempty"`
+	OpenAPIFiles []string      `yaml:"openapi_files,omitempty" json:"openapi_files,omitempty"`
+	GoMethods    []string      `yaml:"go_methods,omitempty" json:"go_methods,omitempty"`
+}
+
+type operationJSON struct {
+	Method      string   `json:"method,omitempty"`
+	EndpointURL string   `json:"endpoint_url,omitempty"`
+	Summary     string   `json:"summary,omitempty"`
+	DocumentURL string   `json:"documentation_url,omitempty"`
+	Plans       []string `json:"plans,omitempty"`
+	GoMethods   []string `json:"go_methods,omitempty"`
+}
+
+func (o *Operation) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&operationJSON{
+		Method:      o.Method(),
+		EndpointURL: o.EndpointURL(),
+		Summary:     o.Summary(),
+		Plans:       o.Plans(),
+		DocumentURL: o.DocumentationURL(),
+		GoMethods:   o.GoMethods,
+	})
+}
+
+func (o *Operation) Plans() []string {
+	var plans []string
+	if slices.ContainsFunc(o.OpenAPIFiles, func(s string) bool {
+		return strings.HasSuffix(s, "api.github.com.json")
+	}) {
+		plans = append(plans, "public")
+	}
+	if slices.ContainsFunc(o.OpenAPIFiles, func(s string) bool {
+		return strings.HasSuffix(s, "ghec.json")
+	}) {
+		plans = append(plans, "ghec")
+	}
+	if slices.ContainsFunc(o.OpenAPIFiles, func(s string) bool {
+		return strings.Contains(s, "/ghes")
+	}) {
+		plans = append(plans, "ghes")
+	}
+	return plans
 }
 
 func (o *Operation) Method() string {
