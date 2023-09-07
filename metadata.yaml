@@ -1,3 +1,24 @@
+undocumented_methods:
+  - ActionsService.AddRepoToRequiredWorkflow
+  - ActionsService.CreateRequiredWorkflow
+  - ActionsService.DeleteRequiredWorkflow
+  - ActionsService.GetRequiredWorkflowByID
+  - ActionsService.ListOrgRequiredWorkflows
+  - ActionsService.ListRepoRequiredWorkflows
+  - ActionsService.ListRequiredWorkflowSelectedRepos
+  - ActionsService.RemoveRepoFromRequiredWorkflow
+  - ActionsService.SetRequiredWorkflowSelectedRepos
+  - ActionsService.UpdateRequiredWorkflow
+  - AppsService.FindRepositoryInstallationByID
+  - Client.ListServiceHooks
+  - IssueImportService.CheckStatus
+  - IssueImportService.CheckStatusSince
+  - IssueImportService.Create
+  - OrganizationsService.GetByID
+  - RepositoriesService.GetByID
+  - RepositoriesService.Subscribe
+  - RepositoriesService.Unsubscribe
+  - UsersService.GetByID
 operations:
   - openapi:
       method: GET
@@ -1215,6 +1236,8 @@ operations:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+    go_methods:
+      - ActivityService.ListFeeds
   - openapi:
       method: GET
       endpoint_url: /gists
@@ -6386,6 +6409,8 @@ operations:
       summary: Create a content attachment
     openapi_files:
       - descriptions/ghes-3.3/ghes-3.3.json
+    go_methods:
+      - AppsService.CreateAttachment
   - openapi:
       method: DELETE
       endpoint_url: /repos/{owner}/{repo}/contents/{path}
@@ -6408,6 +6433,8 @@ operations:
       - descriptions/ghes-3.10/ghes-3.10.json
     go_methods:
       - RepositoriesService.GetContents
+      - RepositoriesService.DownloadContents
+      - RepositoriesService.DownloadContentsWithMeta
   - openapi:
       method: PUT
       endpoint_url: /repos/{owner}/{repo}/contents/{path}
@@ -11166,3 +11193,5 @@ operations:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+    go_methods:
+      - Client.Zen

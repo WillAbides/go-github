@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io/fs"
 	"net/url"
 	"os"
+	"path/filepath"
 	"regexp"
 	"slices"
 	"sort"
@@ -98,7 +100,8 @@ func normalizedURL(u string) string {
 }
 
 type Metadata struct {
-	Operations []*Operation `yaml:"operations,omitempty"`
+	UndocumentedMethods []string     `yaml:"undocumented_methods,omitempty"`
+	Operations          []*Operation `yaml:"operations,omitempty"`
 }
 
 func LoadMetadataFile(filename string, opFile *Metadata) (errOut error) {
@@ -186,14 +189,25 @@ func (m *Metadata) OperationsByDocURL(docURL string) *Operation {
 
 func (m *Metadata) DocLinksForMethod(method string) []string {
 	var links []string
-	for _, op := range m.Operations {
-		if !slices.Contains(op.GoMethods, method) {
-			continue
-		}
+	for _, op := range m.OperationsForMethod(method) {
 		links = append(links, op.DocumentationURL())
 	}
 	sort.Strings(links)
 	return links
+}
+
+func (m *Metadata) OperationsForMethod(method string) []*Operation {
+	var operations []*Operation
+	for _, op := range m.Operations {
+		if !slices.Contains(op.GoMethods, method) {
+			continue
+		}
+		operations = append(operations, op)
+	}
+	sort.Slice(operations, func(i, j int) bool {
+		return operations[i].Less(operations[j])
+	})
+	return operations
 }
 
 func (m *Metadata) UpdateFromGithub(ctx context.Context, client contentsClient, ref string) error {
@@ -231,8 +245,31 @@ var (
 	emptyLineRE = regexp.MustCompile(`^\s*(//\s*)$`)
 )
 
-// UpdateDocsLinks updates in the code comments in content with doc urls from metadata.
-func UpdateDocsLinks(metadata *Metadata, content []byte) ([]byte, error) {
+// UpdateDocLinks updates the code comments in dir with doc urls from metadata.
+func UpdateDocLinks(meta *Metadata, dir string) error {
+	return filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() ||
+			!strings.HasSuffix(path, ".go") ||
+			strings.HasSuffix(path, "_test.go") {
+			return nil
+		}
+		content, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		updatedContent, err := UpdateDocsLinksInFile(meta, content)
+		if err != nil {
+			return err
+		}
+		return os.WriteFile(path, updatedContent, 0)
+	})
+}
+
+// UpdateDocsLinksInFile updates in the code comments in content with doc urls from metadata.
+func UpdateDocsLinksInFile(metadata *Metadata, content []byte) ([]byte, error) {
 	df, err := decorator.Parse(content)
 	if err != nil {
 		return nil, err

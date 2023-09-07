@@ -294,7 +294,7 @@ func TestFooBar(t *testing.T) {
 				fmt.Println("no match", filepath.Base(method.Filename), method.ServiceName, method.MethodName, docsLink)
 				continue
 			}
-			//op.GoMethod = fmt.Sprintf("%s.%s", method.ServiceName, method.MethodName)
+			//op.GoMethod = fmt.Sprintf("%s.%s", method.ReceiverName, method.MethodName)
 
 			gm := fmt.Sprintf("%s.%s", method.ServiceName, method.MethodName)
 			if !slices.Contains(op.GoMethods, gm) {

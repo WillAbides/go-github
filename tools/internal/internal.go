@@ -4,7 +4,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
+	"strings"
 
+	"github.com/dave/dst"
+	"github.com/dave/dst/decorator"
 	"golang.org/x/mod/modfile"
 	"golang.org/x/mod/module"
 )
@@ -61,4 +65,90 @@ func ExitErr(err error) {
 	}
 	fmt.Fprintf(os.Stderr, "error: %v\n", err)
 	os.Exit(1)
+}
+
+type ServiceMethod struct {
+	ReceiverName string
+	MethodName   string
+	Filename     string
+}
+
+func (m *ServiceMethod) Name() string {
+	return fmt.Sprintf("%s.%s", m.ReceiverName, m.MethodName)
+}
+
+func GetServiceMethods(dir string) ([]*ServiceMethod, error) {
+	dirEntries, err := os.ReadDir(dir)
+	if err != nil {
+		return nil, err
+	}
+	var serviceMethods []*ServiceMethod
+	for _, filename := range dirEntries {
+		m, err := getServiceMethodsFromFile(filepath.Join(dir, filename.Name()))
+		if err != nil {
+			return nil, err
+		}
+		serviceMethods = append(serviceMethods, m...)
+	}
+	sort.Slice(serviceMethods, func(i, j int) bool {
+		if serviceMethods[i].Filename != serviceMethods[j].Filename {
+			return serviceMethods[i].Filename < serviceMethods[j].Filename
+		}
+		return serviceMethods[i].Name() < serviceMethods[j].Name()
+	})
+	return serviceMethods, nil
+}
+
+func getServiceMethodsFromFile(filename string) ([]*ServiceMethod, error) {
+	if !strings.HasSuffix(filename, ".go") ||
+		strings.HasSuffix(filename, "_test.go") {
+		return nil, nil
+	}
+
+	df, err := decorator.ParseFile(nil, filename, nil, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	// Only look at the github package
+	if df.Name.Name != "github" {
+		return nil, nil
+	}
+	var serviceMethods []*ServiceMethod
+	dst.Inspect(df, func(n dst.Node) bool {
+		decl, ok := n.(*dst.FuncDecl)
+		if !ok {
+			return true
+		}
+		if decl.Recv == nil || len(decl.Recv.List) != 1 {
+			return true
+		}
+		se, ok := decl.Recv.List[0].Type.(*dst.StarExpr)
+		if !ok {
+			return true
+		}
+		id, ok := se.X.(*dst.Ident)
+		if !ok {
+			return true
+		}
+		receiverName := id.Name
+		methodName := decl.Name.Name
+		if !dst.IsExported(methodName) || !dst.IsExported(receiverName)	{
+			return true
+		}
+		if receiverName != "Client" && !strings.HasSuffix(receiverName, "Service") {
+			return true
+		}
+		// Skip Client methods in github.go
+		if receiverName == "Client" && filepath.Base(filename) == "github.go" {
+			return true
+		}
+		serviceMethods = append(serviceMethods, &ServiceMethod{
+			ReceiverName: receiverName,
+			MethodName:   methodName,
+			Filename:     filename,
+		})
+		return true
+	})
+	return serviceMethods, nil
 }

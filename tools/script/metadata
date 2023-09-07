@@ -8,7 +8,7 @@ mkdir -p "$TOOLS_DIR"/bin
 
 (
   cd "$TOOLS_DIR"
-  go build -o bin/update-urls ./update-urls
+  go build -o bin/metadata ./metadata
 )
 
-exec "$TOOLS_DIR"/bin/update-urls "$@"
+exec "$TOOLS_DIR"/bin/metadata "$@"
