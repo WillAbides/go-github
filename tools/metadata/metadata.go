@@ -127,7 +127,8 @@ func (c *updateUrlsCmd) Run(root *rootCmd) error {
 	if err != nil {
 		return err
 	}
-	return internal.UpdateDocLinks(meta, githubDir)
+	err = internal.UpdateDocLinks(meta, githubDir)
+	return err
 }
 
 type unusedOpsCmd struct{

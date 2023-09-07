@@ -3,9 +3,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:build ignore
-// +build ignore
-
 // gen-accessors generates accessor methods for structs with pointer fields.
 //
 // It is meant to be used by go-github contributors in conjunction with the
@@ -23,9 +20,12 @@ import (
 	"go/token"
 	"log"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"text/template"
+
+	"github.com/google/go-github/tools/internal"
 )
 
 const (
@@ -68,7 +68,15 @@ func main() {
 	flag.Parse()
 	fset := token.NewFileSet()
 
-	pkgs, err := parser.ParseDir(fset, ".", sourceFilter, 0)
+	goghDir, err := internal.ProjRootDir(".")
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	githubDir := filepath.Join(goghDir, "github")
+
+	pkgs, err := parser.ParseDir(fset, githubDir, sourceFilter, 0)
 	if err != nil {
 		log.Fatal(err)
 		return

@@ -305,7 +305,15 @@ func UpdateDocLinks(meta *Metadata, dir string) error {
 		if err != nil {
 			return err
 		}
-		return os.WriteFile(path, updatedContent, 0)
+		f, err := os.Create(path)
+		if err != nil {
+			return err
+		}
+		_, err = f.Write(updatedContent)
+		if err != nil {
+			return err
+		}
+		return f.Close()
 	})
 }
 
