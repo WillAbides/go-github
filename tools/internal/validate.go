@@ -9,7 +9,7 @@ import (
 // ValidateMetadata returns a list of issues with the metadata file. An error means
 // there was an error validating the file, not that there are issues with the file.
 func ValidateMetadata(dir string, meta *Metadata) ([]string, error) {
-	undocumentedMethods, err := GetUndocumentedMethods(dir, meta)
+	undocumentedMethods, err := getUndocumentedMethods(dir, meta)
 	if err != nil {
 		return nil, err
 	}
@@ -32,28 +32,19 @@ func ValidateMetadata(dir string, meta *Metadata) ([]string, error) {
 		metaMethods = append(metaMethods, m)
 	}
 	sort.Strings(metaMethods)
-	serviceMethods, err := GetServiceMethods(dir)
+	missing, err := missingMethods(dir, metaMethods)
 	if err != nil {
 		return nil, err
 	}
-	if len(serviceMethods) == 0 {
-		return nil, fmt.Errorf("no service methods found in %s", dir)
-	}
-	smNames := map[string]bool{}
-	for _, m := range serviceMethods {
-		smNames[m.Name()] = true
-	}
-	for _, m := range metaMethods {
-		if !smNames[m] {
-			msg := fmt.Sprintf("Method %s in metadata does not exist in github package.", m)
-			result = append(result, msg)
-		}
+	for _, m := range missing {
+		msg := fmt.Sprintf("Method %s in metadata does not exist in github package.", m)
+		result = append(result, msg)
 	}
 	return result, nil
 }
 
-// GetUndocumentedMethods returns a list of methods that are not mapped to any operation in metadata.yaml
-func GetUndocumentedMethods(dir string, metadata *Metadata) ([]*ServiceMethod, error) {
+// getUndocumentedMethods returns a list of methods that are not mapped to any operation in metadata.yaml
+func getUndocumentedMethods(dir string, metadata *Metadata) ([]*ServiceMethod, error) {
 	var result []*ServiceMethod
 	methods, err := GetServiceMethods(dir)
 	if err != nil {
@@ -72,8 +63,8 @@ func GetUndocumentedMethods(dir string, metadata *Metadata) ([]*ServiceMethod, e
 	return result, nil
 }
 
-// MissingMethods returns the set from methods that do not exist in the github package.
-func MissingMethods(dir string, methods []string) ([]string, error) {
+// missingMethods returns the set from methods that do not exist in the github package.
+func missingMethods(dir string, methods []string) ([]string, error) {
 	var result []string
 	existingMap := map[string]bool{}
 	sm, err := GetServiceMethods(dir)

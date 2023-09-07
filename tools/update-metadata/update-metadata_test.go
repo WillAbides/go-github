@@ -202,7 +202,7 @@ func TestUncovered(t *testing.T) {
 	require.NoError(t, err)
 	count := 0
 	for _, op := range metadataFile.Operations {
-		if !slices.Contains(op.OpenAPIFiles, "descriptions/api.github.com/api.github.com.json") {
+		if slices.Contains(op.OpenAPIFiles, "descriptions/api.github.com/api.github.com.json") {
 			continue
 		}
 		if len(op.GoMethods) == 0 {
