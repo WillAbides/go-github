@@ -1218,8 +1218,6 @@ operations:
     openapi_files:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
-    go_methods:
-      - BillingService.GetAdvancedSecurityActiveCommittersOrg
   - openapi:
       method: GET
       endpoint_url: /enterprises/{enterprise}/settings/billing/packages
@@ -1734,7 +1732,6 @@ operations:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
     go_methods:
-      - ActivityService.ListNotifications
       - ActivityService.MarkThreadRead
   - openapi:
       method: DELETE
@@ -3783,6 +3780,8 @@ operations:
     openapi_files:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+    go_methods:
+      - BillingService.GetAdvancedSecurityActiveCommittersOrg
   - openapi:
       method: GET
       endpoint_url: /orgs/{org}/settings/billing/packages
@@ -5022,7 +5021,6 @@ operations:
       - descriptions/ghes-3.10/ghes-3.10.json
     go_methods:
       - ActionsService.CancelWorkflowRunByID
-      - ActionsService.PendingDeployments
   - openapi:
       method: POST
       endpoint_url: /repos/{owner}/{repo}/actions/runs/{run_id}/deployment_protection_rule
@@ -5992,7 +5990,6 @@ operations:
       - descriptions/ghes-3.10/ghes-3.10.json
     go_methods:
       - CodeScanningService.GetAnalysis
-      - CodeScanningService.ListAnalysesForRepo
   - openapi:
       method: GET
       endpoint_url: /repos/{owner}/{repo}/code-scanning/codeql/databases
@@ -6045,7 +6042,6 @@ operations:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
     go_methods:
-      - CodeScanningService.ListAlertsForRepo
       - CodeScanningService.UploadSarif
   - openapi:
       method: GET
@@ -6517,8 +6513,6 @@ operations:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
-    go_methods:
-      - DependabotService.ListRepoAlerts
   - openapi:
       method: GET
       endpoint_url: /repos/{owner}/{repo}/dependabot/secrets
@@ -9177,7 +9171,6 @@ operations:
       - descriptions/ghes-3.10/ghes-3.10.json
     go_methods:
       - ActionsService.CreateEnvVariable
-      - ActionsService.UpdateEnvVariable
   - openapi:
       method: DELETE
       endpoint_url: /repositories/{repository_id}/environments/{environment_name}/variables/{name}
@@ -9991,7 +9984,6 @@ operations:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
     go_methods:
-      - CodespacesService.SetSelectedReposForOrgSecret
       - CodespacesService.SetSelectedReposForUserSecret
   - openapi:
       method: DELETE

@@ -50,7 +50,6 @@ type NotificationListOptions struct {
 // ListNotifications lists all notifications for the authenticated user.
 //
 // GitHub API docs: https://docs.github.com/rest/activity/notifications#list-notifications-for-the-authenticated-user
-// GitHub API docs: https://docs.github.com/rest/activity/notifications#mark-a-thread-as-read
 func (s *ActivityService) ListNotifications(ctx context.Context, opts *NotificationListOptions) ([]*Notification, *Response, error) {
 	u := "notifications"
 	u, err := addOptions(u, opts)

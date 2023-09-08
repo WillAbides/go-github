@@ -105,7 +105,6 @@ func (s *DependabotService) listAlerts(ctx context.Context, url string, opts *Li
 // ListRepoAlerts lists all Dependabot alerts of a repository.
 //
 // GitHub API docs: https://docs.github.com/rest/dependabot/alerts#list-dependabot-alerts-for-a-repository
-// GitHub API docs: https://docs.github.com/rest/dependabot/alerts#update-a-dependabot-alert
 func (s *DependabotService) ListRepoAlerts(ctx context.Context, owner, repo string, opts *ListAlertsOptions) ([]*DependabotAlert, *Response, error) {
 	url := fmt.Sprintf("repos/%v/%v/dependabot/alerts", owner, repo)
 	return s.listAlerts(ctx, url, opts)

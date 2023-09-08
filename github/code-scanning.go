@@ -264,7 +264,6 @@ func (s *CodeScanningService) ListAlertsForOrg(ctx context.Context, org string, 
 // read permission to use this endpoint.
 //
 // GitHub API docs: https://docs.github.com/rest/code-scanning/code-scanning#list-code-scanning-alerts-for-a-repository
-// GitHub API docs: https://docs.github.com/rest/code-scanning/code-scanning#upload-an-analysis-as-sarif-data
 func (s *CodeScanningService) ListAlertsForRepo(ctx context.Context, owner, repo string, opts *AlertListOptions) ([]*Alert, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/code-scanning/alerts", owner, repo)
 	u, err := addOptions(u, opts)
@@ -425,7 +424,6 @@ func (s *CodeScanningService) GetSARIF(ctx context.Context, owner, repo, sarifID
 // You must use an access token with the security_events scope to use this endpoint.
 // GitHub Apps must have the security_events read permission to use this endpoint.
 //
-// GitHub API docs: https://docs.github.com/rest/code-scanning/code-scanning#get-a-code-scanning-analysis-for-a-repository
 // GitHub API docs: https://docs.github.com/rest/code-scanning/code-scanning#list-code-scanning-analyses-for-a-repository
 func (s *CodeScanningService) ListAnalysesForRepo(ctx context.Context, owner, repo string, opts *AnalysesListOptions) ([]*ScanningAnalysis, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/code-scanning/analyses", owner, repo)

@@ -170,7 +170,6 @@ func (s *ActionsService) UpdateOrgVariable(ctx context.Context, org string, vari
 
 // UpdateEnvVariable updates an environment variable.
 //
-// GitHub API docs: https://docs.github.com/rest/actions/variables#create-an-environment-variable
 // GitHub API docs: https://docs.github.com/rest/actions/variables#update-an-environment-variable
 func (s *ActionsService) UpdateEnvVariable(ctx context.Context, repoID int, env string, variable *ActionsVariable) (*Response, error) {
 	url := fmt.Sprintf("repositories/%v/environments/%v/variables/%v", repoID, env, variable.Name)

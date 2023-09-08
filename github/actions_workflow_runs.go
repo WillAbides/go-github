@@ -354,7 +354,6 @@ func (s *ActionsService) GetWorkflowRunUsageByID(ctx context.Context, owner, rep
 
 // PendingDeployments approve or reject pending deployments that are waiting on approval by a required reviewer.
 //
-// GitHub API docs: https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run
 // GitHub API docs: https://docs.github.com/rest/actions/workflow-runs#review-pending-deployments-for-a-workflow-run
 func (s *ActionsService) PendingDeployments(ctx context.Context, owner, repo string, runID int64, request *PendingDeploymentsRequest) ([]*Deployment, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/actions/runs/%v/pending_deployments", owner, repo, runID)
