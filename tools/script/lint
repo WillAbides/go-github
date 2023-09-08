@@ -20,4 +20,8 @@ for dir in $MOD_DIRS; do
   )
 done
 
+echo validating metadata.yaml
+"$SCRIPT_DIR"/metadata validate
+
+echo validating go generate is not needed
 "$SCRIPT_DIR"/diff-check 'go generate ./...'
