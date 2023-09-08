@@ -1,8 +1,9 @@
 module github.com/google/go-github/tools
 
-go 1.21.0
+go 1.21
 
 require (
+	github.com/alecthomas/kong v0.8.0
 	github.com/dave/dst v0.27.2
 	github.com/getkin/kin-openapi v0.119.0
 	github.com/google/go-github/v55 v55.0.0
@@ -14,7 +15,6 @@ require (
 
 require (
 	github.com/ProtonMail/go-crypto v0.0.0-20230217124315-7d5c6f04bbb8 // indirect
-	github.com/alecthomas/kong v0.8.0 // indirect
 	github.com/cloudflare/circl v1.3.3 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect
