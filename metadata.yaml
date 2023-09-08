@@ -8572,7 +8572,6 @@ operations:
       - descriptions/ghes-3.10/ghes-3.10.json
     go_methods:
       - RepositoriesService.GetLatestRelease
-      - RepositoriesService.UploadReleaseAsset
   - openapi:
       method: GET
       endpoint_url: /repos/{owner}/{repo}/releases/{release_id}/reactions
