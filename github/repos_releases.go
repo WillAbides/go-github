@@ -118,7 +118,6 @@ func (s *RepositoriesService) GetRelease(ctx context.Context, owner, repo string
 
 // GetLatestRelease fetches the latest published release for the repository.
 //
-// GitHub API docs: https://docs.github.com/rest/releases/assets#upload-a-release-asset
 // GitHub API docs: https://docs.github.com/rest/releases/releases#get-the-latest-release
 func (s *RepositoriesService) GetLatestRelease(ctx context.Context, owner, repo string) (*RepositoryRelease, *Response, error) {
 	u := fmt.Sprintf("repos/%s/%s/releases/latest", owner, repo)
