@@ -1,0 +1,27 @@
+#!/bin/sh
+#/ lint approximates the linting done in CI.
+
+set -e
+
+SCRIPT_DIR="$(CDPATH="" cd -- "$(dirname -- "$0")" && pwd -P)"
+REPO_ROOT="$(CDPATH="" cd -- "$SCRIPT_DIR/../.." && pwd -P)"
+
+MOD_DIRS="$(
+  git -C "$REPO_ROOT" ls-files '*go.mod' |
+   xargs dirname |
+   grep -v 'example/newreposecretwithlibsodium'
+ )"
+
+for dir in $MOD_DIRS; do
+  echo "linting $dir"
+  (
+    cd "$REPO_ROOT"/"$dir"
+    "$SCRIPT_DIR"/golangci-lint run --path-prefix="$dir"
+  )
+done
+
+echo validating metadata.yaml
+"$SCRIPT_DIR"/metadata validate
+
+echo validating go generate is not needed
+"$SCRIPT_DIR"/diff-check 'go generate ./...'

@@ -1,0 +1,7 @@
+#!/bin/sh
+#/ metadata builds and runs tools/metadata with the given arguments.
+
+set -e
+
+SCRIPT_DIR="$(CDPATH="" cd -- "$(dirname -- "$0")" && pwd -P)"
+"$SCRIPT_DIR"/run-tool metadata "$@"

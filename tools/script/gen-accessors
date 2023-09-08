@@ -1,0 +1,7 @@
+#!/bin/sh
+#/ gen-accessors builds and runs tools/gen-accessors with the given arguments.
+
+set -e
+
+SCRIPT_DIR="$(CDPATH="" cd -- "$(dirname -- "$0")" && pwd -P)"
+"$SCRIPT_DIR"/run-tool gen-accessors "$@"
