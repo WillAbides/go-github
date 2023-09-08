@@ -3,9 +3,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:build ignore
-// +build ignore
-
 // gen-stringify-test generates test methods to test the String methods.
 //
 // These tests eliminate most of the code coverage problems so that real
@@ -26,8 +23,11 @@ import (
 	"go/token"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"text/template"
+
+	"github.com/google/go-github/tools/internal"
 )
 
 const (
@@ -86,7 +86,15 @@ func main() {
 	flag.Parse()
 	fset := token.NewFileSet()
 
-	pkgs, err := parser.ParseDir(fset, ".", sourceFilter, 0)
+	goghDir, err := internal.ProjRootDir(".")
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	githubDir := filepath.Join(goghDir, "github")
+
+	pkgs, err := parser.ParseDir(fset, githubDir, sourceFilter, 0)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -94,7 +102,7 @@ func main() {
 
 	for pkgName, pkg := range pkgs {
 		t := &templateData{
-			filename:     pkgName + outputFileSuffix,
+			filename:     filepath.Join(githubDir, pkgName+outputFileSuffix),
 			Year:         2019, // No need to change this once set (even in following years).
 			Package:      pkgName,
 			Imports:      map[string]string{"testing": "testing"},

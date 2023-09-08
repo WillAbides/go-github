@@ -133,7 +133,7 @@ func getServiceMethodsFromFile(filename string) ([]*ServiceMethod, error) {
 		}
 		receiverName := id.Name
 		methodName := decl.Name.Name
-		if !dst.IsExported(methodName) || !dst.IsExported(receiverName)	{
+		if !dst.IsExported(methodName) || !dst.IsExported(receiverName) {
 			return true
 		}
 		if receiverName != "Client" && !strings.HasSuffix(receiverName, "Service") {

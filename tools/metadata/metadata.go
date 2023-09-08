@@ -131,8 +131,8 @@ func (c *updateUrlsCmd) Run(root *rootCmd) error {
 	return err
 }
 
-type unusedOpsCmd struct{
-	Json bool `kong:"help='Output as JSON.'"`
+type unusedOpsCmd struct {
+	JSON bool `kong:"help='Output JSON.'"`
 }
 
 func (c *unusedOpsCmd) Run(root *rootCmd) error {
@@ -146,7 +146,7 @@ func (c *unusedOpsCmd) Run(root *rootCmd) error {
 			unused = append(unused, op)
 		}
 	}
-	if c.Json {
+	if c.JSON {
 		enc := json.NewEncoder(os.Stdout)
 		enc.SetIndent("", "  ")
 		return enc.Encode(unused)

@@ -84,7 +84,7 @@ func main() {
 
 	for pkgName, pkg := range pkgs {
 		t := &templateData{
-			filename: pkgName + fileSuffix,
+			filename: filepath.Join(githubDir, pkgName+fileSuffix),
 			Year:     2017,
 			Package:  pkgName,
 			Imports:  map[string]string{},

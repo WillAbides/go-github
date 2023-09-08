@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -e
+
+TOOLS_DIR="$(CDPATH="" cd -- "$(dirname -- "$0")/.." && pwd -P)"
+
+mkdir -p "$TOOLS_DIR"/bin
+
+(
+  cd "$TOOLS_DIR"
+  go build -o bin/gen-stringify-test ./gen-stringify-test
+)
+
+exec "$TOOLS_DIR"/bin/gen-stringify-test "$@"

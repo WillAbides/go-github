@@ -1,0 +1,28 @@
+#!/bin/sh
+
+set -e
+
+GOLANGCI_LINT_VERSION="v1.54.2"
+
+SCRIPT_DIR="$(CDPATH="" cd -- "$(dirname -- "$0")" && pwd -P)"
+REPO_ROOT="$(CDPATH="" cd -- "$SCRIPT_DIR/../.." && pwd -P)"
+
+LINT_DIRS="
+.
+scrape
+example
+example/newreposecretwithlibsodium
+tools
+"
+
+for dir in $LINT_DIRS; do
+  # temporarily exclude example
+  if [ "$dir" = "example" ]; then
+    continue
+  fi
+  echo "linting $dir"
+  (
+    cd "$REPO_ROOT"/"$dir"
+    "$SCRIPT_DIR"/golangci-lint run --path-prefix="$dir"
+  )
+done
