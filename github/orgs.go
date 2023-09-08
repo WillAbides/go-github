@@ -202,7 +202,6 @@ func (s *OrganizationsService) List(ctx context.Context, user string, opts *List
 // Get fetches an organization by name.
 //
 // GitHub API docs: https://docs.github.com/rest/orgs/orgs#get-an-organization
-// GitHub API docs: https://docs.github.com/rest/orgs/orgs#update-an-organization
 func (s *OrganizationsService) Get(ctx context.Context, org string) (*Organization, *Response, error) {
 	u := fmt.Sprintf("orgs/%v", org)
 	req, err := s.client.NewRequest("GET", u, nil)
