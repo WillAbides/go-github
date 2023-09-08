@@ -353,7 +353,7 @@ func (s *RepositoriesService) DownloadReleaseAsset(ctx context.Context, owner, r
 	}
 
 	if err := CheckResponse(resp); err != nil {
-		resp.Body.Close()
+		_ = resp.Body.Close()
 		return nil, "", err
 	}
 
@@ -372,7 +372,7 @@ func (s *RepositoriesService) downloadReleaseAssetFromURL(ctx context.Context, f
 		return nil, err
 	}
 	if err := CheckResponse(resp); err != nil {
-		resp.Body.Close()
+		_ = resp.Body.Close()
 		return nil, err
 	}
 	return resp.Body, nil
