@@ -397,8 +397,6 @@ func urlIndex(s string) string {
 		return ""
 	}
 	p := u.Path[restIdx+len("/rest/"):]
-	if strings.HasSuffix(p, "/") {
-		p = p[:len(p)-1]
-	}
+	p = strings.TrimSuffix(p, "/")
 	return p + "#" + u.Fragment
 }

@@ -111,9 +111,7 @@ func main() {
 		}
 		for filename, f := range pkg.Files {
 			logf("Processing %v...", filename)
-			if err := t.processAST(f); err != nil {
-				log.Fatal(err)
-			}
+			t.processAST(f)
 		}
 		if err := t.dump(); err != nil {
 			log.Fatal(err)
@@ -147,7 +145,7 @@ type structField struct {
 	NamedStruct  bool // Getter for named struct.
 }
 
-func (t *templateData) processAST(f *ast.File) error {
+func (t *templateData) processAST(f *ast.File) {
 	for _, decl := range f.Decls {
 		fn, ok := decl.(*ast.FuncDecl)
 		if ok {
@@ -249,7 +247,7 @@ func (t *templateData) processAST(f *ast.File) error {
 			}
 		}
 	}
-	return nil
+	return
 }
 
 func (t *templateData) addMapType(receiverType, fieldName string) {
@@ -360,6 +358,7 @@ func (t *templateData) dump() error {
 
 	logf("Writing %v...", t.filename)
 
+	//nolint:gosec // G306: Expect WriteFile permissions to be 0600 or less
 	if err := os.WriteFile(t.filename, clean, 0644); err != nil {
 		return err
 	}

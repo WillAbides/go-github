@@ -91,9 +91,7 @@ func main() {
 		}
 		for filename, f := range pkg.Files {
 			logf("Processing %v...", filename)
-			if err := t.processAST(f); err != nil {
-				log.Fatal(err)
-			}
+			t.processAST(f)
 		}
 		if err := t.dump(); err != nil {
 			log.Fatal(err)
@@ -102,7 +100,7 @@ func main() {
 	logf("Done.")
 }
 
-func (t *templateData) processAST(f *ast.File) error {
+func (t *templateData) processAST(f *ast.File) {
 	for _, decl := range f.Decls {
 		gd, ok := decl.(*ast.GenDecl)
 		if !ok {
@@ -177,7 +175,7 @@ func (t *templateData) processAST(f *ast.File) error {
 			}
 		}
 	}
-	return nil
+	return
 }
 
 func sourceFilter(fi os.FileInfo) bool {
@@ -204,6 +202,7 @@ func (t *templateData) dump() error {
 		}
 
 		logf("Writing %v...", filename)
+		//nolint:gosec // G306: Expect WriteFile permissions to be 0600 or less
 		if err := os.WriteFile(filename, clean, 0644); err != nil {
 			return err
 		}
