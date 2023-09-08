@@ -1940,7 +1940,6 @@ func (s *RepositoriesService) ListUserRestrictions(ctx context.Context, owner, r
 //
 // Note: The list of users, apps, and teams in total is limited to 100 items.
 //
-// GitHub API docs: https://docs.github.com/rest/branches/branch-protection#set-team-access-restrictions
 // GitHub API docs: https://docs.github.com/rest/branches/branch-protection#set-user-access-restrictions
 func (s *RepositoriesService) ReplaceUserRestrictions(ctx context.Context, owner, repo, branch string, users []string) ([]*User, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/branches/%v/protection/restrictions/users", owner, repo, branch)
@@ -1963,7 +1962,6 @@ func (s *RepositoriesService) ReplaceUserRestrictions(ctx context.Context, owner
 //
 // Note: The list of users, apps, and teams in total is limited to 100 items.
 //
-// GitHub API docs: https://docs.github.com/rest/branches/branch-protection#add-team-access-restrictions
 // GitHub API docs: https://docs.github.com/rest/branches/branch-protection#add-user-access-restrictions
 func (s *RepositoriesService) AddUserRestrictions(ctx context.Context, owner, repo, branch string, users []string) ([]*User, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/branches/%v/protection/restrictions/users", owner, repo, branch)
@@ -1986,7 +1984,6 @@ func (s *RepositoriesService) AddUserRestrictions(ctx context.Context, owner, re
 //
 // Note: The list of users, apps, and teams in total is limited to 100 items.
 //
-// GitHub API docs: https://docs.github.com/rest/branches/branch-protection#remove-team-access-restrictions
 // GitHub API docs: https://docs.github.com/rest/branches/branch-protection#remove-user-access-restrictions
 func (s *RepositoriesService) RemoveUserRestrictions(ctx context.Context, owner, repo, branch string, users []string) ([]*User, *Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/branches/%v/protection/restrictions/users", owner, repo, branch)

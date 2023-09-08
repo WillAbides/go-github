@@ -5710,7 +5710,6 @@ operations:
       - descriptions/ghes-3.10/ghes-3.10.json
     go_methods:
       - RepositoriesService.RemoveTeamRestrictions
-      - RepositoriesService.RemoveUserRestrictions
   - openapi:
       method: GET
       endpoint_url: /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams
@@ -5733,7 +5732,6 @@ operations:
       - descriptions/ghes-3.10/ghes-3.10.json
     go_methods:
       - RepositoriesService.AddTeamRestrictions
-      - RepositoriesService.AddUserRestrictions
   - openapi:
       method: PUT
       endpoint_url: /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams
@@ -5745,7 +5743,6 @@ operations:
       - descriptions/ghes-3.10/ghes-3.10.json
     go_methods:
       - RepositoriesService.ReplaceTeamRestrictions
-      - RepositoriesService.ReplaceUserRestrictions
   - openapi:
       method: DELETE
       endpoint_url: /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users
