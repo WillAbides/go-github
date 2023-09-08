@@ -4523,6 +4523,7 @@ operations:
       - descriptions/ghes-3.10/ghes-3.10.json
     go_methods:
       - RepositoriesService.Get
+      - RepositoriesService.GetCodeOfConduct
   - openapi:
       method: PATCH
       endpoint_url: /repos/{owner}/{repo}
@@ -4534,8 +4535,6 @@ operations:
       - descriptions/ghes-3.10/ghes-3.10.json
     go_methods:
       - RepositoriesService.Edit
-      - RepositoriesService.Get
-      - RepositoriesService.GetCodeOfConduct
   - openapi:
       method: GET
       endpoint_url: /repos/{owner}/{repo}/actions/artifacts
