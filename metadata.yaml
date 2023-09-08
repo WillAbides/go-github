@@ -882,6 +882,8 @@ operations:
     openapi_files:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+    go_methods:
+      - EnterpriseService.ListRunnerGroups
   - openapi:
       method: POST
       endpoint_url: /enterprises/{enterprise}/actions/runner-groups
@@ -890,6 +892,8 @@ operations:
     openapi_files:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+    go_methods:
+      - EnterpriseService.CreateEnterpriseRunnerGroup
   - openapi:
       method: DELETE
       endpoint_url: /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}
@@ -898,6 +902,8 @@ operations:
     openapi_files:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+    go_methods:
+      - EnterpriseService.DeleteEnterpriseRunnerGroup
   - openapi:
       method: GET
       endpoint_url: /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}
@@ -906,6 +912,8 @@ operations:
     openapi_files:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+    go_methods:
+      - EnterpriseService.GetEnterpriseRunnerGroup
   - openapi:
       method: PATCH
       endpoint_url: /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}
@@ -914,6 +922,8 @@ operations:
     openapi_files:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+    go_methods:
+      - EnterpriseService.UpdateEnterpriseRunnerGroup
   - openapi:
       method: GET
       endpoint_url: /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations
@@ -922,6 +932,8 @@ operations:
     openapi_files:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+    go_methods:
+      - EnterpriseService.ListOrganizationAccessRunnerGroup
   - openapi:
       method: PUT
       endpoint_url: /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations
@@ -930,6 +942,8 @@ operations:
     openapi_files:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+    go_methods:
+      - EnterpriseService.SetOrganizationAccessRunnerGroup
   - openapi:
       method: DELETE
       endpoint_url: /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations/{org_id}
@@ -938,6 +952,8 @@ operations:
     openapi_files:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+    go_methods:
+      - EnterpriseService.RemoveOrganizationAccessRunnerGroup
   - openapi:
       method: PUT
       endpoint_url: /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations/{org_id}
@@ -946,6 +962,8 @@ operations:
     openapi_files:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+    go_methods:
+      - EnterpriseService.AddOrganizationAccessRunnerGroup
   - openapi:
       method: GET
       endpoint_url: /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/runners
@@ -954,6 +972,8 @@ operations:
     openapi_files:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+    go_methods:
+      - EnterpriseService.ListRunnerGroupRunners
   - openapi:
       method: PUT
       endpoint_url: /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/runners
@@ -962,6 +982,8 @@ operations:
     openapi_files:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+    go_methods:
+      - EnterpriseService.SetRunnerGroupRunners
   - openapi:
       method: DELETE
       endpoint_url: /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/runners/{runner_id}
@@ -970,6 +992,8 @@ operations:
     openapi_files:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+    go_methods:
+      - EnterpriseService.RemoveRunnerGroupRunners
   - openapi:
       method: PUT
       endpoint_url: /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/runners/{runner_id}
@@ -978,6 +1002,8 @@ operations:
     openapi_files:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+    go_methods:
+      - EnterpriseService.AddRunnerGroupRunners
   - openapi:
       method: GET
       endpoint_url: /enterprises/{enterprise}/actions/runners
@@ -1006,6 +1032,8 @@ operations:
     openapi_files:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+    go_methods:
+      - EnterpriseService.GenerateEnterpriseJITConfig
   - openapi:
       method: POST
       endpoint_url: /enterprises/{enterprise}/actions/runners/registration-token

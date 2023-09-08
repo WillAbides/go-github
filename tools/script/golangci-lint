@@ -1,4 +1,5 @@
 #!/bin/sh
+#/ golangci-lint installs golangci-lint and runs it with the given arguments.
 
 set -e
 

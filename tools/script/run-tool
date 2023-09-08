@@ -1,0 +1,20 @@
+#!/bin/sh
+#/ run-tool runs the go tool in the first argument passing the rest of the
+#/ arguments to it. This is meant to be used by other scripts in this
+#/ directory.
+
+set -e
+
+TOOLS_DIR="$(CDPATH="" cd -- "$(dirname -- "$0")/.." && pwd -P)"
+
+mkdir -p "$TOOLS_DIR"/bin
+
+GO_TOOL="$1"
+shift
+
+(
+  cd "$TOOLS_DIR"
+  go build -o bin/"$GO_TOOL" ./"$GO_TOOL"
+)
+
+exec "$TOOLS_DIR"/bin/"$GO_TOOL" "$@"

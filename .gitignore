@@ -1,6 +1,7 @@
 *.sh
 *.test
 coverage.out
+coverage.txt
 /tools/bin
 
 # intellij files
