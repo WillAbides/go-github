@@ -3,6 +3,9 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+//go:build ignore
+// +build ignore
+
 // gen-stringify-test generates test methods to test the String methods.
 //
 // These tests eliminate most of the code coverage problems so that real
@@ -23,11 +26,8 @@ import (
 	"go/token"
 	"log"
 	"os"
-	"path/filepath"
 	"strings"
 	"text/template"
-
-	"github.com/google/go-github/tools/internal"
 )
 
 const (
@@ -86,15 +86,7 @@ func main() {
 	flag.Parse()
 	fset := token.NewFileSet()
 
-	goghDir, err := internal.ProjRootDir(".")
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-
-	githubDir := filepath.Join(goghDir, "github")
-
-	pkgs, err := parser.ParseDir(fset, githubDir, sourceFilter, 0)
+	pkgs, err := parser.ParseDir(fset, ".", sourceFilter, 0)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -102,7 +94,7 @@ func main() {
 
 	for pkgName, pkg := range pkgs {
 		t := &templateData{
-			filename:     filepath.Join(githubDir, pkgName+outputFileSuffix),
+			filename:     pkgName + outputFileSuffix,
 			Year:         2019, // No need to change this once set (even in following years).
 			Package:      pkgName,
 			Imports:      map[string]string{"testing": "testing"},
@@ -111,7 +103,9 @@ func main() {
 		}
 		for filename, f := range pkg.Files {
 			logf("Processing %v...", filename)
-			t.processAST(f)
+			if err := t.processAST(f); err != nil {
+				log.Fatal(err)
+			}
 		}
 		if err := t.dump(); err != nil {
 			log.Fatal(err)
@@ -145,7 +139,7 @@ type structField struct {
 	NamedStruct  bool // Getter for named struct.
 }
 
-func (t *templateData) processAST(f *ast.File) {
+func (t *templateData) processAST(f *ast.File) error {
 	for _, decl := range f.Decls {
 		fn, ok := decl.(*ast.FuncDecl)
 		if ok {
@@ -247,7 +241,7 @@ func (t *templateData) processAST(f *ast.File) {
 			}
 		}
 	}
-	return
+	return nil
 }
 
 func (t *templateData) addMapType(receiverType, fieldName string) {
@@ -358,7 +352,6 @@ func (t *templateData) dump() error {
 
 	logf("Writing %v...", t.filename)
 
-	//nolint:gosec // G306: Expect WriteFile permissions to be 0600 or less
 	if err := os.WriteFile(t.filename, clean, 0644); err != nil {
 		return err
 	}

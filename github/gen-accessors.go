@@ -3,6 +3,9 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+//go:build ignore
+// +build ignore
+
 // gen-accessors generates accessor methods for structs with pointer fields.
 //
 // It is meant to be used by go-github contributors in conjunction with the
@@ -20,12 +23,9 @@ import (
 	"go/token"
 	"log"
 	"os"
-	"path/filepath"
 	"sort"
 	"strings"
 	"text/template"
-
-	"github.com/google/go-github/tools/internal"
 )
 
 const (
@@ -68,15 +68,7 @@ func main() {
 	flag.Parse()
 	fset := token.NewFileSet()
 
-	goghDir, err := internal.ProjRootDir(".")
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-
-	githubDir := filepath.Join(goghDir, "github")
-
-	pkgs, err := parser.ParseDir(fset, githubDir, sourceFilter, 0)
+	pkgs, err := parser.ParseDir(fset, ".", sourceFilter, 0)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -84,14 +76,16 @@ func main() {
 
 	for pkgName, pkg := range pkgs {
 		t := &templateData{
-			filename: filepath.Join(githubDir, pkgName+fileSuffix),
+			filename: pkgName + fileSuffix,
 			Year:     2017,
 			Package:  pkgName,
 			Imports:  map[string]string{},
 		}
 		for filename, f := range pkg.Files {
 			logf("Processing %v...", filename)
-			t.processAST(f)
+			if err := t.processAST(f); err != nil {
+				log.Fatal(err)
+			}
 		}
 		if err := t.dump(); err != nil {
 			log.Fatal(err)
@@ -100,7 +94,7 @@ func main() {
 	logf("Done.")
 }
 
-func (t *templateData) processAST(f *ast.File) {
+func (t *templateData) processAST(f *ast.File) error {
 	for _, decl := range f.Decls {
 		gd, ok := decl.(*ast.GenDecl)
 		if !ok {
@@ -175,7 +169,7 @@ func (t *templateData) processAST(f *ast.File) {
 			}
 		}
 	}
-	return
+	return nil
 }
 
 func sourceFilter(fi os.FileInfo) bool {
@@ -202,7 +196,7 @@ func (t *templateData) dump() error {
 		}
 
 		logf("Writing %v...", filename)
-		//nolint:gosec // G306: Expect WriteFile permissions to be 0600 or less
+
 		if err := os.WriteFile(filename, clean, 0644); err != nil {
 			return err
 		}
