@@ -1829,7 +1829,6 @@ operations:
       - descriptions/ghes-3.10/ghes-3.10.json
     go_methods:
       - OrganizationsService.Edit
-      - OrganizationsService.Get
   - openapi:
       method: GET
       endpoint_url: /orgs/{org}/actions/cache/usage
