@@ -1,13 +1,6 @@
 
 on:
   push: {}
-  workflow_dispatch:
-    inputs:
-      debug_enabled:
-        type: boolean
-        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
-        required: false
-        default: false
 
 name: tests
 env:
@@ -33,7 +26,9 @@ jobs:
       # Enable tmate debugging of manually-triggered workflows if the input option was provided
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        with:
+          limit-access-to-actor: false
+#        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
       - uses: WillAbides/setup-go-faster@v1
         id: setup-go
         with:
@@ -48,6 +43,13 @@ jobs:
             ${{ steps.setup-go.outputs.GOMODCACHE }}
           key: ${{ runner.os }}-go-debug2
 
+      # Enable tmate debugging of manually-triggered workflows if the input option was provided
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-actor: false
+
+      #        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
       - run: 'go -C tools build -o "${{ runner.temp }}"/metadata ./cmd/metadata'
 #      - run: '"${{ runner.temp }}"/metadata update-urls'
 
