@@ -35,8 +35,8 @@ jobs:
             ${{ steps.setup-go.outputs.GOMODCACHE }}
           key: ${{ runner.os }}-go-debug2
 
-      - run: go -C tools build -o "$RUNNER_TEMP"/metadata ./cmd/metadata
-      - run: "$RUNNER_TEMP"/metadata update-urls
+      - run: 'go -C tools build -o "${{ runner.temp }}"/metadata ./cmd/metadata'
+      - run: '"${{ runner.temp }}"/metadata update-urls'
 
 #    - name: Ensure go generate produces a zero diff
 #      shell: bash
