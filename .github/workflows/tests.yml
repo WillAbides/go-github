@@ -23,12 +23,6 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
-      # Enable tmate debugging of manually-triggered workflows if the input option was provided
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: false
-#        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
       - uses: WillAbides/setup-go-faster@v1
         id: setup-go
         with:
