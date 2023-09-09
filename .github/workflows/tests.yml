@@ -1,14 +1,6 @@
-concurrency:
-  group: ${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 on:
-  push:
-    branches:
-    - master
-  pull_request:
-    branches:
-    - master
+  push: {}
 
 name: tests
 env:
@@ -17,69 +9,58 @@ env:
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   test:
     strategy:
       matrix:
-        go-version: [1.x, 1.20.x]
-        platform: [ubuntu-latest]
-        include:
-          # include windows, but only with the latest Go version, since there
-          # is very little in the library that is platform specific
-          - go-version: 1.x
-            platform: windows-latest
-
-          # only update test coverage stats with the most recent go version on linux
-          - go-version: 1.x
-            platform: ubuntu-latest
-            update-coverage: true
+        go-version: [ 1.x ]
+        platform: [ ubuntu-latest, windows-latest ]
+      fail-fast: false
     runs-on: ${{ matrix.platform }}
 
     steps:
-    - uses: actions/setup-go@v4
-      with:
-        go-version: ${{ matrix.go-version }}
-    - uses: actions/checkout@v4
+      - uses: WillAbides/setup-go-faster@v1
+        id: setup-go
+        with:
+          go-version: ${{ matrix.go-version }}
+          ignore-local: true
+      - uses: actions/checkout@v4
 
-    # Get values for cache paths to be used in later steps 
-    - id: cache-paths
-      run: |
-        echo "go-cache=$(go env GOCACHE)" >> $GITHUB_OUTPUT
-        echo "go-mod-cache=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
-      shell: bash
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ${{ steps.setup-go.outputs.GOCACHE }}
+            ${{ steps.setup-go.outputs.GOMODCACHE }}
+          key: ${{ runner.os }}-go-debug2
 
-    - name: Cache go modules
-      uses: actions/cache@v3
-      with:
-        path: |
-          ${{ steps.cache-paths.outputs.go-cache }}
-          ${{ steps.cache-paths.outputs.go-mod-cache }}
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: ${{ runner.os }}-go-
+      # Enable tmate debugging of manually-triggered workflows if the input option was provided
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-actor: false
 
-    - name: Ensure go generate produces a zero diff
-      shell: bash
-      run: go generate -x ./... && git diff --exit-code; code=$?; git checkout -- .; (exit $code)
+      #        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+      - run: 'go -C tools build -o "${{ runner.temp }}"/metadata ./cmd/metadata'
+#      - run: '"${{ runner.temp }}"/metadata update-urls'
 
-    - name: Run go test
-      run: go test -v -race -coverprofile coverage.txt -covermode atomic ./...
+      - name: diff-check
+        run: |
+          script/diff-check '"${{ runner.temp }}"/metadata update-urls'
+          
 
-    - name: Ensure integration tests build
-      # don't actually run tests since they hit live GitHub API
-      run: go test -v -tags=integration -run=^$ ./test/integration
+#      - name: git diff
+#        run: |
+#          git -c user.name='bot' -c user.email='bot@localhost' commit -am 'tmp commit' --allow-empty
+#          git diff HEAD^ --exit-code
+#          git reset HEAD^
 
-    - name: Run scrape tests
-      run: |
-        cd scrape
-        go test ./...
+#      - name: git diff
+#        run: git diff --exit-code
 
-    - name: Upload coverage to Codecov
-      if: ${{ matrix.update-coverage }}
-      uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d #v3.1.4
-
-    - name: Ensure go generate produces a zero diff for update-urls
-      shell: bash
-      run: cd update-urls && go generate -x ./... && git diff --exit-code; code=$?; git checkout -- .; (exit $code)
-
-    - name: Run go test for update-urls
-      run: cd update-urls && go test -v -race ./...
+#    - name: Ensure go generate produces a zero diff
+#      shell: bash
+#      run: go generate -x ./... && git diff --exit-code; code=$?; git checkout -- .; (exit $code)

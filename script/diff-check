@@ -1,0 +1,53 @@
+#!/bin/sh
+#/ script/diff-check checks whether running the given command results in changes to the repo. <command> is
+#/ executed in the root of a temporary worktree with all files copied from the current worktree. If the
+#/ command results in changes, the diff is printed and the script exits with a non-zero exit code.
+#/
+#/ Usage: script/diff-check <command>
+#/
+#/ Example:
+#/   script/diff-check 'go generate ./...'
+
+set -e
+
+CDPATH="" cd -- "$(dirname -- "$0")/.."
+
+usage() {
+  grep '^#/' "$0" | cut -c4-
+  exit 1
+}
+
+if [ "$1" = "--help" ]; then
+  usage
+fi
+
+if [ $# -ne 1 ]; then
+  usage
+fi
+
+GENTEMP="$(mktemp -d)"
+if [ -n "$RUNNER_TEMP" ]; then
+  GENTEMP="$RUNNER_TEMP/$(basename "$GENTEMP")"
+fi
+
+git worktree add -q --detach "$GENTEMP"
+#trap 'git worktree remove -f "$GENTEMP"; rm -rf "$GENTEMP"' EXIT
+for f in $(git ls-files -com --exclude-standard); do
+  target="$GENTEMP/$f"
+  mkdir -p "$(dirname -- "$target")"
+  cp "$f" "$target"
+done
+if [ -f "$(pwd)"/bin ]; then
+  ln -s "$(pwd)"/bin "$GENTEMP"/bin
+fi
+
+cd "$GENTEMP"
+git add .
+git -c user.name='bot' -c user.email='bot@localhost' commit -m "generate" -q --allow-empty
+sh -c "$*"
+git add -N .
+[ -z "$(git status --porcelain)" ] || {
+  echo "$* resulted in changes." 1>&2
+  git diff -u . "$GENTEMP"
+  exit 1
+}
