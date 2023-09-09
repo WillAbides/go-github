@@ -37,13 +37,18 @@ jobs:
           key: ${{ runner.os }}-go-debug2
 
       - run: 'go -C tools build -o "${{ runner.temp }}"/metadata ./cmd/metadata'
-      - run: '"${{ runner.temp }}"/metadata update-urls'
+#      - run: '"${{ runner.temp }}"/metadata update-urls'
 
-      - name: git diff
+      - name: diff-check
         run: |
-          git -c user.name='bot' -c user.email='bot@localhost' commit -am 'tmp commit' --allow-empty
-          git diff HEAD^ --exit-code
-          git reset HEAD^
+          script/diff-check '"${{ runner.temp }}"/metadata update-urls'
+          
+
+#      - name: git diff
+#        run: |
+#          git -c user.name='bot' -c user.email='bot@localhost' commit -am 'tmp commit' --allow-empty
+#          git diff HEAD^ --exit-code
+#          git reset HEAD^
 
 #      - name: git diff
 #        run: git diff --exit-code
