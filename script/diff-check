@@ -31,7 +31,7 @@ if [ -n "$RUNNER_TEMP" ]; then
 fi
 
 git worktree add -q --detach "$GENTEMP"
-trap 'git worktree remove -f "$GENTEMP"; rm -rf "$GENTEMP"' EXIT
+#trap 'git worktree remove -f "$GENTEMP"; rm -rf "$GENTEMP"' EXIT
 for f in $(git ls-files -com --exclude-standard); do
   target="$GENTEMP/$f"
   mkdir -p "$(dirname -- "$target")"
