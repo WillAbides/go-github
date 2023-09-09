@@ -26,8 +26,12 @@ if [ $# -ne 1 ]; then
 fi
 
 GENTEMP="$(mktemp -d)"
+if [ -n "$RUNNER_TEMP" ]; then
+  GENTEMP="$RUNNER_TEMP/$(basename "$GENTEMP")"
+fi
+
 git worktree add -q --detach "$GENTEMP"
-trap 'git worktree remove -f "$GENTEMP"; rm -rf "$GENTEMP" || true' EXIT
+trap 'git worktree remove -f "$GENTEMP"; rm -rf "$GENTEMP"' EXIT
 for f in $(git ls-files -com --exclude-standard); do
   target="$GENTEMP/$f"
   mkdir -p "$(dirname -- "$target")"
