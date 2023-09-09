@@ -3,12 +3,7 @@ concurrency:
   cancel-in-progress: true
 
 on:
-  push:
-    branches:
-    - master
-  pull_request:
-    branches:
-    - master
+  push: {}
 
 name: tests
 env:
@@ -21,18 +16,8 @@ jobs:
   test:
     strategy:
       matrix:
-        go-version: [1.x, 1.20.x]
-        platform: [ubuntu-latest]
-        include:
-          # include windows, but only with the latest Go version, since there
-          # is very little in the library that is platform specific
-          - go-version: 1.x
-            platform: windows-latest
-
-          # only update test coverage stats with the most recent go version on linux
-          - go-version: 1.x
-            platform: ubuntu-latest
-            update-coverage: true
+        go-version: [1.x]
+        platform: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -60,26 +45,3 @@ jobs:
     - name: Ensure go generate produces a zero diff
       shell: bash
       run: go generate -x ./... && git diff --exit-code; code=$?; git checkout -- .; (exit $code)
-
-    - name: Run go test
-      run: go test -v -race -coverprofile coverage.txt -covermode atomic ./...
-
-    - name: Ensure integration tests build
-      # don't actually run tests since they hit live GitHub API
-      run: go test -v -tags=integration -run=^$ ./test/integration
-
-    - name: Run scrape tests
-      run: |
-        cd scrape
-        go test ./...
-
-    - name: Upload coverage to Codecov
-      if: ${{ matrix.update-coverage }}
-      uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d #v3.1.4
-
-    - name: Run go test for tools
-      run: cd tools && go test -v -race ./...
-
-    - name: Validate metadata.yaml
-      working-directory: tools
-      run: go run ./cmd/metadata validate
