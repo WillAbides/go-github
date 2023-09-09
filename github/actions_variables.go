@@ -137,8 +137,6 @@ func (s *ActionsService) CreateOrgVariable(ctx context.Context, org string, vari
 }
 
 // CreateEnvVariable creates an environment variable.
-//
-// GitHub API docs: https://docs.github.com/rest/actions/variables#create-an-environment-variable
 func (s *ActionsService) CreateEnvVariable(ctx context.Context, repoID int, env string, variable *ActionsVariable) (*Response, error) {
 	url := fmt.Sprintf("repositories/%v/environments/%v/variables", repoID, env)
 	return s.postVariable(ctx, url, variable)
