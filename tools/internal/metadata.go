@@ -19,6 +19,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// 2VAUTth52q0Cu0X13HMPsyL7Fjf_4y9ZtP6ZcXbySi5q5FRsW
 type OperationDesc struct {
 	Method           string `yaml:"method,omitempty" json:"method,omitempty"`
 	EndpointURL      string `yaml:"endpoint_url,omitempty" json:"endpoint_url,omitempty"`

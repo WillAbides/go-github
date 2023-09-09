@@ -1,5 +1,13 @@
+
 on:
-  push: { }
+  push: {}
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
 
 name: tests
 env:
@@ -22,6 +30,10 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
+      # Enable tmate debugging of manually-triggered workflows if the input option was provided
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
       - uses: WillAbides/setup-go-faster@v1
         id: setup-go
         with:
