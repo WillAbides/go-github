@@ -38,6 +38,9 @@ jobs:
     - name: build metadata
       run: go -C tools build -o "/tmp/metadata" ./cmd/metadata
 
+    - name: update-urls
+      run: /tmp/metadata -update-urls
+
 #    - name: Ensure go generate produces a zero diff
 #      shell: bash
 #      run: go generate -x ./... && git diff --exit-code; code=$?; git checkout -- .; (exit $code)
