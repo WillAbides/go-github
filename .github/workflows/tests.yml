@@ -25,6 +25,7 @@ jobs:
       id: setup-go
       with:
         go-version: ${{ matrix.go-version }}
+        ignore-local: true
     - uses: actions/checkout@v4
 
     - uses: actions/cache@v3
@@ -32,7 +33,7 @@ jobs:
         path: |
           ${{ steps.setup-go.outputs.GOCACHE }}
           ${{ steps.setup-go.outputs.GOMODCACHE }}
-        key: ${{ runner.os }}-go-debug-
+        key: ${{ runner.os }}-go-debug2
 
     - name: build metadata
       run: go -C tools build -o "/tmp/metadata" ./cmd/metadata
