@@ -1,7 +1,3 @@
-concurrency:
-  group: ${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 on:
   push: {}
 
@@ -39,7 +35,7 @@ jobs:
       run: go -C tools build -o "/tmp/metadata" ./cmd/metadata
 
     - name: update-urls
-      run: /tmp/metadata --update-urls
+      run: /tmp/metadata update-urls
 
 #    - name: Ensure go generate produces a zero diff
 #      shell: bash
