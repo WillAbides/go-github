@@ -37,6 +37,7 @@ jobs:
 
       - run: 'go -C tools build -o "${{ runner.temp }}"/metadata ./cmd/metadata'
       - run: '"${{ runner.temp }}"/metadata update-urls'
+      - run: git diff
 
 #    - name: Ensure go generate produces a zero diff
 #      shell: bash
