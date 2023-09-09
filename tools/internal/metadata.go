@@ -288,7 +288,7 @@ func UpdateDocLinks(meta *Metadata, dir string) error {
 
 // updateDocsLinksInFile updates in the code comments in content with doc urls from metadata.
 func updateDocsLinksInFile(metadata *Metadata, content []byte) ([]byte, error) {
-	useCrlf := strings.Contains(string(content), "\r\n")
+	useCrlf := bytes.Contains(content, []byte("\r\n"))
 	df, err := decorator.Parse(content)
 	if err != nil {
 		return nil, err
@@ -358,8 +358,27 @@ func updateDocsLinksInFile(metadata *Metadata, content []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	out := buf.Bytes()
 	if useCrlf {
-		return bytes.ReplaceAll(buf.Bytes(), []byte{'\n'}, []byte("\r\n")), nil
+		out = convertCrlf(out)
 	}
-	return buf.Bytes(), nil
+	return out, nil
+}
+
+// convertCrlf adds \r before \n unless it's already there.
+func convertCrlf(in []byte) []byte {
+	out := make([]byte, 0, len(in))
+	if len(in) == 0 {
+		return in
+	}
+	if in[0] == '\n' {
+		out = append(out, '\r')
+	}
+	for i := 1; i < len(in); i++ {
+		if in[i] == '\n' && in[i-1] != '\r' {
+			out = append(out, '\r')
+		}
+		out = append(out, in[i])
+	}
+	return out
 }
