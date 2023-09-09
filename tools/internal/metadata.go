@@ -288,7 +288,9 @@ func UpdateDocLinks(meta *Metadata, dir string) error {
 
 // updateDocsLinksInFile updates in the code comments in content with doc urls from metadata.
 func updateDocsLinksInFile(metadata *Metadata, content []byte) ([]byte, error) {
-	useCrlf := strings.Contains(string(content), "\r\n")
+	useCrlf := bytes.Contains(content, []byte("\r\n"))
+	bytes.ReplaceAll(content, []byte("\r\n"), []byte{'\n'})
+
 	df, err := decorator.Parse(content)
 	if err != nil {
 		return nil, err
