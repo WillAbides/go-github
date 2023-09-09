@@ -1,5 +1,5 @@
 on:
-  push: {}
+  push: { }
 
 name: tests
 env:
@@ -8,34 +8,35 @@ env:
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   test:
     strategy:
       matrix:
-        go-version: [1.x]
-        platform: [ubuntu-latest, windows-latest]
+        go-version: [ 1.x ]
+        platform: [ ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.platform }}
 
     steps:
-    - uses: WillAbides/setup-go-faster@v1
-      id: setup-go
-      with:
-        go-version: ${{ matrix.go-version }}
-        ignore-local: true
-    - uses: actions/checkout@v4
+      - uses: WillAbides/setup-go-faster@v1
+        id: setup-go
+        with:
+          go-version: ${{ matrix.go-version }}
+          ignore-local: true
+      - uses: actions/checkout@v4
 
-    - uses: actions/cache@v3
-      with:
-        path: |
-          ${{ steps.setup-go.outputs.GOCACHE }}
-          ${{ steps.setup-go.outputs.GOMODCACHE }}
-        key: ${{ runner.os }}-go-debug2
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ${{ steps.setup-go.outputs.GOCACHE }}
+            ${{ steps.setup-go.outputs.GOMODCACHE }}
+          key: ${{ runner.os }}-go-debug2
 
-    - name: build metadata
-      run: go -C tools build -o "/tmp/metadata" ./cmd/metadata
-
-    - name: update-urls
-      run: /tmp/metadata update-urls
+      - run: go -C tools build -o "$RUNNER_TEMP"/metadata ./cmd/metadata
+      - run: "$RUNNER_TEMP"/metadata update-urls
 
 #    - name: Ensure go generate produces a zero diff
 #      shell: bash
