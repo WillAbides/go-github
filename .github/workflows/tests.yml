@@ -37,11 +37,15 @@ jobs:
 
       - run: 'go -C tools build -o "${{ runner.temp }}"/metadata ./cmd/metadata'
       - run: '"${{ runner.temp }}"/metadata update-urls'
+
+#      - name: git diff
+#        run: |
+#          git -c user.name='bot' -c user.email='bot@localhost' commit -am 'tmp commit' --allow-empty
+#          git diff HEAD^
+#          git reset HEAD^
+
       - name: git diff
-        run: |
-          git -c user.name='bot' -c user.email='bot@localhost' commit -am 'tmp commit' --allow-empty 
-          git diff HEAD^
-          git reset HEAD^
+        run: git diff --exit-code
 
 #    - name: Ensure go generate produces a zero diff
 #      shell: bash
