@@ -13,8 +13,6 @@ import (
 )
 
 // ArtifactWorkflowRun represents a GitHub artifact's workflow run.
-//
-// GitHub API docs: https://docs.github.com/en/rest/actions/artifacts
 type ArtifactWorkflowRun struct {
 	ID               *int64  `json:"id,omitempty"`
 	RepositoryID     *int64  `json:"repository_id,omitempty"`
