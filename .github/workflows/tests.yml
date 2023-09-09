@@ -39,7 +39,7 @@ jobs:
       - run: '"${{ runner.temp }}"/metadata update-urls'
       - name: git diff
         run: |
-          git commit -am 'tmp commit'
+          git -c user.name='bot' -c user.email='bot@localhost' commit -am 'tmp commit'
           git diff HEAD^
           git reset HEAD^
 
