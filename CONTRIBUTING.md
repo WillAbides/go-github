@@ -53,25 +53,19 @@ are more sensitive, emailed to <opensource@google.com>.
      are invaluable tools for seeing which parts of your code aren't being
      exercised by your tests.
 
-  5. Please run:
-     * `go generate github.com/google/go-github/...`
+5. Please run:
+   `go generate github.com/google/go-github/...` to update or generate certain
+   files. The resulting changes should be included in your pull request.
 
-     to update or generate certain files. The resulting changes should be
-     included in your pull request.
+   `go test github.com/google/go-github/...` to run tests inside your code. This
+   will help you spot places where code might be faulty before committing.
 
-     * `go test github.com/google/go-github/...`
-     
-     to run tests inside your code. This will help you spot places where code
-     might be faulty before committing.
+   `go vet github.com/google/go-github/...` to check linting and styling over
+   your code, keeping the project consistent formatting-wise.
 
-     * `go vet github.com/google/go-github/...`
-     
-     to check linting and styling over your code, keeping the project consistent
-     formatting-wise.
-
-     In any case, it is always a good idea to read [official Go documentation][]
-     when working on this project, as the definition of tools and commands of
-     the Go programming language is described in further detail there.
+   In any case, it is always a good idea to read [official Go documentation][]
+   when working on this project, as the definition of tools and commands of the
+   Go programming language is described in further detail there.
 
   6. Do your best to have [well-formed commit messages][] for each change.
      This provides consistency throughout the project, and ensures that commit
