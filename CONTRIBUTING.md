@@ -54,15 +54,16 @@ are more sensitive, emailed to <opensource@google.com>.
      exercised by your tests.
 
   5. Please run:
-     `go generate github.com/google/go-github/...` to update or generate certain
+     `go generate ./...` to update or generate certain
      files. The resulting changes should be included in your pull request.
 
-     `go test github.com/google/go-github/...` to run tests inside your code.
+     `go test ./...` to run tests inside your code.
      This will help you spot places where code might be faulty before
      committing.
 
-     `go vet github.com/google/go-github/...` to check linting and styling over
-     your code, keeping the project consistent formatting-wise.
+     `go run github.com/golangci/golangci-lint/cmd/golangci-lint@latest run` to
+     check linting and styling over your code, keeping the project consistent
+     formatting-wise.
 
      In any case, it is always a good idea to read [official Go documentation][]
      when working on this project, as the definition of tools and commands of
