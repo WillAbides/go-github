@@ -41,6 +41,8 @@ jobs:
       with:
         go-version: ${{ matrix.go-version }}
     - uses: actions/checkout@v4
+    - run: |
+        echo "::add-matcher::.github/go-matcher.json"
 
     # Get values for cache paths to be used in later steps
     - id: cache-paths
@@ -66,10 +68,6 @@ jobs:
 
     - name: Run go test
       if: ${{ !matrix.update-coverage }}
-      run: scripts/test
-
-    - name: Run go test with coverage
-      if: ${{ matrix.update-coverage }}
       run: scripts/test ${{ env.TEST_ARGS }}
 
     - name: Ensure integration tests build
