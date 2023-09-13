@@ -13,6 +13,7 @@ on:
 name: tests
 env:
   GO111MODULE: on
+  TEST_ARGS: -race -covermode atomic -coverprofile coverage.txt ./...
 
 permissions:
   contents: read
@@ -57,8 +58,19 @@ jobs:
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
         restore-keys: ${{ runner.os }}-go-
 
+    - name: Add -fullpath
+      if: matrix.go-version == '1.x'
+      shell: bash
+      run: |
+          echo "TEST_ARGS=-fullpath $TEST_ARGS" >> $GITHUB_ENV
+
     - name: Run go test
-      run: scripts/test -fullpath -race -covermode atomic -coverprofile coverage.txt ./...
+      if: ${{ !matrix.update-coverage }}
+      run: scripts/test
+
+    - name: Run go test with coverage
+      if: ${{ matrix.update-coverage }}
+      run: scripts/test ${{ env.TEST_ARGS }}
 
     - name: Ensure integration tests build
       # don't actually run tests since they hit live GitHub API
