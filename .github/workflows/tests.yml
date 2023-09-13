@@ -67,7 +67,6 @@ jobs:
           echo "TEST_ARGS=-fullpath $TEST_ARGS" >> $GITHUB_ENV
 
     - name: Run go test
-      if: ${{ !matrix.update-coverage }}
       run: scripts/test ${{ env.TEST_ARGS }}
 
     - name: Ensure integration tests build
