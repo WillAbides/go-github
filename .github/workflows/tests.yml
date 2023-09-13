@@ -58,9 +58,7 @@ jobs:
         restore-keys: ${{ runner.os }}-go-
 
     - name: Run go test
-      env:
-        COVERPROFILE: coverage.txt
-      run: scripts/test
+      run: scripts/test -fullpath -race -covermode atomic -coverprofile coverage.txt ./...
 
     - name: Ensure integration tests build
       # don't actually run tests since they hit live GitHub API
