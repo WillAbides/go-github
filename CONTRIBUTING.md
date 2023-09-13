@@ -37,45 +37,38 @@ are more sensitive, emailed to <opensource@google.com>.
      issue that you are planning to work on that bug or feature so that it can
      be assigned to you.
 
-  1. Follow the normal process of [forking][] the project, and setup a new
+  2. Follow the normal process of [forking][] the project, and setup a new
      branch to work in. It's important that each group of changes be done in
      separate branches in order to ensure that a pull request only includes the
      commits related to that bug or feature.
 
-  1. Go makes it very simple to ensure properly formatted code, so always run
-     `go fmt` on your code before committing it. You should also run
-     [go vet][] over your code. this will help you find common style issues
-     within your code and will keep styling consistent within the project.
-
-  1. Any significant changes should almost always be accompanied by tests. The
+  3. Any significant changes should almost always be accompanied by tests. The
      project already has good test coverage, so look at some of the existing
      tests if you're unsure how to go about it. [gocov][] and [gocov-html][]
      are invaluable tools for seeing which parts of your code aren't being
      exercised by your tests.
 
-  1. Please run:
-     * `go generate github.com/google/go-github/...`
-     * `go test github.com/google/go-github/...`
-     * `go vet github.com/google/go-github/...`
+  4. Please run:
+     `go generate ./...` to update or generate certain
+     files. The resulting changes should be included in your pull request.
 
-   The `go generate ./...` command will update or generate certain files, and the 
-   resulting changes should be included in your pull request.
+     `go test ./...` to run tests inside your code.
+     This will help you spot places where code might be faulty before
+     committing.
 
-   The `go test ./...` command will run tests inside your code. This will help you
-   spot places where code might be faulty before committing.
+     `go run github.com/golangci/golangci-lint/cmd/golangci-lint@latest run` to
+     check linting and styling over your code, keeping the project consistent
+     formatting-wise.
 
-   And finally, the `go vet ./...` command will check linting and styling over your 
-   code, keeping the project consistent formatting-wise.
+     In any case, it is always a good idea to read [official Go documentation][]
+     when working on this project, as the definition of tools and commands of
+     the Go programming language is described in further detail there.
 
-   In any case, it is always a good idea to read [official Go documentation][] when working 
-   on this project, as the definition of tools and commands of the Go programming 
-   language is described in further detail there.
-
-  1. Do your best to have [well-formed commit messages][] for each change.
+  5. Do your best to have [well-formed commit messages][] for each change.
      This provides consistency throughout the project, and ensures that commit
      messages are able to be formatted properly by various git tools.
 
-  1. Finally, push the commits to your fork and submit a [pull request][].
+  6. Finally, push the commits to your fork and submit a [pull request][].
      Before pushing commits, it is highly advised to check for generated files
      that were either created or modified for the sake of your commit. Running
      `go generate -x ./...` should return a log of modified generated files that should
@@ -84,9 +77,23 @@ are more sensitive, emailed to <opensource@google.com>.
      it more difficult for reviewers to see what has changed since the last
      code review.
 
+## Scripts ##
+
+There are a number of scripts in the `scripts` directory to help with common
+development tasks.
+
+**scripts/fmt** formats all go code in the repository.
+
+**scripts/generate** runs code generators and `go mod tidy` on all modules. With
+`--check` it checks that the generated files are current.
+
+**scripts/lint** runs linters on the project and checks generated files are
+current.
+
+**scripts/test** runs tests on all modules.
+
 [official Go documentation]: https://pkg.go.dev/std
 [forking]: https://help.github.com/articles/fork-a-repo
-[go vet]: https://pkg.go.dev/cmd/vet
 [gocov]: https://github.com/axw/gocov
 [gocov-html]: https://github.com/matm/gocov-html
 [well-formed commit messages]: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html

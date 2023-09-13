@@ -11,6 +11,10 @@ import (
 	"testing"
 )
 
+func TestFail(t *testing.T) {
+	t.Errorf("This test should fail")
+}
+
 func newReactionsPipeline() *pipelineSetup {
 	return &pipelineSetup{
 		baseURL:              "https://docs.github.com/en/rest/reactions/",

@@ -1,6 +1,6 @@
 #!/bin/sh
-#/ scripts/test runs tests on each go module in . When COVERPROFILE is set, it
-#/ collects coverage information in the file named by COVERPROFILE.
+#/ scripts/test runs tests on each go module in go-github. Arguments are passed to each go test invocation.
+#/ "-race -covermode atomic ./..." is used when no arguments are given.
 
 set -e
 
@@ -10,16 +10,26 @@ MOD_DIRS="$(
   git ls-files '*go.mod' |
     xargs dirname |
     grep -v newreposecretwithlibsodium |
-    sort
+    sort -r
 )"
 
+# when there are no args
+if [ "$#" = "0" ]; then
+  set -- -race -covermode atomic ./...
+fi
+
+echo "$@"
+
 for dir in $MOD_DIRS; do
+  set +e
   (
     cd "$dir"
-    if [ -n "$COVERPROFILE" ]; then
-      go test -race -covermode atomic -coverprofile "$COVERPROFILE" ./...
-      continue
-    fi
-    go test -race -covermode atomic ./...
+    go test "$@"
   )
+  [ $? -eq 0 ] || FAILED=1
+  set -e
 done
+
+if [ -n "$FAILED" ]; then
+  exit 1
+fi
