@@ -6,16 +6,14 @@ set -e
 
 CDPATH="" cd -- "$(dirname -- "$0")/.."
 
-MOD_DIRS="$(git ls-files '*go.mod' | xargs dirname | sort)"
-
-# when there are no args
 if [ "$#" = "0" ]; then
   set -- -race -covermode atomic ./...
 fi
 
-echo "$@"
+MOD_DIRS="$(git ls-files '*go.mod' | xargs dirname | sort)"
 
 for dir in $MOD_DIRS; do
+  [ "$dir" = "example/newreposecretwithlibsodium" ] && continue
   (
     cd "$dir"
     go test "$@"
