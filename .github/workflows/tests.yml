@@ -42,10 +42,15 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Install libsodium
+      if: matrix.platform == 'ubuntu-latest'
+      run: sudo apt-get install -y libsodium-dev
       shell: bash
+
+    - name: Install libsodium on Windows
+      if: matrix.platform == 'windows-latest'
       run: |
-        [ "${{ runner.os }}" = "Linux" ] && sudo apt-get install -y libsodium-dev
-        [ "${{ runner.os }}" = "Windows" ] && choco install minisign
+        choco install minisign
+      shell: powershell
 
     # Get values for cache paths to be used in later steps
     - id: cache-paths
