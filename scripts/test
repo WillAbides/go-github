@@ -21,13 +21,10 @@ fi
 echo "$@"
 
 for dir in $MOD_DIRS; do
-  set +e
   (
     cd "$dir"
     go test "$@"
-  )
-  [ $? -eq 0 ] || FAILED=1
-  set -e
+  ) || FAILED=1
 done
 
 if [ -n "$FAILED" ]; then

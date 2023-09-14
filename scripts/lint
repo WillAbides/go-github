@@ -30,7 +30,6 @@ MOD_DIRS="$(
 
 for dir in $MOD_DIRS; do
   echo linting "$dir"
-  set +e
   (
     cd "$dir"
     # github actions output when running in an action
@@ -39,9 +38,7 @@ for dir in $MOD_DIRS; do
     else
       "$BIN"/golangci-lint run --path-prefix "$dir"
     fi
-  )
-  [ $? -eq 0 ] || FAILED=1
-  set -e
+  ) || FAILED=1
 done
 
 scripts/generate --check
