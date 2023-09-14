@@ -21,12 +21,7 @@ install_golangci_lint() {
 
 install_golangci_lint
 
-MOD_DIRS="$(
-  git ls-files '*go.mod' |
-    xargs dirname |
-    grep -v newreposecretwithlibsodium |
-    sort
-)"
+MOD_DIRS="$(git ls-files '*go.mod' | xargs dirname | sort)"
 
 for dir in $MOD_DIRS; do
   echo linting "$dir"

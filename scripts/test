@@ -6,12 +6,7 @@ set -e
 
 CDPATH="" cd -- "$(dirname -- "$0")/.."
 
-MOD_DIRS="$(
-  git ls-files '*go.mod' |
-    xargs dirname |
-    grep -v newreposecretwithlibsodium |
-    sort -r
-)"
+MOD_DIRS="$(git ls-files '*go.mod' | xargs dirname | sort)"
 
 # when there are no args
 if [ "$#" = "0" ]; then
