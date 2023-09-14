@@ -49,7 +49,7 @@ jobs:
     - name: Install libsodium on Windows
       if: matrix.platform == 'windows-latest'
       run: |
-        choco install libsodium
+        choco install minisign
       shell: powershell
 
     # Get values for cache paths to be used in later steps
