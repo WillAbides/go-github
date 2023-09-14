@@ -51,17 +51,6 @@ jobs:
           choco install minisign
         fi
 
-#    - name: Install libsodium
-#      if: matrix.platform == 'ubuntu-latest'
-#      run: sudo apt-get install -y libsodium-dev
-#      shell: bash
-#
-#    - name: Install libsodium on Windows
-#      if: matrix.platform == 'windows-latest'
-#      run: |
-#        choco install minisign
-#      shell: powershell
-
     # Get values for cache paths to be used in later steps
     - id: cache-paths
       run: |
