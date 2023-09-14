@@ -67,8 +67,9 @@ jobs:
         path: |
           ${{ steps.cache-paths.outputs.go-cache }}
           ${{ steps.cache-paths.outputs.go-mod-cache }}
-        key: ${{ steps.cache-paths.outputs.cache-prefix }}${{ hashFiles('**/go.sum') }}-${{ hashFiles('**/*.go') }}
+        key: ${{ steps.cache-paths.outputs.cache-prefix }}${{ hashFiles('**/go.sum') }}-${{ hashFiles('**/*.go') }}-${{ hashFiles('**/*') }}
         restore-keys: |
+          ${{ steps.cache-paths.outputs.cache-prefix }}${{ hashFiles('**/go.sum') }}-${{ hashFiles('**/*.go') }}-
           ${{ steps.cache-paths.outputs.cache-prefix }}${{ hashFiles('**/go.sum') }}-
           ${{ steps.cache-paths.outputs.cache-prefix }}
 
