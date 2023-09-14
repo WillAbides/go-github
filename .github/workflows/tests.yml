@@ -73,7 +73,12 @@ jobs:
           ${{ steps.cache-paths.outputs.cache-prefix }}
 
     - name: Run go test
-      run: scripts/test -race -covermode atomic -coverprofile coverage.txt ./...
+      run: |
+        if [ -n "${{ matrix.update-coverage }} ; then
+          scripts/test -race -covermode atomic -coverprofile coverage.txt ./...
+          exit
+        fi
+        scripts/test -race -covermode atomic ./...
 
     - name: Ensure integration tests build
       # don't actually run tests since they hit live GitHub API
