@@ -16,6 +16,7 @@ for dir in $MOD_DIRS; do
   if echo "$dir" | grep -q "^example"; then
     continue
   fi
+  echo "**** TESTING $dir"
   (
     cd "$dir"
     go test "$@"
