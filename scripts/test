@@ -13,6 +13,9 @@ fi
 MOD_DIRS="$(git ls-files '*go.mod' | xargs dirname | sort)"
 
 for dir in $MOD_DIRS; do
+  if echo "$dir" | grep -q "^example"; then
+    continue
+  fi
   (
     cd "$dir"
     go test "$@"
