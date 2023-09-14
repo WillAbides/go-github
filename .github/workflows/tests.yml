@@ -45,15 +45,6 @@ jobs:
         go-version: ${{ matrix.go-version }}
     - uses: actions/checkout@v4
 
-    - name: Install libsodium
-      run: |
-        if [ "${{ runner.os }}" = "Linux" ]; then
-          sudo apt-get install -y libsodium-dev
-        fi
-        if [ "${{ runner.os }}" = "Windows" ]; then
-          choco install minisign
-        fi
-
     # Get values for cache paths to be used in later steps
     - id: cache-paths
       run: |
