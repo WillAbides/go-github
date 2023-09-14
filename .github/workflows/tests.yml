@@ -13,7 +13,6 @@ on:
 name: tests
 env:
   GO111MODULE: on
-  TEST_ARGS: -race -covermode atomic -coverprofile coverage.txt ./...
 
 permissions:
   contents: read
@@ -41,8 +40,6 @@ jobs:
       with:
         go-version: ${{ matrix.go-version }}
     - uses: actions/checkout@v4
-    - run: |
-        echo "::add-matcher::.github/go-matcher.json"
 
     # Get values for cache paths to be used in later steps
     - id: cache-paths
@@ -60,14 +57,8 @@ jobs:
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
         restore-keys: ${{ runner.os }}-go-
 
-    - name: Add -fullpath
-      if: matrix.go-version == '1.x'
-      shell: bash
-      run: |
-          echo "TEST_ARGS=-fullpath $TEST_ARGS" >> $GITHUB_ENV
-
     - name: Run go test
-      run: scripts/test ${{ env.TEST_ARGS }}
+      run: scripts/test -race -covermode atomic -coverprofile coverage.txt ./...
 
     - name: Ensure integration tests build
       # don't actually run tests since they hit live GitHub API

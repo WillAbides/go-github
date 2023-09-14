@@ -21,8 +21,6 @@ func init() {
 	http.HandleFunc("/", handler)
 }
 
-
-
 func handler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
