@@ -77,9 +77,9 @@ jobs:
       if: ${{ matrix.update-coverage }}
       uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d #v3.1.4
 
-    - name: Ensure go generate produces a zero diff for update-urls
-      shell: bash
-      run: cd update-urls && go generate -x ./... && git diff --exit-code; code=$?; git checkout -- .; (exit $code)
+    - name: Run go test for tools
+      run: cd tools && go test -v -race ./...
 
-    - name: Run go test for update-urls
-      run: cd update-urls && go test -v -race ./...
+    - name: Validate metadata.yaml
+      working-directory: tools
+      run: go run ./cmd/metadata validate

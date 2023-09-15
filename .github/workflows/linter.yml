@@ -18,7 +18,7 @@ jobs:
           - ""
           - example
           - scrape
-          - update-urls
+          - tools
     runs-on: ${{ matrix.platform }}
 
     steps:
