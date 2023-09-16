@@ -7,10 +7,12 @@ import (
 	"go/token"
 	"log"
 	"os"
+	"sort"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"golang.org/x/exp/maps"
 )
 
 // realAstFileIterator implements astFileIterator.
@@ -91,13 +93,13 @@ func TestPP(t *testing.T) {
 			count++
 		}
 
-		//if ep.helperMethod == "" {
-		//	continue
-		//}
+		if ep.helperMethod == "" {
+			continue
+		}
 		//fmt.Println(s, ep.helperMethod, ep.urlFormats)
 
-		//helperMethod := strings.Split(s, ".")[0] + "." + ep.helperMethod
-		//helpers[helperMethod] = append(helpers[helperMethod], s)
+		helperMethod := strings.Split(s, ".")[0] + "." + ep.helperMethod
+		helpers[helperMethod] = append(helpers[helperMethod], s)
 		//
 		//if helperMethod == "ReactionsService.deleteReaction" {
 		//	fmt.Println(s, ep.httpMethod, ep.urlFormats)
@@ -117,20 +119,19 @@ func TestPP(t *testing.T) {
 		//}
 		//fmt.Println(ep.endpointName)
 	}
-	fmt.Println(count)
 	fmt.Println(len(helpers))
-	//helperNames := maps.Keys(helpers)
-	//sort.Strings(helperNames)
-	//for _, helperName := range helperNames {
-	//	callers := helpers[helperName]
-	//	//if len(callers) > 1 {
-	//	//	continue
-	//	//}
-	//	fmt.Println(helperName)
-	//	for _, endpointName := range callers {
-	//		fmt.Println("  ", endpointName)
-	//	}
-	//}
+	helperNames := maps.Keys(helpers)
+	sort.Strings(helperNames)
+	for _, helperName := range helperNames {
+		callers := helpers[helperName]
+		//if len(callers) > 1 {
+		//	continue
+		//}
+		fmt.Println(helperName)
+		for _, endpointName := range callers {
+			fmt.Println("  ", endpointName)
+		}
+	}
 	//ep := endpoints["AdminService.CreateOrg"]
 	//fmt.Println(ep.urlFormats)
 }

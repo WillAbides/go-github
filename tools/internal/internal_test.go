@@ -26,8 +26,18 @@ func TestFoo(t *testing.T) {
 	dir := extractTxtar(t, "testdata/test1.txtar")
 	methods, err := getServiceMethods(dir)
 	require.NoError(t, err)
-	require.Equal(t, 1, len(methods))
-	method := methods[0]
-	require.Equal(t, "GitService.GetBlob", method.name())
-	require.Equal(t, "GET", method.httpMethod)
+	require.Equal(t, 2, len(methods))
+	methodsMap := map[string]*serviceMethod{}
+	for _, m := range methods {
+		methodsMap[m.name()] = m
+	}
+	getBlob := methodsMap["GitService.GetBlob"]
+	require.NotNil(t, getBlob)
+	require.Equal(t, "GET", getBlob.httpMethod)
+	//"CreateWorkflowDispatchEventByFileName"
+	create := methodsMap["ActionsService.CreateWorkflowDispatchEventByFileName"]
+	require.NotNil(t, create)
+	require.Equal(t, "ActionsService.createWorkflowDispatchEvent", create.helper)
+	//require.Equal(t, "POST", create.httpMethod)
+
 }
