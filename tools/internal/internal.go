@@ -72,6 +72,7 @@ type serviceMethod struct {
 	receiverName string
 	methodName   string
 	filename     string
+	httpMethod   string
 }
 
 func (m *serviceMethod) name() string {
@@ -100,8 +101,7 @@ func getServiceMethods(dir string) ([]*serviceMethod, error) {
 	return serviceMethods, nil
 }
 
-// getServiceMethodsFromFile is like getServiceMethodsFromFileDST, but uses
-// the AST package instead of the DST package.
+// getServiceMethodsFromFile returns the service methods in filename.
 func getServiceMethodsFromFile(filename string) ([]*serviceMethod, error) {
 	if !strings.HasSuffix(filename, ".go") ||
 		strings.HasSuffix(filename, "_test.go") {
@@ -120,43 +120,50 @@ func getServiceMethodsFromFile(filename string) ([]*serviceMethod, error) {
 	}
 	var serviceMethods []*serviceMethod
 	ast.Inspect(f, func(n ast.Node) bool {
-		decl, ok := n.(*ast.FuncDecl)
-		if !ok {
-			return true
+		sm := serviceMethodFromNode(filename, n)
+		if sm != nil {
+			serviceMethods = append(serviceMethods, sm)
 		}
-		if decl.Recv == nil || len(decl.Recv.List) != 1 {
-			return true
-		}
-		se, ok := decl.Recv.List[0].Type.(*ast.StarExpr)
-		if !ok {
-			return true
-		}
-		id, ok := se.X.(*ast.Ident)
-		if !ok {
-			return true
-		}
-		receiverName := id.Name
-		methodName := decl.Name.Name
-
-		// We only want exported methods on exported types.
-		// The receiver must either end with Service or be named Client.
-		// The exception is github.go, which contains Client methods we want to skip.
-
-		if !ast.IsExported(methodName) || !ast.IsExported(receiverName) {
-			return true
-		}
-		if receiverName != "Client" && !strings.HasSuffix(receiverName, "Service") {
-			return true
-		}
-		if receiverName == "Client" && filepath.Base(filename) == "github.go" {
-			return true
-		}
-		serviceMethods = append(serviceMethods, &serviceMethod{
-			receiverName: receiverName,
-			methodName:   methodName,
-			filename:     filename,
-		})
 		return true
 	})
 	return serviceMethods, nil
+}
+
+func serviceMethodFromNode(filename string, n ast.Node) *serviceMethod {
+	decl, ok := n.(*ast.FuncDecl)
+	if !ok {
+		return nil
+	}
+	if decl.Recv == nil || len(decl.Recv.List) != 1 {
+		return nil
+	}
+	se, ok := decl.Recv.List[0].Type.(*ast.StarExpr)
+	if !ok {
+		return nil
+	}
+	id, ok := se.X.(*ast.Ident)
+	if !ok {
+		return nil
+	}
+	receiverName := id.Name
+	methodName := decl.Name.Name
+
+	// We only want exported methods on exported types.
+	// The receiver must either end with Service or be named Client.
+	// The exception is github.go, which contains Client methods we want to skip.
+
+	if !ast.IsExported(methodName) || !ast.IsExported(receiverName) {
+		return nil
+	}
+	if receiverName != "Client" && !strings.HasSuffix(receiverName, "Service") {
+		return nil
+	}
+	if receiverName == "Client" && filepath.Base(filename) == "github.go" {
+		return nil
+	}
+	return &serviceMethod{
+		receiverName: receiverName,
+		methodName:   methodName,
+		filename:     filename,
+	}
 }

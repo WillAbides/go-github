@@ -569,15 +569,7 @@ func processAssignStmt(receiverName string, stmt *ast.AssignStmt) (httpMethod, u
 }
 
 func resolveHelpers(endpoints endpointsMap) error {
-	logf("Step 3 - resolving helpers and cache docs ...")
-	usedHelpers := map[string]bool{}
-	endpointsByFilename := map[string][]*Endpoint{}
 	for k, v := range endpoints {
-		if _, ok := endpointsByFilename[v.filename]; !ok {
-			endpointsByFilename[v.filename] = []*Endpoint{}
-		}
-		endpointsByFilename[v.filename] = append(endpointsByFilename[v.filename], v)
-
 		if v.httpMethod == "" && v.helperMethod != "" {
 			fullName := fmt.Sprintf("%v.%v", v.serviceName, v.helperMethod)
 			hm, ok := endpoints[fullName]
@@ -588,9 +580,7 @@ func resolveHelpers(endpoints endpointsMap) error {
 				return fmt.Errorf("helper method %q for %q has empty httpMethod: %#v", fullName, k, hm)
 			}
 			v.httpMethod = hm.httpMethod
-			usedHelpers[fullName] = true
 		}
 	}
-
 	return nil
 }

@@ -81,15 +81,21 @@ func TestPP(t *testing.T) {
 		//if !ast.IsExported(ep.endpointName) {
 		//	continue
 		//}
-		//if ep.httpMethod != "" {
+		if ast.IsExported(ep.endpointName) {
+			if len(ep.urlFormats) == 0 {
+				fmt.Println(s, "no url formats")
+			}
+			if ep.httpMethod == "" {
+				fmt.Println(s, "no http method")
+			}
+			count++
+		}
+
+		//if ep.helperMethod == "" {
 		//	continue
 		//}
+		//fmt.Println(s, ep.helperMethod, ep.urlFormats)
 
-		if ep.helperMethod == "" {
-			continue
-		}
-		fmt.Println(s, ep.helperMethod, ep.urlFormats)
-		count++
 		//helperMethod := strings.Split(s, ".")[0] + "." + ep.helperMethod
 		//helpers[helperMethod] = append(helpers[helperMethod], s)
 		//
