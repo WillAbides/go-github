@@ -13,7 +13,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-
 // realAstFileIterator implements astFileIterator.
 type realAstFileIterator struct {
 	fset   *token.FileSet
@@ -60,7 +59,6 @@ func (rafi *realAstFileIterator) Next() *filenameAstFilePair {
 	return nil
 }
 
-
 func TestPP(t *testing.T) {
 	fset := token.NewFileSet()
 	sourceFilter := func(fi os.FileInfo) bool {
@@ -74,10 +72,59 @@ func TestPP(t *testing.T) {
 	iter := &realAstFileIterator{fset: fset, pkgs: pkgs}
 	endpoints, err := findAllServiceEndpoints(iter, services)
 	require.NoError(t, err)
+	err = resolveHelpers(endpoints)
+	require.NoError(t, err)
+	helpers := map[string][]string{}
+	count := 0
 	for s := range endpoints {
 		ep := endpoints[s]
-		if len(ep.urlFormats) == 0 {
-			fmt.Println("No urlFormats for", s)
+		//if !ast.IsExported(ep.endpointName) {
+		//	continue
+		//}
+		//if ep.httpMethod != "" {
+		//	continue
+		//}
+
+		if ep.helperMethod == "" {
+			continue
 		}
+		fmt.Println(s, ep.helperMethod, ep.urlFormats)
+		count++
+		//helperMethod := strings.Split(s, ".")[0] + "." + ep.helperMethod
+		//helpers[helperMethod] = append(helpers[helperMethod], s)
+		//
+		//if helperMethod == "ReactionsService.deleteReaction" {
+		//	fmt.Println(s, ep.httpMethod, ep.urlFormats)
+		//}
+
+		//if ep.helperMethod != "" {
+		//	fmt.Println(s, ep.helperMethod)
+		//	count++
+		//}
+		//if len(ep.urlFormats) == 0 {
+		//	fmt.Println(s, ep.helperMethod)
+		//	count++
+		//}
+		//if strings.HasPrefix(s, "ActionsService.DownloadArtifact") {
+		//	fmt.Println(s, ep.urlFormats)
+		//
+		//}
+		//fmt.Println(ep.endpointName)
 	}
+	fmt.Println(count)
+	fmt.Println(len(helpers))
+	//helperNames := maps.Keys(helpers)
+	//sort.Strings(helperNames)
+	//for _, helperName := range helperNames {
+	//	callers := helpers[helperName]
+	//	//if len(callers) > 1 {
+	//	//	continue
+	//	//}
+	//	fmt.Println(helperName)
+	//	for _, endpointName := range callers {
+	//		fmt.Println("  ", endpointName)
+	//	}
+	//}
+	//ep := endpoints["AdminService.CreateOrg"]
+	//fmt.Println(ep.urlFormats)
 }

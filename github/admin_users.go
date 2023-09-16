@@ -46,7 +46,7 @@ func (s *AdminService) CreateUser(ctx context.Context, login, email string) (*Us
 //
 // GitHub API docs: https://docs.github.com/enterprise-server@3.10/rest/enterprise-admin/users#delete-a-user
 func (s *AdminService) DeleteUser(ctx context.Context, username string) (*Response, error) {
-	u := "admin/users/" + username
+	u := fmt.Sprintf("admin/users/%s", username)
 
 	req, err := s.client.NewRequest("DELETE", u, nil)
 	if err != nil {

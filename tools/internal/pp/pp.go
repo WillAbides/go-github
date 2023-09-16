@@ -6,7 +6,7 @@ import (
 	"go/ast"
 	"go/token"
 	"log"
-	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -24,46 +24,10 @@ var (
 	// skipMethods holds methods which are skipped because they do not have GitHub v3
 	// API URLs or are otherwise problematic in parsing, discovering, and/or fixing.
 	skipMethods = map[string]bool{
-		"ActionsService.DownloadArtifact":              true,
-		"AdminService.CreateOrg":                       true,
-		"AdminService.CreateUser":                      true,
-		"AdminService.CreateUserImpersonation":         true,
-		"AdminService.DeleteUserImpersonation":         true,
-		"AdminService.GetAdminStats":                   true,
-		"AdminService.RenameOrg":                       true,
-		"AdminService.RenameOrgByName":                 true,
-		"AdminService.UpdateTeamLDAPMapping":           true,
-		"AdminService.UpdateUserLDAPMapping":           true,
-		"AppsService.CreateAttachment":                 true,
-		"AppsService.FindRepositoryInstallationByID":   true,
-		"AuthorizationsService.CreateImpersonation":    true,
-		"AuthorizationsService.DeleteImpersonation":    true,
-		"IssueImportService.CheckStatus":               true,
-		"IssueImportService.CheckStatusSince":          true,
-		"IssueImportService.Create":                    true,
-		"MarketplaceService.marketplaceURI":            true,
-		"MigrationService.UserMigrationArchiveURL":     true,
-		"OrganizationsService.GetByID":                 true,
-		"RepositoriesService.CompareCommits":           true,
-		"RepositoriesService.CompareCommitsRaw":        true,
-		"RepositoriesService.DeletePreReceiveHook":     true,
 		"RepositoriesService.DownloadContents":         true,
 		"RepositoriesService.DownloadContentsWithMeta": true,
-		"RepositoriesService.GetArchiveLink":           true,
-		"RepositoriesService.GetByID":                  true,
-		"RepositoriesService.GetPreReceiveHook":        true,
-		"RepositoriesService.ListPreReceiveHooks":      true,
-		"RepositoriesService.UpdatePreReceiveHook":     true,
-		"SearchService.search":                         true,
-		"TeamsService.ListTeamMembersByID":             true,
-		"UsersService.DemoteSiteAdmin":                 true,
-		"UsersService.GetByID":                         true,
-		"UsersService.PromoteSiteAdmin":                true,
-		"UsersService.Suspend":                         true,
-		"UsersService.Unsuspend":                       true,
 		"RepositoriesService.Subscribe":                true,
 		"RepositoriesService.Unsubscribe":              true,
-		"RepositoriesService.createWebSubRequest":      true,
 	}
 )
 
@@ -271,11 +235,13 @@ func processAST(filename string, f *ast.File, services servicesMap, endpoints en
 				stdRefLines:        stdRefLines,
 				endpointComments:   endpointComments,
 			}
-			// ep.checkHTTPMethodOverride("")
 			endpoints[fullName] = ep
 			logf("endpoints[%q] = %#v", fullName, endpoints[fullName])
 			if ep.httpMethod == "" && (ep.helperMethod == "" || len(ep.urlFormats) == 0) {
-				return fmt.Errorf("filename=%q, endpoint=%q: could not find body info: %#v", filename, fullName, *ep)
+				// only error for exported methods
+				if ast.IsExported(endpointName) {
+					return fmt.Errorf("filename=%q, endpoint=%q: could not find body info: %#v", filename, fullName, *ep)
+				}
 			}
 		case *ast.GenDecl:
 		default:
@@ -320,6 +286,13 @@ func (b *bodyData) parseBody(body *ast.BlockStmt) error {
 				b.helperMethod = hlp
 			}
 			b.assignments = append(b.assignments, asgn...)
+
+			rawFormat, err := strconv.Unquote(uvn)
+			// we know it's a raw string literal if strconv.Unquote doesn't error
+			if err == nil {
+				b.urlFormats = append(b.urlFormats, rawFormat)
+			}
+
 			// logf("assignments=%#v", b.assignments)
 			if b.urlVarName == "" && uvn != "" {
 				b.urlVarName = uvn
@@ -365,24 +338,20 @@ func (b *bodyData) parseBody(body *ast.BlockStmt) error {
 							b.urlFormats = append(b.urlFormats, strings.Trim(args[1], `"`))
 							b.helperMethod = funcName
 							switch b.helperMethod {
-							case "deleteReaction":
-								b.httpMethod = "DELETE"
+							//case "deleteReaction":
+							//	b.httpMethod = "DELETE"
 							default:
 								logf("WARNING: helper method %q not found", b.helperMethod)
+								//fmt.Printf("WARNING: helper method %q not found\n", b.helperMethod)
 							}
 							logf("found urlFormat: %v and helper method: %v, httpMethod: %v", b.urlFormats[0], b.helperMethod, b.httpMethod)
+							//fmt.Printf("found urlFormat: %v and helper method: %v, httpMethod: %v\n", b.urlFormats[0], b.helperMethod, b.httpMethod)
 						} else {
 							for _, lr := range b.assignments {
 								if lr.lhs == args[1] { // Multiple matches are possible. Loop over all assignments.
 									b.urlVarName = args[1]
 									b.urlFormats = append(b.urlFormats, lr.rhs)
 									b.helperMethod = funcName
-									switch b.helperMethod {
-									case "deleteReaction":
-										b.httpMethod = "DELETE"
-									default:
-										logf("WARNING: helper method %q not found", b.helperMethod)
-									}
 									logf("found urlFormat: %v and helper method: %v, httpMethod: %v", lr.rhs, b.helperMethod, b.httpMethod)
 								}
 							}
@@ -453,28 +422,11 @@ func processCallExpr(expr *ast.CallExpr) (recv, funcName string, args []string) 
 			logf("processCallExpr: *ast.SelectorExpr: %#v", arg)
 			x, ok := arg.X.(*ast.Ident)
 			if ok { // special case
-				switch name := fmt.Sprintf("%v.%v", x.Name, arg.Sel.Name); name {
-				case "http.MethodGet":
-					args = append(args, http.MethodGet)
-				case "http.MethodHead":
-					args = append(args, http.MethodHead)
-				case "http.MethodPost":
-					args = append(args, http.MethodPost)
-				case "http.MethodPut":
-					args = append(args, http.MethodPut)
-				case "http.MethodPatch":
-					args = append(args, http.MethodPatch)
-				case "http.MethodDelete":
-					args = append(args, http.MethodDelete)
-				case "http.MethodConnect":
-					args = append(args, http.MethodConnect)
-				case "http.MethodOptions":
-					args = append(args, http.MethodOptions)
-				case "http.MethodTrace":
-					args = append(args, http.MethodTrace)
-				default:
-					args = append(args, name)
+				name := fmt.Sprintf("%v.%v", x.Name, arg.Sel.Name)
+				if strings.HasPrefix(name, "http.Method") {
+					name = strings.ToUpper(strings.TrimPrefix(name, "http.Method"))
 				}
+				args = append(args, name)
 			}
 		case *ast.StarExpr:
 			logf("processCallExpr: *ast.StarExpr: %#v", arg)
@@ -614,4 +566,31 @@ func processAssignStmt(receiverName string, stmt *ast.AssignStmt) (httpMethod, u
 	logf("urlVarName=%v, assignments=%#v", urlVarName, assignments)
 
 	return httpMethod, urlVarName, helperMethod, assignments
+}
+
+func resolveHelpers(endpoints endpointsMap) error {
+	logf("Step 3 - resolving helpers and cache docs ...")
+	usedHelpers := map[string]bool{}
+	endpointsByFilename := map[string][]*Endpoint{}
+	for k, v := range endpoints {
+		if _, ok := endpointsByFilename[v.filename]; !ok {
+			endpointsByFilename[v.filename] = []*Endpoint{}
+		}
+		endpointsByFilename[v.filename] = append(endpointsByFilename[v.filename], v)
+
+		if v.httpMethod == "" && v.helperMethod != "" {
+			fullName := fmt.Sprintf("%v.%v", v.serviceName, v.helperMethod)
+			hm, ok := endpoints[fullName]
+			if !ok {
+				return fmt.Errorf("unable to find helper method %q for %q", fullName, k)
+			}
+			if hm.httpMethod == "" {
+				return fmt.Errorf("helper method %q for %q has empty httpMethod: %#v", fullName, k, hm)
+			}
+			v.httpMethod = hm.httpMethod
+			usedHelpers[fullName] = true
+		}
+	}
+
+	return nil
 }
