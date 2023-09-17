@@ -10,6 +10,43 @@ import (
 	"golang.org/x/tools/txtar"
 )
 
+func TestPopulateMethodOperations(t *testing.T) {
+	var meta Metadata
+	err := LoadMetadataFile("../../metadata.yaml", &meta)
+	require.NoError(t, err)
+	methodOps := meta.MethodOperations
+	for _, op := range meta.Operations {
+		opID := op.Method() + " " + op.EndpointURL()
+		for _, goMethod := range op.GoMethods {
+			methodOps[goMethod] = append(methodOps[goMethod], opID)
+		}
+	}
+	err = meta.SaveFile("../../metadata.yaml")
+	require.NoError(t, err)
+}
+
+func TestDups(t *testing.T) {
+	var meta Metadata
+	err := LoadMetadataFile("../../metadata.yaml", &meta)
+	require.NoError(t, err)
+	normOps := map[string][]*Operation{}
+	for _, op := range meta.Operations {
+		verb := op.Method()
+		u := normalizedURL(op.EndpointURL())
+		opID := verb + " " + u
+		normOps[opID] = append(normOps[opID], op)
+	}
+	for opID, ops := range normOps {
+		if len(ops) > 1 {
+			fmt.Println(opID)
+			for _, op := range ops {
+				fmt.Println("  ", op.DocumentationURL())
+			}
+		}
+	}
+	fmt.Println(len(normOps))
+}
+
 func extractTxtar(t *testing.T, filename string) string {
 	t.Helper()
 	a, err := txtar.ParseFile(filepath.FromSlash(filename))
