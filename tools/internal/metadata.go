@@ -29,8 +29,6 @@ import (
 )
 
 type OperationDesc struct {
-	Method           string `yaml:"method,omitempty" json:"method,omitempty"`
-	EndpointURL      string `yaml:"endpoint_url,omitempty" json:"endpoint_url,omitempty"`
 	DocumentationURL string `yaml:"documentation_url,omitempty" json:"documentation_url,omitempty"`
 }
 
@@ -75,15 +73,6 @@ func (o *Operation) Plans() []string {
 	return plans
 }
 
-func (o *Operation) Verb() string {
-	return strings.Split(o.ID, " ")[0]
-}
-
-func (o *Operation) EndpointURL() string {
-	_, u, _ := strings.Cut(o.ID, " ")
-	return u
-}
-
 func (o *Operation) DocumentationURL() string {
 	if o.Override.DocumentationURL != "" {
 		return o.Override.DocumentationURL
@@ -92,8 +81,8 @@ func (o *Operation) DocumentationURL() string {
 }
 
 func (o *Operation) Less(other *Operation) bool {
-	leftVerb, leftURL, _ := strings.Cut(o.ID, " ")
-	rightVerb, rightURL, _ := strings.Cut(other.ID, " ")
+	leftVerb, leftURL := parseID(o.ID)
+	rightVerb, rightURL := parseID(other.ID)
 	if leftURL != rightURL {
 		return leftURL < rightURL
 	}
@@ -101,18 +90,8 @@ func (o *Operation) Less(other *Operation) bool {
 }
 
 func (o *Operation) normalizedID() string {
-	verb, u, _ := strings.Cut(o.ID, " ")
+	verb, u := parseID(o.ID)
 	return verb + " " + normalizedURL(u)
-}
-
-// matchesOpenAPIDesc returns true if this is describing the same operation as desc
-// based on endpoint and method.
-func (o *Operation) matchesOpenAPIDesc(desc OperationDesc) bool {
-	verb, u, _ := strings.Cut(o.ID, " ")
-	if verb != desc.Method {
-		return false
-	}
-	return normalizedURL(u) == normalizedURL(desc.EndpointURL)
 }
 
 var normalizedURLs = map[string]string{}
@@ -135,6 +114,16 @@ func normalizedURL(u string) string {
 	n = strings.Join(parts, "/")
 	normalizedURLs[u] = n
 	return n
+}
+
+func normalizedID(id string) string {
+	verb, u := parseID(id)
+	return verb + " " + normalizedURL(u)
+}
+
+func parseID(id string) (verb, url string) {
+	verb, url, _ = strings.Cut(id, " ")
+	return verb, url
 }
 
 type Metadata struct {
@@ -179,16 +168,17 @@ func (m *Metadata) SaveFile(filename string) (errOut error) {
 	return enc.Encode(m)
 }
 
-func (m *Metadata) addOperation(filename string, desc OperationDesc) {
-	descID := desc.Method + " " + desc.EndpointURL
-	normDescID := desc.Method + " " + normalizedURL(desc.EndpointURL)
+func (m *Metadata) addOperation(filename string, descID, docURL string) {
+	normDescID := normalizedID(descID)
 	for _, op := range m.Operations {
-		if normDescID != op.normalizedID() {
+		if normDescID != normalizedID(op.ID) {
 			continue
 		}
 		if len(op.OpenAPIFiles) == 0 {
 			op.OpenAPIFiles = append(op.OpenAPIFiles, filename)
-			op.OpenAPI = desc
+			op.OpenAPI = OperationDesc{
+				DocumentationURL: docURL,
+			}
 			return
 		}
 		// just append to files, but only add the first ghes file
@@ -207,7 +197,9 @@ func (m *Metadata) addOperation(filename string, desc OperationDesc) {
 	m.Operations = append(m.Operations, &Operation{
 		ID:           descID,
 		OpenAPIFiles: []string{filename},
-		OpenAPI:      desc,
+		OpenAPI:      OperationDesc{
+			DocumentationURL: docURL,
+		},
 	})
 }
 
@@ -263,11 +255,8 @@ func (m *Metadata) UpdateFromGithub(ctx context.Context, client contentsClient, 
 				if op.ExternalDocs != nil {
 					docURL = op.ExternalDocs.URL
 				}
-				m.addOperation(desc.filename, OperationDesc{
-					Method:           method,
-					EndpointURL:      p,
-					DocumentationURL: docURL,
-				})
+				id := method + " " + p
+				m.addOperation(desc.filename, id, docURL)
 			}
 		}
 	}
