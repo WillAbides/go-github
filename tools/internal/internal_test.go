@@ -10,16 +10,38 @@ import (
 	"golang.org/x/tools/txtar"
 )
 
-//func TestPopulateID(t *testing.T) {
-//	var meta Metadata
-//	err := LoadMetadataFile("../../metadata.yaml", &meta)
-//	require.NoError(t, err)
-//	for _, op := range meta.Operations {
-//		op.ID = op.Identifier()
-//	}
-//	err = meta.SaveFile("../../metadata.yaml")
-//	require.NoError(t, err)
-//}
+func TestPopulateOps(t *testing.T) {
+	var meta Metadata
+	err := LoadMetadataFile("../../metadata.yaml", &meta)
+	require.NoError(t, err)
+	var zeroDesc OperationDesc
+	meta.ManualOps = meta.ManualOps[:0]
+	meta.OpenapiOps = meta.OpenapiOps[:0]
+	meta.OverrideOps = meta.OverrideOps[:0]
+	for _, op := range meta.OldOps {
+		if op.OpenAPI == zeroDesc {
+			meta.ManualOps = append(meta.ManualOps, &Operation2{
+				Name:             op.ID,
+				DocumentationURL: op.DocumentationURL(),
+			})
+			continue
+		}
+		meta.OpenapiOps = append(meta.OpenapiOps, &Operation2{
+			Name:             op.ID,
+			DocumentationURL: op.OpenAPI.DocumentationURL,
+			OpenAPIFiles:     op.OpenAPIFiles,
+		})
+		if op.Override == zeroDesc {
+			continue
+		}
+		meta.OverrideOps = append(meta.OverrideOps, &Operation2{
+			Name:             op.ID,
+			DocumentationURL: op.Override.DocumentationURL,
+		})
+	}
+	err = meta.SaveFile("../../metadata.yaml")
+	require.NoError(t, err)
+}
 
 func extractTxtar(t *testing.T, filename string) string {
 	t.Helper()

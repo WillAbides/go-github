@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"tools/internal"
 
@@ -146,9 +145,9 @@ func (c *unusedOpsCmd) Run(root *rootCmd) error {
 	if err != nil {
 		return err
 	}
-	var unused []*internal.Operation
-	for _, op := range meta.Operations {
-		goMethods := meta.OperationMethods(op.ID)
+	var unused []*internal.Operation2
+	for _, op := range meta.Operations() {
+		goMethods := meta.OperationMethods(op.Name)
 		if len(goMethods) == 0 {
 			unused = append(unused, op)
 		}
@@ -164,9 +163,8 @@ func (c *unusedOpsCmd) Run(root *rootCmd) error {
 	}
 	fmt.Println("")
 	for _, op := range unused {
-		fmt.Println(op.ID)
-		fmt.Printf("plans:   %s\n", strings.Join(op.Plans(), ", "))
-		fmt.Printf("doc:     %s\n", op.DocumentationURL())
+		fmt.Println(op.Name)
+		fmt.Printf("doc:     %s\n", op.DocumentationURL)
 		fmt.Println("")
 	}
 	return nil

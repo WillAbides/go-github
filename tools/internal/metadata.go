@@ -32,6 +32,12 @@ type OperationDesc struct {
 	DocumentationURL string `yaml:"documentation_url,omitempty" json:"documentation_url,omitempty"`
 }
 
+type Operation2 struct {
+	Name             string   `yaml:"name,omitempty" json:"name,omitempty"`
+	DocumentationURL string   `yaml:"documentation_url,omitempty" json:"documentation_url,omitempty"`
+	OpenAPIFiles     []string `yaml:"openapi_files,omitempty" json:"openapi_files,omitempty"`
+}
+
 type Operation struct {
 	ID           string        `yaml:"id,omitempty" json:"id,omitempty"`
 	OpenAPI      OperationDesc `yaml:"openapi,omitempty" json:"openapi,omitempty"`
@@ -89,6 +95,21 @@ func (o *Operation) Less(other *Operation) bool {
 	return leftVerb < rightVerb
 }
 
+func (o *Operation2) Less(other *Operation2) bool {
+	leftVerb, leftURL := parseID(o.Name)
+	rightVerb, rightURL := parseID(other.Name)
+	if leftURL != rightURL {
+		return leftURL < rightURL
+	}
+	return leftVerb < rightVerb
+}
+
+func sortOperations(ops []*Operation2) {
+	sort.Slice(ops, func(i, j int) bool {
+		return ops[i].Less(ops[j])
+	})
+}
+
 func (o *Operation) normalizedID() string {
 	verb, u := parseID(o.ID)
 	return verb + " " + normalizedURL(u)
@@ -129,7 +150,50 @@ func parseID(id string) (verb, url string) {
 type Metadata struct {
 	MethodOperations    map[string][]string `yaml:"method_operations,omitempty"`
 	UndocumentedMethods []string            `yaml:"undocumented_methods,omitempty"`
-	Operations          []*Operation        `yaml:"operations,omitempty"`
+	ManualOps           []*Operation2       `yaml:"operations"`
+	OverrideOps         []*Operation2       `yaml:"operation_overrides"`
+	OpenapiOps          []*Operation2       `yaml:"openapi_operations"`
+	OldOps              []*Operation        `yaml:"old_operations,omitempty"`
+
+	mu          sync.Mutex
+	resolvedOps map[string]*Operation2
+}
+
+func (m *Metadata) resolve() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if m.resolvedOps != nil {
+		return
+	}
+	m.resolvedOps = map[string]*Operation2{}
+	for _, op := range m.OpenapiOps {
+		m.resolvedOps[op.Name] = op
+	}
+	for _, op := range m.ManualOps {
+		m.resolvedOps[op.Name] = op
+	}
+	for _, op := range m.OverrideOps {
+		_, ok := m.resolvedOps[op.Name]
+		if !ok {
+			m.resolvedOps[op.Name] = op
+		}
+		if op.DocumentationURL != "" {
+			m.resolvedOps[op.Name].DocumentationURL = op.DocumentationURL
+		}
+		if len(op.OpenAPIFiles) > 0 {
+			m.resolvedOps[op.Name].OpenAPIFiles = op.OpenAPIFiles
+		}
+	}
+}
+
+func (m *Metadata) Operations() []*Operation2 {
+	m.resolve()
+	ops := make([]*Operation2, 0, len(m.resolvedOps))
+	for _, op := range m.resolvedOps {
+		ops = append(ops, op)
+	}
+	sortOperations(ops)
+	return ops
 }
 
 func LoadMetadataFile(filename string, opFile *Metadata) (errOut error) {
@@ -147,8 +211,17 @@ func LoadMetadataFile(filename string, opFile *Metadata) (errOut error) {
 }
 
 func (m *Metadata) SaveFile(filename string) (errOut error) {
-	sort.Slice(m.Operations, func(i, j int) bool {
-		return m.Operations[i].Less(m.Operations[j])
+	sort.Slice(m.OldOps, func(i, j int) bool {
+		return m.OldOps[i].Less(m.OldOps[j])
+	})
+	sort.Slice(m.ManualOps, func(i, j int) bool {
+		return m.ManualOps[i].Less(m.ManualOps[j])
+	})
+	sort.Slice(m.OverrideOps, func(i, j int) bool {
+		return m.OverrideOps[i].Less(m.OverrideOps[j])
+	})
+	sort.Slice(m.OpenapiOps, func(i, j int) bool {
+		return m.OpenapiOps[i].Less(m.OpenapiOps[j])
 	})
 	for i := range m.MethodOperations {
 		sort.Strings(m.MethodOperations[i])
@@ -170,7 +243,7 @@ func (m *Metadata) SaveFile(filename string) (errOut error) {
 
 func (m *Metadata) addOperation(filename string, descID, docURL string) {
 	normDescID := normalizedID(descID)
-	for _, op := range m.Operations {
+	for _, op := range m.OldOps {
 		if normDescID != normalizedID(op.ID) {
 			continue
 		}
@@ -194,10 +267,11 @@ func (m *Metadata) addOperation(filename string, descID, docURL string) {
 		op.OpenAPIFiles = append(op.OpenAPIFiles, filename)
 		return
 	}
-	m.Operations = append(m.Operations, &Operation{
+
+	m.OldOps = append(m.OldOps, &Operation{
 		ID:           descID,
 		OpenAPIFiles: []string{filename},
-		OpenAPI:      OperationDesc{
+		OpenAPI: OperationDesc{
 			DocumentationURL: docURL,
 		},
 	})
@@ -218,7 +292,7 @@ func (m *Metadata) OperationMethods(opID string) []string {
 
 func (m *Metadata) operationsByID(id string) []*Operation {
 	var operations []*Operation
-	for _, op := range m.Operations {
+	for _, op := range m.OldOps {
 		if op.ID == id {
 			operations = append(operations, op)
 		}
@@ -245,7 +319,7 @@ func (m *Metadata) UpdateFromGithub(ctx context.Context, client contentsClient, 
 	if err != nil {
 		return err
 	}
-	for _, op := range m.Operations {
+	for _, op := range m.OldOps {
 		op.OpenAPIFiles = op.OpenAPIFiles[:0]
 	}
 	for _, desc := range descs {
@@ -260,8 +334,8 @@ func (m *Metadata) UpdateFromGithub(ctx context.Context, client contentsClient, 
 			}
 		}
 	}
-	sort.Slice(m.Operations, func(i, j int) bool {
-		return m.Operations[i].Less(m.Operations[j])
+	sort.Slice(m.OldOps, func(i, j int) bool {
+		return m.OldOps[i].Less(m.OldOps[j])
 	})
 	return nil
 }
