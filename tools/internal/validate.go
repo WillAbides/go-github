@@ -8,7 +8,6 @@ package internal
 import (
 	"fmt"
 	"sort"
-	"strings"
 
 	"golang.org/x/exp/slices"
 )
@@ -29,13 +28,6 @@ func ValidateMetadata(dir string, meta *Metadata) ([]string, error) {
 	for _, m := range meta.UndocumentedMethods {
 		metaMethodMap[m] = true
 	}
-	methodOperations := map[string][]*Operation{}
-	for _, op := range meta.Operations {
-		for _, m := range op.GoMethods {
-			metaMethodMap[m] = true
-			methodOperations[m] = append(methodOperations[m], op)
-		}
-	}
 	var metaMethods []string
 	for m := range metaMethodMap {
 		metaMethods = append(metaMethods, m)
@@ -50,14 +42,10 @@ func ValidateMetadata(dir string, meta *Metadata) ([]string, error) {
 		result = append(result, msg)
 	}
 	for _, m := range meta.UndocumentedMethods {
-		if len(methodOperations[m]) == 0 {
+		if meta.MethodOperations == nil || len(meta.MethodOperations[m]) == 0 {
 			continue
 		}
-		var ops []string
-		for _, op := range methodOperations[m] {
-			ops = append(ops, fmt.Sprintf("%s %s", op.Method(), op.EndpointURL()))
-		}
-		msg := fmt.Sprintf("Method %s is listed as undocumented in metadata and also in these operations: %s", m, strings.Join(ops, ", "))
+		msg := fmt.Sprintf("Method %s is listed in both undodumented_methods and method_operations.", m)
 		result = append(result, msg)
 	}
 	return result, nil
@@ -71,8 +59,7 @@ func getUndocumentedMethods(dir string, metadata *Metadata) ([]*serviceMethod, e
 		return nil, err
 	}
 	for _, method := range methods {
-		ops := metadata.operationsForMethod(method.name())
-		if len(ops) > 0 {
+		if metadata.MethodOperations != nil && len(metadata.MethodOperations[method.name()]) > 0 {
 			continue
 		}
 		if slices.Contains(metadata.UndocumentedMethods, method.name()) {

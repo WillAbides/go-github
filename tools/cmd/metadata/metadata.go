@@ -148,7 +148,8 @@ func (c *unusedOpsCmd) Run(root *rootCmd) error {
 	}
 	var unused []*internal.Operation
 	for _, op := range meta.Operations {
-		if len(op.GoMethods) == 0 {
+		goMethods := meta.OperationMethods(op.Identifier())
+		if len(goMethods) == 0 {
 			unused = append(unused, op)
 		}
 	}

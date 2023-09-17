@@ -38,7 +38,6 @@ type Operation struct {
 	OpenAPI      OperationDesc `yaml:"openapi,omitempty" json:"openapi,omitempty"`
 	Override     OperationDesc `yaml:"override,omitempty" json:"override,omitempty"`
 	OpenAPIFiles []string      `yaml:"openapi_files,omitempty" json:"openapi_files,omitempty"`
-	GoMethods    []string      `yaml:"go_methods,omitempty" json:"go_methods,omitempty"`
 }
 
 type operationJSON struct {
@@ -46,7 +45,6 @@ type operationJSON struct {
 	EndpointURL string   `json:"endpoint_url,omitempty"`
 	DocumentURL string   `json:"documentation_url,omitempty"`
 	Plans       []string `json:"plans,omitempty"`
-	GoMethods   []string `json:"go_methods,omitempty"`
 }
 
 func (o *Operation) MarshalJSON() ([]byte, error) {
@@ -55,7 +53,6 @@ func (o *Operation) MarshalJSON() ([]byte, error) {
 		EndpointURL: o.EndpointURL(),
 		Plans:       o.Plans(),
 		DocumentURL: o.DocumentationURL(),
-		GoMethods:   o.GoMethods,
 	})
 }
 
@@ -105,6 +102,10 @@ func (o *Operation) Less(other *Operation) bool {
 		return o.EndpointURL() < other.EndpointURL()
 	}
 	return o.Method() < other.Method()
+}
+
+func (o *Operation) Identifier() string {
+	return o.Method() + " " + o.EndpointURL()
 }
 
 // matchesOpenAPIDesc returns true if this is describing the same operation as desc
@@ -209,13 +210,36 @@ func (m *Metadata) addOperation(filename string, desc OperationDesc) {
 	})
 }
 
-func (m *Metadata) operationsForMethod(method string) []*Operation {
+// OperationMethods returns a list methods that are mapped to the given operation id.
+func (m *Metadata) OperationMethods(opID string) []string {
+	var methods []string
+	for method, methodOpIDs := range m.MethodOperations {
+		for _, methodOpID := range methodOpIDs {
+			if methodOpID == opID {
+				methods = append(methods, method)
+			}
+		}
+	}
+	return methods
+}
+
+func (m *Metadata) operationsByID(id string) []*Operation {
 	var operations []*Operation
 	for _, op := range m.Operations {
-		if !slices.Contains(op.GoMethods, method) {
-			continue
+		if op.Identifier() == id {
+			operations = append(operations, op)
 		}
-		operations = append(operations, op)
+	}
+	return operations
+}
+
+func (m *Metadata) operationsForMethod(method string) []*Operation {
+	if m.MethodOperations == nil {
+		return nil
+	}
+	var operations []*Operation
+	for _, id := range m.MethodOperations[method] {
+		operations = append(operations, m.operationsByID(id)...)
 	}
 	sort.Slice(operations, func(i, j int) bool {
 		return operations[i].Less(operations[j])
