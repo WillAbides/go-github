@@ -148,7 +148,7 @@ func (c *unusedOpsCmd) Run(root *rootCmd) error {
 	}
 	var unused []*internal.Operation
 	for _, op := range meta.Operations {
-		goMethods := meta.OperationMethods(op.Identifier())
+		goMethods := meta.OperationMethods(op.ID)
 		if len(goMethods) == 0 {
 			unused = append(unused, op)
 		}
@@ -164,7 +164,7 @@ func (c *unusedOpsCmd) Run(root *rootCmd) error {
 	}
 	fmt.Println("")
 	for _, op := range unused {
-		fmt.Printf("%s %s\n", op.Method(), op.EndpointURL())
+		fmt.Println(op.ID)
 		fmt.Printf("plans:   %s\n", strings.Join(op.Plans(), ", "))
 		fmt.Printf("doc:     %s\n", op.DocumentationURL())
 		fmt.Println("")

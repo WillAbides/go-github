@@ -42,16 +42,14 @@ type Operation struct {
 }
 
 type operationJSON struct {
-	Method      string   `json:"method,omitempty"`
-	EndpointURL string   `json:"endpoint_url,omitempty"`
+	ID          string   `json:"id,omitempty"`
 	DocumentURL string   `json:"documentation_url,omitempty"`
 	Plans       []string `json:"plans,omitempty"`
 }
 
 func (o *Operation) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&operationJSON{
-		Method:      o.Method(),
-		EndpointURL: o.EndpointURL(),
+		ID:          o.ID,
 		Plans:       o.Plans(),
 		DocumentURL: o.DocumentationURL(),
 	})
@@ -77,18 +75,13 @@ func (o *Operation) Plans() []string {
 	return plans
 }
 
-func (o *Operation) Method() string {
-	if o.Override.Method != "" {
-		return o.Override.Method
-	}
-	return o.OpenAPI.Method
+func (o *Operation) Verb() string {
+	return strings.Split(o.ID, " ")[0]
 }
 
 func (o *Operation) EndpointURL() string {
-	if o.Override.EndpointURL != "" {
-		return o.Override.EndpointURL
-	}
-	return o.OpenAPI.EndpointURL
+	_, u, _ := strings.Cut(o.ID, " ")
+	return u
 }
 
 func (o *Operation) DocumentationURL() string {
@@ -99,23 +92,27 @@ func (o *Operation) DocumentationURL() string {
 }
 
 func (o *Operation) Less(other *Operation) bool {
-	if o.EndpointURL() != other.EndpointURL() {
-		return o.EndpointURL() < other.EndpointURL()
+	leftVerb, leftURL, _ := strings.Cut(o.ID, " ")
+	rightVerb, rightURL, _ := strings.Cut(other.ID, " ")
+	if leftURL != rightURL {
+		return leftURL < rightURL
 	}
-	return o.Method() < other.Method()
+	return leftVerb < rightVerb
 }
 
-func (o *Operation) Identifier() string {
-	return o.Method() + " " + o.EndpointURL()
+func (o *Operation) normalizedID() string {
+	verb, u, _ := strings.Cut(o.ID, " ")
+	return verb + " " + normalizedURL(u)
 }
 
 // matchesOpenAPIDesc returns true if this is describing the same operation as desc
 // based on endpoint and method.
 func (o *Operation) matchesOpenAPIDesc(desc OperationDesc) bool {
-	if o.Method() != desc.Method {
+	verb, u, _ := strings.Cut(o.ID, " ")
+	if verb != desc.Method {
 		return false
 	}
-	return normalizedURL(o.EndpointURL()) == normalizedURL(desc.EndpointURL)
+	return normalizedURL(u) == normalizedURL(desc.EndpointURL)
 }
 
 var normalizedURLs = map[string]string{}
@@ -183,8 +180,10 @@ func (m *Metadata) SaveFile(filename string) (errOut error) {
 }
 
 func (m *Metadata) addOperation(filename string, desc OperationDesc) {
+	descID := desc.Method + " " + desc.EndpointURL
+	normDescID := desc.Method + " " + normalizedURL(desc.EndpointURL)
 	for _, op := range m.Operations {
-		if !op.matchesOpenAPIDesc(desc) {
+		if normDescID != op.normalizedID() {
 			continue
 		}
 		if len(op.OpenAPIFiles) == 0 {
@@ -206,6 +205,7 @@ func (m *Metadata) addOperation(filename string, desc OperationDesc) {
 		return
 	}
 	m.Operations = append(m.Operations, &Operation{
+		ID:           descID,
 		OpenAPIFiles: []string{filename},
 		OpenAPI:      desc,
 	})
@@ -227,7 +227,7 @@ func (m *Metadata) OperationMethods(opID string) []string {
 func (m *Metadata) operationsByID(id string) []*Operation {
 	var operations []*Operation
 	for _, op := range m.Operations {
-		if op.Identifier() == id {
+		if op.ID == id {
 			operations = append(operations, op)
 		}
 	}

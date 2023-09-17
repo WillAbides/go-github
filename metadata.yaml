@@ -2268,6 +2268,30 @@ operations:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+  - id: GET /assignments/{assignment_id}
+    openapi:
+      method: GET
+      endpoint_url: /assignments/{assignment_id}
+      documentation_url: https://docs.github.com/rest/classroom/classroom#get-an-assignment
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
+  - id: GET /assignments/{assignment_id}/accepted_assignments
+    openapi:
+      method: GET
+      endpoint_url: /assignments/{assignment_id}/accepted_assignments
+      documentation_url: https://docs.github.com/rest/classroom/classroom#list-accepted-assignments-for-an-assignment
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
+  - id: GET /assignments/{assignment_id}/grades
+    openapi:
+      method: GET
+      endpoint_url: /assignments/{assignment_id}/grades
+      documentation_url: https://docs.github.com/rest/classroom/classroom#get-assignment-grades
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
   - id: GET /authorizations
     openapi:
       method: GET
@@ -2317,6 +2341,30 @@ operations:
       documentation_url: https://docs.github.com/enterprise-server@3.10/rest/oauth-authorizations/oauth-authorizations#update-an-existing-authorization
     openapi_files:
       - descriptions/ghes-3.10/ghes-3.10.json
+  - id: GET /classrooms
+    openapi:
+      method: GET
+      endpoint_url: /classrooms
+      documentation_url: https://docs.github.com/rest/classroom/classroom#list-classrooms
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
+  - id: GET /classrooms/{classroom_id}
+    openapi:
+      method: GET
+      endpoint_url: /classrooms/{classroom_id}
+      documentation_url: https://docs.github.com/rest/classroom/classroom#get-a-classroom
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
+  - id: GET /classrooms/{classroom_id}/assignments
+    openapi:
+      method: GET
+      endpoint_url: /classrooms/{classroom_id}/assignments
+      documentation_url: https://docs.github.com/rest/classroom/classroom#list-assignments-for-a-classroom
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
   - id: GET /codes_of_conduct
     openapi:
       method: GET
