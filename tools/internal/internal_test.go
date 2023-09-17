@@ -10,6 +10,17 @@ import (
 	"golang.org/x/tools/txtar"
 )
 
+//func TestPopulateID(t *testing.T) {
+//	var meta Metadata
+//	err := LoadMetadataFile("../../metadata.yaml", &meta)
+//	require.NoError(t, err)
+//	for _, op := range meta.Operations {
+//		op.ID = op.Identifier()
+//	}
+//	err = meta.SaveFile("../../metadata.yaml")
+//	require.NoError(t, err)
+//}
+
 func extractTxtar(t *testing.T, filename string) string {
 	t.Helper()
 	a, err := txtar.ParseFile(filepath.FromSlash(filename))

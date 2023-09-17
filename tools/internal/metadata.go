@@ -35,6 +35,7 @@ type OperationDesc struct {
 }
 
 type Operation struct {
+	ID           string        `yaml:"id,omitempty" json:"id,omitempty"`
 	OpenAPI      OperationDesc `yaml:"openapi,omitempty" json:"openapi,omitempty"`
 	Override     OperationDesc `yaml:"override,omitempty" json:"override,omitempty"`
 	OpenAPIFiles []string      `yaml:"openapi_files,omitempty" json:"openapi_files,omitempty"`
