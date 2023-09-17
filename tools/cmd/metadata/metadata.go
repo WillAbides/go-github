@@ -164,7 +164,6 @@ func (c *unusedOpsCmd) Run(root *rootCmd) error {
 	fmt.Println("")
 	for _, op := range unused {
 		fmt.Printf("%s %s\n", op.Method(), op.EndpointURL())
-		fmt.Printf("summary: %s\n", op.Summary())
 		fmt.Printf("plans:   %s\n", strings.Join(op.Plans(), ", "))
 		fmt.Printf("doc:     %s\n", op.DocumentationURL())
 		fmt.Println("")

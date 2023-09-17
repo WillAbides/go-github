@@ -32,7 +32,6 @@ type OperationDesc struct {
 	Method           string `yaml:"method,omitempty" json:"method,omitempty"`
 	EndpointURL      string `yaml:"endpoint_url,omitempty" json:"endpoint_url,omitempty"`
 	DocumentationURL string `yaml:"documentation_url,omitempty" json:"documentation_url,omitempty"`
-	Summary          string `yaml:"summary,omitempty" json:"summary,omitempty"`
 }
 
 type Operation struct {
@@ -45,7 +44,6 @@ type Operation struct {
 type operationJSON struct {
 	Method      string   `json:"method,omitempty"`
 	EndpointURL string   `json:"endpoint_url,omitempty"`
-	Summary     string   `json:"summary,omitempty"`
 	DocumentURL string   `json:"documentation_url,omitempty"`
 	Plans       []string `json:"plans,omitempty"`
 	GoMethods   []string `json:"go_methods,omitempty"`
@@ -55,7 +53,6 @@ func (o *Operation) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&operationJSON{
 		Method:      o.Method(),
 		EndpointURL: o.EndpointURL(),
-		Summary:     o.Summary(),
 		Plans:       o.Plans(),
 		DocumentURL: o.DocumentationURL(),
 		GoMethods:   o.GoMethods,
@@ -101,13 +98,6 @@ func (o *Operation) DocumentationURL() string {
 		return o.Override.DocumentationURL
 	}
 	return o.OpenAPI.DocumentationURL
-}
-
-func (o *Operation) Summary() string {
-	if o.Override.Summary != "" {
-		return o.Override.Summary
-	}
-	return o.OpenAPI.Summary
 }
 
 func (o *Operation) Less(other *Operation) bool {
@@ -252,7 +242,6 @@ func (m *Metadata) UpdateFromGithub(ctx context.Context, client contentsClient, 
 					Method:           method,
 					EndpointURL:      p,
 					DocumentationURL: docURL,
-					Summary:          op.Summary,
 				})
 			}
 		}
