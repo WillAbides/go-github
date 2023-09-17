@@ -145,7 +145,7 @@ func (c *unusedOpsCmd) Run(root *rootCmd) error {
 	if err != nil {
 		return err
 	}
-	var unused []*internal.Operation2
+	var unused []*internal.Operation
 	for _, op := range meta.Operations() {
 		goMethods := meta.OperationMethods(op.Name)
 		if len(goMethods) == 0 {
