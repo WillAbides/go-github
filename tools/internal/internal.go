@@ -71,7 +71,7 @@ func isGoGithubRoot(dir string) (bool, error) {
 }
 
 type serviceMethod struct {
-	receiverName string
+	receiverType string
 	methodName   string
 	filename     string
 	httpMethod   string
@@ -80,7 +80,7 @@ type serviceMethod struct {
 }
 
 func (m *serviceMethod) name() string {
-	return fmt.Sprintf("%s.%s", m.receiverName, m.methodName)
+	return fmt.Sprintf("%s.%s", m.receiverType, m.methodName)
 }
 
 func getServiceMethods(dir string) ([]*serviceMethod, error) {
@@ -123,32 +123,43 @@ func getServiceMethodsFromFile(filename string) ([]*serviceMethod, error) {
 		return nil, nil
 	}
 	var serviceMethods []*serviceMethod
+	var inspectErr error
 	ast.Inspect(f, func(n ast.Node) bool {
-		sm := serviceMethodFromNode(filename, n)
+		if inspectErr != nil {
+			return false
+		}
+		decl, ok := n.(*ast.FuncDecl)
+		if !ok {
+			return true
+		}
+		sm, e := serviceMethodFromNode(filename, decl)
+		if e != nil {
+			inspectErr = e
+			return false
+		}
 		if sm != nil {
 			serviceMethods = append(serviceMethods, sm)
 		}
-		return true
+		return false
 	})
+	if inspectErr != nil {
+		return nil, inspectErr
+	}
 	return serviceMethods, nil
 }
 
-func serviceMethodFromNode(filename string, n ast.Node) *serviceMethod {
-	decl, ok := n.(*ast.FuncDecl)
-	if !ok {
-		return nil
-	}
+func serviceMethodFromNode(filename string, decl *ast.FuncDecl) (*serviceMethod, error) {
 	if decl.Recv == nil || len(decl.Recv.List) != 1 {
-		return nil
+		return nil, nil
 	}
 	recv := decl.Recv.List[0]
 	se, ok := recv.Type.(*ast.StarExpr)
 	if !ok {
-		return nil
+		return nil, nil
 	}
 	id, ok := se.X.(*ast.Ident)
 	if !ok {
-		return nil
+		return nil, nil
 	}
 	receiverType := id.Name
 	methodName := decl.Name.Name
@@ -158,30 +169,30 @@ func serviceMethodFromNode(filename string, n ast.Node) *serviceMethod {
 	// The exception is github.go, which contains Client methods we want to skip.
 
 	if !ast.IsExported(methodName) || !ast.IsExported(receiverType) {
-		return nil
+		return nil, nil
 	}
 	if receiverType != "Client" && !strings.HasSuffix(receiverType, "Service") {
-		return nil
+		return nil, nil
 	}
 	if receiverType == "Client" && filepath.Base(filename) == "github.go" {
-		return nil
+		return nil, nil
 	}
 	method := serviceMethod{
-		receiverName: receiverType,
+		receiverType: receiverType,
 		methodName:   methodName,
 		filename:     filename,
 	}
 	bd := &bodyData{receiverName: recv.Names[0].Name}
-	err := bd.parseBody(decl.Body)
+	err := bd.parseBodyInspect(decl.Body)
 	if err != nil {
-		return &method
+		return nil, fmt.Errorf("error parsing body of %s.%s: %v", receiverType, methodName, err)
 	}
 	method.httpMethod = bd.httpMethod
 	method.urls = append(method.urls, bd.urlFormats...)
 	if bd.helperMethod != "" {
 		method.helper = receiverType + "." + bd.helperMethod
 	}
-	return &method
+	return &method, nil
 }
 
 // bodyData contains information found in a BlockStmt.
@@ -190,113 +201,87 @@ type bodyData struct {
 	httpMethod   string
 	urlVarName   string
 	urlFormats   []string
-	assignments  []lhsrhs
 	helperMethod string // If populated, httpMethod lives in helperMethod.
 }
 
-func (b *bodyData) parseBody(body *ast.BlockStmt) error {
-	// Find the variable used for the format string, its one-or-more values,
-	// and the httpMethod used for the NewRequest.
-	for _, stmt := range body.List {
-		switch stmt := stmt.(type) {
+func (b *bodyData) parseBodyInspect(body *ast.BlockStmt) error {
+	var err error
+	var assignments []lhsrhs
+	ast.Inspect(body, func(n ast.Node) bool {
+		if err != nil {
+			return false
+		}
+		switch stmt := n.(type) {
 		case *ast.AssignStmt:
-			hm, uvn, hlp, asgn := processAssignStmt(b.receiverName, stmt)
-			if b.httpMethod != "" && hm != "" && b.httpMethod != hm {
-				return fmt.Errorf("found two httpMethod values: %q and %q", b.httpMethod, hm)
+			httpMethod, urlVarName, helperMethod, asgn, ok := processAssignStmt(b.receiverName, stmt)
+			if !ok {
+				return false
 			}
-			if hm != "" {
-				b.httpMethod = hm
-				// logf("parseBody: httpMethod=%v", b.httpMethod)
+			if b.httpMethod != "" && httpMethod != "" && b.httpMethod != httpMethod {
+				err = fmt.Errorf("found two httpMethod values: %q and %q", b.httpMethod, httpMethod)
+				return false
 			}
-			if hlp != "" {
-				b.helperMethod = hlp
+			if httpMethod != "" {
+				b.httpMethod = httpMethod
 			}
-			b.assignments = append(b.assignments, asgn...)
+			if helperMethod != "" {
+				b.helperMethod = helperMethod
+			}
+			assignments = append(assignments, asgn...)
 
-			rawFormat, err := strconv.Unquote(uvn)
+			rawFormat, e := strconv.Unquote(urlVarName)
 			// we know it's a raw string literal if strconv.Unquote doesn't error
-			if err == nil {
+			if e == nil {
 				b.urlFormats = append(b.urlFormats, rawFormat)
 			}
 
-			// logf("assignments=%#v", b.assignments)
-			if b.urlVarName == "" && uvn != "" {
-				b.urlVarName = uvn
-				// logf("parseBody: urlVarName=%v", b.urlVarName)
+			if b.urlVarName == "" && urlVarName != "" {
+				b.urlVarName = urlVarName
 				// By the time the urlVarName is found, all assignments should
 				// have already taken place so that we can find the correct
 				// ones and determine the urlFormats.
-				for _, lr := range b.assignments {
+				for _, lr := range assignments {
 					if lr.lhs == b.urlVarName {
 						b.urlFormats = append(b.urlFormats, lr.rhs)
 					}
 				}
 			}
-		case *ast.DeclStmt:
-		case *ast.DeferStmt:
-		case *ast.ExprStmt:
-		case *ast.IfStmt:
-			if err := b.parseIf(stmt); err != nil {
-				return err
-			}
-		case *ast.RangeStmt:
+
 		case *ast.ReturnStmt: // Return Results
 			if len(stmt.Results) > 0 {
-				switch rslt0 := stmt.Results[0].(type) {
-				case *ast.CallExpr:
-					recv, funcName, args := processCallExpr(rslt0)
-					// If the httpMethod has not been found at this point, but
-					// this method is calling a helper function, then see if
-					// any of its arguments match a previous assignment, then
-					// record the urlFormat and remember the helper method.
-					if b.httpMethod == "" && len(args) > 1 && recv == b.receiverName {
-						if args[0] != "ctx" {
-							return fmt.Errorf("expected helper function to get ctx as first arg: %#v, %#v", args, *b)
-						}
-						if len(b.assignments) == 0 && len(b.urlFormats) == 0 {
-							b.urlFormats = append(b.urlFormats, strings.Trim(args[1], `"`))
-							b.helperMethod = funcName
-						} else {
-							for _, lr := range b.assignments {
-								if lr.lhs == args[1] { // Multiple matches are possible. Loop over all assignments.
-									b.urlVarName = args[1]
-									b.urlFormats = append(b.urlFormats, lr.rhs)
-									b.helperMethod = funcName
-								}
+				rslt0, ok := stmt.Results[0].(*ast.CallExpr)
+				if !ok {
+					return true
+				}
+				recv, funcName, args := processCallExpr(rslt0)
+				// If the httpMethod has not been found at this point, but
+				// this method is calling a helper function, then see if
+				// any of its arguments match a previous assignment, then
+				// record the urlFormat and remember the helper method.
+				if b.httpMethod == "" && len(args) > 1 && recv == b.receiverName {
+					if args[0] != "ctx" {
+						err = fmt.Errorf("expected helper function to get ctx as first arg: %#v, %#v", args, *b)
+						return false
+					}
+					if len(assignments) == 0 && len(b.urlFormats) == 0 {
+						b.urlFormats = append(b.urlFormats, strings.Trim(args[1], `"`))
+						b.helperMethod = funcName
+					} else {
+						for _, lr := range assignments {
+							if lr.lhs == args[1] { // Multiple matches are possible. Loop over all assignments.
+								b.urlVarName = args[1]
+								b.urlFormats = append(b.urlFormats, lr.rhs)
+								b.helperMethod = funcName
 							}
 						}
 					}
 				}
+
 			}
-		case *ast.SwitchStmt:
-		default:
-			return fmt.Errorf("unhandled stmt type: %T", stmt)
 		}
-	}
-
-	return nil
-}
-
-func (b *bodyData) parseIf(stmt *ast.IfStmt) error {
-	if err := b.parseBody(stmt.Body); err != nil {
-		return err
-	}
-	if stmt.Else != nil {
-		switch els := stmt.Else.(type) {
-		case *ast.BlockStmt:
-			if err := b.parseBody(els); err != nil {
-				return err
-			}
-		case *ast.IfStmt:
-			if err := b.parseIf(els); err != nil {
-				return err
-			}
-		default:
-			return fmt.Errorf("unhandled else stmt type %T", els)
-		}
-	}
-
-	return nil
+		return true
+	})
+	return err
 }
 
 // lhsrhs represents an assignment with a variable name on the left
@@ -314,7 +299,7 @@ var (
 	}
 )
 
-func processAssignStmt(receiverName string, stmt *ast.AssignStmt) (httpMethod, urlVarName, helperMethod string, assignments []lhsrhs) {
+func processAssignStmt(receiverName string, stmt *ast.AssignStmt) (httpMethod, urlVarName, helperMethod string, assignments []lhsrhs, ok bool) {
 	var lhs []string
 	for _, expr := range stmt.Lhs {
 		switch expr := expr.(type) {
@@ -322,7 +307,7 @@ func processAssignStmt(receiverName string, stmt *ast.AssignStmt) (httpMethod, u
 			lhs = append(lhs, expr.Name)
 		case *ast.SelectorExpr: // X, Sel
 		default:
-			log.Fatalf("unhandled AssignStmt Lhs type: %T", expr)
+			return "", "", "", nil, false
 		}
 	}
 
@@ -376,15 +361,14 @@ func processAssignStmt(receiverName string, stmt *ast.AssignStmt) (httpMethod, u
 		case *ast.TypeAssertExpr: // X, Lparen, Type, Rparen
 		case *ast.Ident: // NamePos, Name, Obj
 		default:
-			log.Fatalf("unhandled AssignStmt Rhs type: %T", expr)
+			return "", "", "", nil, false
 		}
 	}
 
-	return httpMethod, urlVarName, helperMethod, assignments
+	return httpMethod, urlVarName, helperMethod, assignments, true
 }
 
 func processCallExpr(expr *ast.CallExpr) (recv, funcName string, args []string) {
-
 	for _, arg := range expr.Args {
 		switch arg := arg.(type) {
 		case *ast.ArrayType:

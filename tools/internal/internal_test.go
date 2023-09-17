@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -39,5 +40,19 @@ func TestFoo(t *testing.T) {
 	require.NotNil(t, create)
 	require.Equal(t, "ActionsService.createWorkflowDispatchEvent", create.helper)
 	//require.Equal(t, "POST", create.httpMethod)
+
+}
+
+func TestBar(t *testing.T) {
+	dir := "../../github"
+	methods, err := getServiceMethods(dir)
+	require.NoError(t, err)
+	methodsMap := map[string]*serviceMethod{}
+	for _, m := range methods {
+		methodsMap[m.name()] = m
+	}
+	method, ok := methodsMap["MarketplaceService.GetPlanAccountForAccount"]
+	require.True(t, ok)
+	fmt.Println(method.urls)
 
 }

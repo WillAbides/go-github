@@ -149,8 +149,9 @@ func normalizedURL(u string) string {
 }
 
 type Metadata struct {
-	UndocumentedMethods []string     `yaml:"undocumented_methods,omitempty"`
-	Operations          []*Operation `yaml:"operations,omitempty"`
+	MethodOperations    map[string][]string `yaml:"method_operations,omitempty"`
+	UndocumentedMethods []string            `yaml:"undocumented_methods,omitempty"`
+	Operations          []*Operation        `yaml:"operations,omitempty"`
 }
 
 func LoadMetadataFile(filename string, opFile *Metadata) (errOut error) {
@@ -168,6 +169,12 @@ func LoadMetadataFile(filename string, opFile *Metadata) (errOut error) {
 }
 
 func (m *Metadata) SaveFile(filename string) (errOut error) {
+	sort.Slice(m.Operations, func(i, j int) bool {
+		return m.Operations[i].Less(m.Operations[j])
+	})
+	for i := range m.MethodOperations {
+		sort.Strings(m.MethodOperations[i])
+	}
 	f, err := os.Create(filename)
 	if err != nil {
 		panic(err)

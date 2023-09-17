@@ -1,3 +1,10 @@
+method_endpoints:
+  Baz.Qux:
+    - baz
+    - qux
+  Foo.Bar:
+    - bar
+    - foo
 undocumented_methods:
   - AppsService.FindRepositoryInstallationByID
   - Client.ListServiceHooks
