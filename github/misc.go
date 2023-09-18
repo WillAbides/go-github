@@ -264,6 +264,8 @@ func (s *ServiceHook) String() string {
 }
 
 // ListServiceHooks lists all of the available service hooks.
+//
+// Note: ListServiceHooks uses the undocumented GitHub API endpoint "GET /hooks".
 func (c *Client) ListServiceHooks(ctx context.Context) ([]*ServiceHook, *Response, error) {
 	u := "hooks"
 	req, err := c.NewRequest("GET", u, nil)

@@ -24,6 +24,7 @@ import (
 	"sync"
 
 	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
 	"gopkg.in/yaml.v3"
 )
 
@@ -43,8 +44,8 @@ func (o *Operation) clone() *Operation {
 
 func sortOperations(ops []*Operation) {
 	sort.Slice(ops, func(i, j int) bool {
-		leftVerb, leftURL := parseID(ops[i].Name)
-		rightVerb, rightURL := parseID(ops[j].Name)
+		leftVerb, leftURL := parseOpName(ops[i].Name)
+		rightVerb, rightURL := parseOpName(ops[j].Name)
 		if leftURL != rightURL {
 			return leftURL < rightURL
 		}
@@ -74,12 +75,12 @@ func normalizedURL(u string) string {
 	return n
 }
 
-func normalizedName(name string) string {
-	verb, u := parseID(name)
+func normalizedOpName(name string) string {
+	verb, u := parseOpName(name)
 	return verb + " " + normalizedURL(u)
 }
 
-func parseID(id string) (verb, url string) {
+func parseOpName(id string) (verb, url string) {
 	verb, url, _ = strings.Cut(id, " ")
 	return verb, url
 }
@@ -90,11 +91,11 @@ type Method struct {
 }
 
 type Metadata struct {
-	Methods             []*Method           `yaml:"methods,omitempty" json:"methods,omitempty"`
-	UndocumentedMethods []string            `yaml:"undocumented_methods,omitempty"`
-	ManualOps           []*Operation        `yaml:"operations"`
-	OverrideOps         []*Operation        `yaml:"operation_overrides"`
-	OpenapiOps          []*Operation        `yaml:"openapi_operations"`
+	Methods             []*Method    `yaml:"methods,omitempty" json:"methods,omitempty"`
+	UndocumentedMethods []string     `yaml:"undocumented_methods,omitempty"`
+	ManualOps           []*Operation `yaml:"operations"`
+	OverrideOps         []*Operation `yaml:"operation_overrides"`
+	OpenapiOps          []*Operation `yaml:"openapi_operations"`
 
 	mu          sync.Mutex
 	resolvedOps map[string]*Operation
@@ -177,9 +178,9 @@ func (m *Metadata) SaveFile(filename string) (errOut error) {
 }
 
 func (m *Metadata) addOperation(filename string, descID, docURL string) {
-	normDescID := normalizedName(descID)
+	normDescID := normalizedOpName(descID)
 	for _, op := range m.OpenapiOps {
-		if normDescID != normalizedName(op.Name) {
+		if normDescID != normalizedOpName(op.Name) {
 			continue
 		}
 		if len(op.OpenAPIFiles) == 0 {
@@ -227,9 +228,9 @@ func (m *Metadata) getOperation(name string) *Operation {
 
 func (m *Metadata) getOperationByNormalizedName(name string) *Operation {
 	m.resolve()
-	norm := normalizedName(name)
+	norm := normalizedOpName(name)
 	for n := range m.resolvedOps {
-		if normalizedName(n) == norm {
+		if normalizedOpName(n) == norm {
 			return m.resolvedOps[n]
 		}
 	}
@@ -386,17 +387,31 @@ func updateDocsLinksForNode(metadata *Metadata, n ast.Node) bool {
 	}
 
 	linksMap := map[string]struct{}{}
-	ops := metadata.operationsForMethod(strings.Join([]string{receiverType, methodName}, "."))
+	var undocumentedOps []string
+	fullMethodName := strings.Join([]string{receiverType, methodName}, ".")
+	ops := metadata.operationsForMethod(fullMethodName)
 	for _, op := range ops {
+		if op.DocumentationURL == "" {
+			if !slices.Contains(undocumentedOps, op.Name) {
+				undocumentedOps = append(undocumentedOps, op.Name)
+			}
+			continue
+		}
 		linksMap[op.DocumentationURL] = struct{}{}
 	}
+	sort.Strings(undocumentedOps)
 
 	// create copy of comment group with non-matching doc links removed
 	if fn.Doc == nil {
 		fn.Doc = &ast.CommentGroup{}
 	}
 	fnComments := make([]*ast.Comment, 0, len(fn.Doc.List))
+	skipSpacer := false
 	for _, comment := range fn.Doc.List {
+		if strings.Contains(comment.Text, "uses the undocumented GitHub API endpoint") {
+			skipSpacer = true
+			continue
+		}
 		match := docLineRE.FindStringSubmatch(comment.Text)
 		if match == nil {
 			fnComments = append(fnComments, comment)
@@ -406,6 +421,7 @@ func updateDocsLinksForNode(metadata *Metadata, n ast.Node) bool {
 		for link := range linksMap {
 			if sameDocLink(match[2], link) {
 				matchesLink = true
+				skipSpacer = true
 				delete(linksMap, link)
 				break
 			}
@@ -415,17 +431,8 @@ func updateDocsLinksForNode(metadata *Metadata, n ast.Node) bool {
 		}
 	}
 
-	// remove trailing empty lines
-	for len(fnComments) > 0 {
-		if !emptyLineRE.MatchString(fnComments[len(fnComments)-1].Text) {
-			break
-		}
-		fnComments = fnComments[:len(fnComments)-1]
-	}
-
 	// add an empty line before adding doc links
-	if len(linksMap) > 0 &&
-		len(fnComments) > 0 &&
+	if len(linksMap)+len(undocumentedOps) > 0 && !skipSpacer &&
 		!emptyLineRE.MatchString(fnComments[len(fnComments)-1].Text) {
 		fnComments = append(fnComments, &ast.Comment{Text: "//"})
 	}
@@ -441,7 +448,28 @@ func updateDocsLinksForNode(metadata *Metadata, n ast.Node) bool {
 			},
 		)
 	}
-	fn.Doc.List = fnComments
+	for _, opName := range undocumentedOps {
+		line := fmt.Sprintf("// Note: %s uses the undocumented GitHub API endpoint %q.", methodName, opName)
+		fnComments = append(fnComments, &ast.Comment{Text: line})
+	}
+	if len(docLinks)+len(undocumentedOps) > 0 {
+		fn.Doc.List = fnComments
+		return true
+	}
+	//if len(docLinks) == 0 {
+	//	method := metadata.getMethod(fullMethodName)
+	//	var opURLs []string
+	//	for _, opName := range method.OpNames {
+	//		_, opURL := parseOpName(opName)
+	//		if !slices.Contains(opURLs, opURL) {
+	//			opURLs = append(opURLs, opURL)
+	//		}
+	//	}
+	//	sort.Strings(opURLs)
+	//	for _, opURL := range opURLs {
+	//		line := fmt.Sprintf("// GitHub API docs: https://docs.github.com/rest/reference/%s", opURL)
+	//	}
+	//}
 	return true
 }
 

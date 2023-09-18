@@ -8,8 +8,6 @@ package internal
 import (
 	"fmt"
 	"sort"
-
-	"golang.org/x/exp/slices"
 )
 
 // ValidateMetadata returns a list of issues with the metadata file. An error means
@@ -24,13 +22,9 @@ func ValidateMetadata(dir string, meta *Metadata) ([]string, error) {
 		msg := fmt.Sprintf("Undocumented method %s. Please add it to metadata.", m.name())
 		result = append(result, msg)
 	}
-	metaMethodMap := map[string]bool{}
-	for _, m := range meta.UndocumentedMethods {
-		metaMethodMap[m] = true
-	}
 	var metaMethods []string
-	for m := range metaMethodMap {
-		metaMethods = append(metaMethods, m)
+	for _, m := range meta.Methods {
+		metaMethods = append(metaMethods, m.Name)
 	}
 	sort.Strings(metaMethods)
 	missing, err := missingMethods(dir, metaMethods)
@@ -51,24 +45,24 @@ func ValidateMetadata(dir string, meta *Metadata) ([]string, error) {
 	return result, nil
 }
 
-// getUndocumentedMethods returns a list of methods that are not mapped to any operation in metadata.yaml
-func getUndocumentedMethods(dir string, meta *Metadata) ([]*serviceMethod, error) {
-	var result []*serviceMethod
-	methods, err := getServiceMethods(dir)
+func validateMethodsExist(dir string, meta *Metadata) ([]string, error) {
+	sm, err := getServiceMethods(dir)
 	if err != nil {
 		return nil, err
 	}
-	for _, method := range methods {
-		if meta.getMethod(method.name()) != nil {
+	existingMethods := map[string]bool{}
+	for _, method := range sm {
+		existingMethods[method.name()] = true
+	}
+	var result []string
+	for _, m := range meta.Methods {
+		if existingMethods[m.Name] {
 			continue
 		}
-		if slices.Contains(meta.UndocumentedMethods, method.name()) {
-			continue
-		}
-		result = append(result, method)
 	}
 	return result, nil
 }
+
 
 // missingMethods returns the set from methods that do not exist in the github package.
 func missingMethods(dir string, methods []string) ([]string, error) {
@@ -84,6 +78,22 @@ func missingMethods(dir string, methods []string) ([]string, error) {
 	for _, m := range methods {
 		if !existingMap[m] {
 			result = append(result, m)
+		}
+	}
+	return result, nil
+}
+
+
+// getUndocumentedMethods returns a list of methods that are not mapped to any operation in metadata.yaml
+func getUndocumentedMethods(dir string, meta *Metadata) ([]*serviceMethod, error) {
+	var result []*serviceMethod
+	methods, err := getServiceMethods(dir)
+	if err != nil {
+		return nil, err
+	}
+	for _, method := range methods {
+		if meta.getMethod(method.name()) == nil {
+			result = append(result, method)
 		}
 	}
 	return result, nil

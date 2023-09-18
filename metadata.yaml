@@ -510,6 +510,9 @@ methods:
   - name: AppsService.FindRepositoryInstallation
     operations:
       - GET /repos/{owner}/{repo}/installation
+  - name: AppsService.FindRepositoryInstallationByID
+    operations:
+      - GET /repositories/{repository_id}/installation
   - name: AppsService.FindUserInstallation
     operations:
       - GET /users/{username}/installation
@@ -646,6 +649,9 @@ methods:
   - name: Client.ListEmojis
     operations:
       - GET /emojis
+  - name: Client.ListServiceHooks
+    operations:
+      - GET /hooks
   - name: Client.Markdown
     operations:
       - POST /markdown
@@ -1311,6 +1317,9 @@ methods:
   - name: OrganizationsService.GetAuditLog
     operations:
       - GET /orgs/{org}/audit-log
+  - name: OrganizationsService.GetByID
+    operations:
+      - GET /organizations/{organization_id}
   - name: OrganizationsService.GetHook
     operations:
       - GET /orgs/{org}/hooks/{hook_id}
@@ -1884,6 +1893,9 @@ methods:
   - name: RepositoriesService.GetBranchProtection
     operations:
       - GET /repos/{owner}/{repo}/branches/{branch}/protection
+  - name: RepositoriesService.GetByID
+    operations:
+      - GET /repositories/{repository_id}
   - name: RepositoriesService.GetCodeOfConduct
     operations:
       - GET /repos/{owner}/{repo}
@@ -2547,6 +2559,9 @@ methods:
     operations:
       - GET /user
       - GET /users/{username}
+  - name: UsersService.GetByID
+    operations:
+      - GET /user/{user_id}
   - name: UsersService.GetGPGKey
     operations:
       - GET /user/gpg_keys/{gpg_key_id}
@@ -2647,15 +2662,11 @@ methods:
   - name: UsersService.Unsuspend
     operations:
       - DELETE /users/{username}/suspended
-undocumented_methods:
-  - AppsService.FindRepositoryInstallationByID
-  - Client.ListServiceHooks
-  - OrganizationsService.GetByID
-  - RepositoriesService.GetByID
-  - UsersService.GetByID
 operations:
+  - name: GET /hooks
   - name: POST /hub
     documentation_url: https://docs.github.com/webhooks/about-webhooks-for-repositories#pubsubhubbub
+  - name: GET /organizations/{organization_id}
   - name: GET /orgs/{org}/actions/required_workflows
     documentation_url: https://docs.github.com/actions/using-workflows/required-workflows
   - name: POST /orgs/{org}/actions/required_workflows
@@ -2682,6 +2693,9 @@ operations:
     documentation_url: https://gist.github.com/jonmagic/5282384165e0f86ef105#start-an-issue-import
   - name: GET /repos/{owner}/{repo}/import/issues/{issue_number}
     documentation_url: https://gist.github.com/jonmagic/5282384165e0f86ef105#import-status-request
+  - name: GET /repositories/{repository_id}
+  - name: GET /repositories/{repository_id}/installation
+  - name: GET /user/{user_id}
 operation_overrides:
   - name: GET /meta
     documentation_url: https://docs.github.com/rest/meta/meta#get-github-meta-information
