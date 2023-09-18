@@ -42,27 +42,27 @@ func ValidateMetadata(dir string, meta *Metadata) ([]string, error) {
 		result = append(result, msg)
 	}
 	for _, m := range meta.UndocumentedMethods {
-		if meta.MethodOperations == nil || len(meta.MethodOperations[m]) == 0 {
+		if meta.getMethod(m) == nil {
 			continue
 		}
-		msg := fmt.Sprintf("Method %s is listed in both undodumented_methods and method_operations.", m)
+		msg := fmt.Sprintf("Method %s is listed in both undocumented_methods and method_operations.", m)
 		result = append(result, msg)
 	}
 	return result, nil
 }
 
 // getUndocumentedMethods returns a list of methods that are not mapped to any operation in metadata.yaml
-func getUndocumentedMethods(dir string, metadata *Metadata) ([]*serviceMethod, error) {
+func getUndocumentedMethods(dir string, meta *Metadata) ([]*serviceMethod, error) {
 	var result []*serviceMethod
 	methods, err := getServiceMethods(dir)
 	if err != nil {
 		return nil, err
 	}
 	for _, method := range methods {
-		if metadata.MethodOperations != nil && len(metadata.MethodOperations[method.name()]) > 0 {
+		if meta.getMethod(method.name()) != nil {
 			continue
 		}
-		if slices.Contains(metadata.UndocumentedMethods, method.name()) {
+		if slices.Contains(meta.UndocumentedMethods, method.name()) {
 			continue
 		}
 		result = append(result, method)

@@ -1,1781 +1,2652 @@
-method_operations:
-  ActionsService.AddEnabledReposInOrg:
-    - PUT /orgs/{org}/actions/permissions/repositories/{repository_id}
-  ActionsService.AddRepoToRequiredWorkflow:
-    - PUT /orgs/{org}/actions/required_workflows/{workflow_id}/repositories/{repository_id}
-  ActionsService.AddRepositoryAccessRunnerGroup:
-    - PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories/{repository_id}
-  ActionsService.AddRunnerGroupRunners:
-    - PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/runners/{runner_id}
-  ActionsService.AddSelectedRepoToOrgSecret:
-    - PUT /orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}
-  ActionsService.AddSelectedRepoToOrgVariable:
-    - PUT /orgs/{org}/actions/variables/{name}/repositories/{repository_id}
-  ActionsService.CancelWorkflowRunByID:
-    - POST /repos/{owner}/{repo}/actions/runs/{run_id}/cancel
-  ActionsService.CreateEnvVariable:
-    - POST /repositories/{repository_id}/environments/{environment_name}/variables
-  ActionsService.CreateOrUpdateEnvSecret:
-    - PUT /repositories/{repository_id}/environments/{environment_name}/secrets/{secret_name}
-  ActionsService.CreateOrUpdateOrgSecret:
-    - PUT /orgs/{org}/actions/secrets/{secret_name}
-  ActionsService.CreateOrUpdateRepoSecret:
-    - PUT /repos/{owner}/{repo}/actions/secrets/{secret_name}
-  ActionsService.CreateOrgVariable:
-    - POST /orgs/{org}/actions/variables
-  ActionsService.CreateOrganizationRegistrationToken:
-    - POST /orgs/{org}/actions/runners/registration-token
-  ActionsService.CreateOrganizationRemoveToken:
-    - POST /orgs/{org}/actions/runners/remove-token
-  ActionsService.CreateOrganizationRunnerGroup:
-    - POST /orgs/{org}/actions/runner-groups
-  ActionsService.CreateRegistrationToken:
-    - POST /repos/{owner}/{repo}/actions/runners/registration-token
-  ActionsService.CreateRemoveToken:
-    - POST /repos/{owner}/{repo}/actions/runners/remove-token
-  ActionsService.CreateRepoVariable:
-    - POST /repos/{owner}/{repo}/actions/variables
-  ActionsService.CreateRequiredWorkflow:
-    - POST /orgs/{org}/actions/required_workflows
-  ActionsService.CreateWorkflowDispatchEventByFileName:
-    - POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches
-  ActionsService.CreateWorkflowDispatchEventByID:
-    - POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches
-  ActionsService.DeleteArtifact:
-    - DELETE /repos/{owner}/{repo}/actions/artifacts/{artifact_id}
-  ActionsService.DeleteCachesByID:
-    - DELETE /repos/{owner}/{repo}/actions/caches/{cache_id}
-  ActionsService.DeleteCachesByKey:
-    - DELETE /repos/{owner}/{repo}/actions/caches
-  ActionsService.DeleteEnvSecret:
-    - DELETE /repositories/{repository_id}/environments/{environment_name}/secrets/{secret_name}
-  ActionsService.DeleteEnvVariable:
-    - DELETE /repositories/{repository_id}/environments/{environment_name}/variables/{name}
-  ActionsService.DeleteOrgSecret:
-    - DELETE /orgs/{org}/actions/secrets/{secret_name}
-  ActionsService.DeleteOrgVariable:
-    - DELETE /orgs/{org}/actions/variables/{name}
-  ActionsService.DeleteOrganizationRunnerGroup:
-    - DELETE /orgs/{org}/actions/runner-groups/{runner_group_id}
-  ActionsService.DeleteRepoSecret:
-    - DELETE /repos/{owner}/{repo}/actions/secrets/{secret_name}
-  ActionsService.DeleteRepoVariable:
-    - DELETE /repos/{owner}/{repo}/actions/variables/{name}
-  ActionsService.DeleteRequiredWorkflow:
-    - DELETE /orgs/{org}/actions/required_workflows/{workflow_id}
-  ActionsService.DeleteWorkflowRun:
-    - DELETE /repos/{owner}/{repo}/actions/runs/{run_id}
-  ActionsService.DeleteWorkflowRunLogs:
-    - DELETE /repos/{owner}/{repo}/actions/runs/{run_id}/logs
-  ActionsService.DisableWorkflowByFileName:
-    - PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/disable
-  ActionsService.DisableWorkflowByID:
-    - PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/disable
-  ActionsService.DownloadArtifact:
-    - GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/{archive_format}
-  ActionsService.EnableWorkflowByFileName:
-    - PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/enable
-  ActionsService.EnableWorkflowByID:
-    - PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/enable
-  ActionsService.GenerateOrgJITConfig:
-    - POST /orgs/{org}/actions/runners/generate-jitconfig
-  ActionsService.GenerateRepoJITConfig:
-    - POST /repos/{owner}/{repo}/actions/runners/generate-jitconfig
-  ActionsService.GetArtifact:
-    - GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}
-  ActionsService.GetCacheUsageForRepo:
-    - GET /repos/{owner}/{repo}/actions/cache/usage
-  ActionsService.GetEnvPublicKey:
-    - GET /repositories/{repository_id}/environments/{environment_name}/secrets/public-key
-  ActionsService.GetEnvSecret:
-    - GET /repositories/{repository_id}/environments/{environment_name}/secrets/{secret_name}
-  ActionsService.GetEnvVariable:
-    - GET /repositories/{repository_id}/environments/{environment_name}/variables/{name}
-  ActionsService.GetOrgOIDCSubjectClaimCustomTemplate:
-    - GET /orgs/{org}/actions/oidc/customization/sub
-  ActionsService.GetOrgPublicKey:
-    - GET /orgs/{org}/actions/secrets/public-key
-  ActionsService.GetOrgSecret:
-    - GET /orgs/{org}/actions/secrets/{secret_name}
-  ActionsService.GetOrgVariable:
-    - GET /orgs/{org}/actions/variables/{name}
-  ActionsService.GetOrganizationRunner:
-    - GET /orgs/{org}/actions/runners/{runner_id}
-  ActionsService.GetOrganizationRunnerGroup:
-    - GET /orgs/{org}/actions/runner-groups/{runner_group_id}
-  ActionsService.GetRepoOIDCSubjectClaimCustomTemplate:
-    - GET /repos/{owner}/{repo}/actions/oidc/customization/sub
-  ActionsService.GetRepoPublicKey:
-    - GET /repos/{owner}/{repo}/actions/secrets/public-key
-  ActionsService.GetRepoSecret:
-    - GET /repos/{owner}/{repo}/actions/secrets/{secret_name}
-  ActionsService.GetRepoVariable:
-    - GET /repos/{owner}/{repo}/actions/variables/{name}
-  ActionsService.GetRequiredWorkflowByID:
-    - GET /orgs/{org}/actions/required_workflows/{workflow_id}
-  ActionsService.GetRunner:
-    - GET /repos/{owner}/{repo}/actions/runners/{runner_id}
-  ActionsService.GetTotalCacheUsageForEnterprise:
-    - GET /enterprises/{enterprise}/actions/cache/usage
-  ActionsService.GetTotalCacheUsageForOrg:
-    - GET /orgs/{org}/actions/cache/usage
-  ActionsService.GetWorkflowByFileName:
-    - GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}
-  ActionsService.GetWorkflowByID:
-    - GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}
-  ActionsService.GetWorkflowJobByID:
-    - GET /repos/{owner}/{repo}/actions/jobs/{job_id}
-  ActionsService.GetWorkflowJobLogs:
-    - GET /repos/{owner}/{repo}/actions/jobs/{job_id}/logs
-  ActionsService.GetWorkflowRunAttempt:
-    - GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}
-  ActionsService.GetWorkflowRunAttemptLogs:
-    - GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/logs
-  ActionsService.GetWorkflowRunByID:
-    - GET /repos/{owner}/{repo}/actions/runs/{run_id}
-  ActionsService.GetWorkflowRunLogs:
-    - GET /repos/{owner}/{repo}/actions/runs/{run_id}/logs
-  ActionsService.GetWorkflowRunUsageByID:
-    - GET /repos/{owner}/{repo}/actions/runs/{run_id}/timing
-  ActionsService.GetWorkflowUsageByFileName:
-    - GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/timing
-  ActionsService.GetWorkflowUsageByID:
-    - GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/timing
-  ActionsService.ListArtifacts:
-    - GET /repos/{owner}/{repo}/actions/artifacts
-  ActionsService.ListCacheUsageByRepoForOrg:
-    - GET /orgs/{org}/actions/cache/usage-by-repository
-  ActionsService.ListCaches:
-    - GET /repos/{owner}/{repo}/actions/caches
-  ActionsService.ListEnabledReposInOrg:
-    - GET /orgs/{org}/actions/permissions/repositories
-  ActionsService.ListEnvSecrets:
-    - GET /repositories/{repository_id}/environments/{environment_name}/secrets
-  ActionsService.ListEnvVariables:
-    - GET /repositories/{repository_id}/environments/{environment_name}/variables
-  ActionsService.ListOrgRequiredWorkflows:
-    - GET /orgs/{org}/actions/required_workflows
-  ActionsService.ListOrgSecrets:
-    - GET /orgs/{org}/actions/secrets
-  ActionsService.ListOrgVariables:
-    - GET /orgs/{org}/actions/variables
-  ActionsService.ListOrganizationRunnerApplicationDownloads:
-    - GET /orgs/{org}/actions/runners/downloads
-  ActionsService.ListOrganizationRunnerGroups:
-    - GET /orgs/{org}/actions/runner-groups
-  ActionsService.ListOrganizationRunners:
-    - GET /orgs/{org}/actions/runners
-  ActionsService.ListRepoRequiredWorkflows:
-    - GET /repos/{owner}/{repo}/actions/required_workflows
-  ActionsService.ListRepoSecrets:
-    - GET /repos/{owner}/{repo}/actions/secrets
-  ActionsService.ListRepoVariables:
-    - GET /repos/{owner}/{repo}/actions/variables
-  ActionsService.ListRepositoryAccessRunnerGroup:
-    - GET /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories
-  ActionsService.ListRepositoryWorkflowRuns:
-    - GET /repos/{owner}/{repo}/actions/runs
-  ActionsService.ListRequiredWorkflowSelectedRepos:
-    - GET /orgs/{org}/actions/required_workflows/{workflow_id}/repositories
-  ActionsService.ListRunnerApplicationDownloads:
-    - GET /repos/{owner}/{repo}/actions/runners/downloads
-  ActionsService.ListRunnerGroupRunners:
-    - GET /orgs/{org}/actions/runner-groups/{runner_group_id}/runners
-  ActionsService.ListRunners:
-    - GET /repos/{owner}/{repo}/actions/runners
-  ActionsService.ListSelectedReposForOrgSecret:
-    - GET /orgs/{org}/actions/secrets/{secret_name}/repositories
-  ActionsService.ListSelectedReposForOrgVariable:
-    - GET /orgs/{org}/actions/variables/{name}/repositories
-  ActionsService.ListWorkflowJobs:
-    - GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs
-  ActionsService.ListWorkflowRunArtifacts:
-    - GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts
-  ActionsService.ListWorkflowRunsByFileName:
-    - GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs
-  ActionsService.ListWorkflowRunsByID:
-    - GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs
-  ActionsService.ListWorkflows:
-    - GET /repos/{owner}/{repo}/actions/workflows
-  ActionsService.PendingDeployments:
-    - POST /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments
-  ActionsService.RemoveEnabledRepoInOrg:
-    - DELETE /orgs/{org}/actions/permissions/repositories/{repository_id}
-  ActionsService.RemoveOrganizationRunner:
-    - DELETE /orgs/{org}/actions/runners/{runner_id}
-  ActionsService.RemoveRepoFromRequiredWorkflow:
-    - DELETE /orgs/{org}/actions/required_workflows/{workflow_id}/repositories/{repository_id}
-  ActionsService.RemoveRepositoryAccessRunnerGroup:
-    - DELETE /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories/{repository_id}
-  ActionsService.RemoveRunner:
-    - DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}
-  ActionsService.RemoveRunnerGroupRunners:
-    - DELETE /orgs/{org}/actions/runner-groups/{runner_group_id}/runners/{runner_id}
-  ActionsService.RemoveSelectedRepoFromOrgSecret:
-    - DELETE /orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}
-  ActionsService.RemoveSelectedRepoFromOrgVariable:
-    - DELETE /orgs/{org}/actions/variables/{name}/repositories/{repository_id}
-  ActionsService.RerunFailedJobsByID:
-    - POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun-failed-jobs
-  ActionsService.RerunJobByID:
-    - POST /repos/{owner}/{repo}/actions/jobs/{job_id}/rerun
-  ActionsService.RerunWorkflowByID:
-    - POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun
-  ActionsService.SetEnabledReposInOrg:
-    - PUT /orgs/{org}/actions/permissions/repositories
-  ActionsService.SetOrgOIDCSubjectClaimCustomTemplate:
-    - PUT /orgs/{org}/actions/oidc/customization/sub
-  ActionsService.SetRepoOIDCSubjectClaimCustomTemplate:
-    - PUT /repos/{owner}/{repo}/actions/oidc/customization/sub
-  ActionsService.SetRepositoryAccessRunnerGroup:
-    - PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories
-  ActionsService.SetRequiredWorkflowSelectedRepos:
-    - PUT /orgs/{org}/actions/required_workflows/{workflow_id}/repositories
-  ActionsService.SetRunnerGroupRunners:
-    - PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/runners
-  ActionsService.SetSelectedReposForOrgSecret:
-    - PUT /orgs/{org}/actions/secrets/{secret_name}/repositories
-  ActionsService.SetSelectedReposForOrgVariable:
-    - PUT /orgs/{org}/actions/variables/{name}/repositories
-  ActionsService.UpdateEnvVariable:
-    - PATCH /repositories/{repository_id}/environments/{environment_name}/variables/{name}
-  ActionsService.UpdateOrgVariable:
-    - PATCH /orgs/{org}/actions/variables/{name}
-  ActionsService.UpdateOrganizationRunnerGroup:
-    - PATCH /orgs/{org}/actions/runner-groups/{runner_group_id}
-  ActionsService.UpdateRepoVariable:
-    - PATCH /repos/{owner}/{repo}/actions/variables/{name}
-  ActionsService.UpdateRequiredWorkflow:
-    - PATCH /orgs/{org}/actions/required_workflows/{workflow_id}
-  ActivityService.DeleteRepositorySubscription:
-    - DELETE /repos/{owner}/{repo}/subscription
-  ActivityService.DeleteThreadSubscription:
-    - DELETE /notifications/threads/{thread_id}/subscription
-  ActivityService.GetRepositorySubscription:
-    - GET /repos/{owner}/{repo}/subscription
-  ActivityService.GetThread:
-    - GET /notifications/threads/{thread_id}
-  ActivityService.GetThreadSubscription:
-    - GET /notifications/threads/{thread_id}/subscription
-  ActivityService.IsStarred:
-    - GET /user/starred/{owner}/{repo}
-  ActivityService.ListEvents:
-    - GET /events
-  ActivityService.ListEventsForOrganization:
-    - GET /orgs/{org}/events
-  ActivityService.ListEventsForRepoNetwork:
-    - GET /networks/{owner}/{repo}/events
-  ActivityService.ListEventsPerformedByUser:
-    - GET /users/{username}/events
-    - GET /users/{username}/events/public
-  ActivityService.ListEventsReceivedByUser:
-    - GET /users/{username}/received_events
-    - GET /users/{username}/received_events/public
-  ActivityService.ListFeeds:
-    - GET /feeds
-  ActivityService.ListIssueEventsForRepository:
-    - GET /repos/{owner}/{repo}/issues/events
-  ActivityService.ListNotifications:
-    - GET /notifications
-  ActivityService.ListRepositoryEvents:
-    - GET /repos/{owner}/{repo}/events
-  ActivityService.ListRepositoryNotifications:
-    - GET /repos/{owner}/{repo}/notifications
-  ActivityService.ListStargazers:
-    - GET /repos/{owner}/{repo}/stargazers
-  ActivityService.ListStarred:
-    - GET /user/starred
-    - GET /users/{username}/starred
-  ActivityService.ListUserEventsForOrganization:
-    - GET /users/{username}/events/orgs/{org}
-  ActivityService.ListWatched:
-    - GET /user/subscriptions
-    - GET /users/{username}/subscriptions
-  ActivityService.ListWatchers:
-    - GET /repos/{owner}/{repo}/subscribers
-  ActivityService.MarkNotificationsRead:
-    - PUT /notifications
-  ActivityService.MarkRepositoryNotificationsRead:
-    - PUT /repos/{owner}/{repo}/notifications
-  ActivityService.MarkThreadRead:
-    - PATCH /notifications/threads/{thread_id}
-  ActivityService.SetRepositorySubscription:
-    - PUT /repos/{owner}/{repo}/subscription
-  ActivityService.SetThreadSubscription:
-    - PUT /notifications/threads/{thread_id}/subscription
-  ActivityService.Star:
-    - PUT /user/starred/{owner}/{repo}
-  ActivityService.Unstar:
-    - DELETE /user/starred/{owner}/{repo}
-  AdminService.CreateOrg:
-    - POST /admin/organizations
-  AdminService.CreateUser:
-    - POST /admin/users
-  AdminService.CreateUserImpersonation:
-    - POST /admin/users/{username}/authorizations
-  AdminService.DeleteUser:
-    - DELETE /admin/users/{username}
-  AdminService.DeleteUserImpersonation:
-    - DELETE /admin/users/{username}/authorizations
-  AdminService.GetAdminStats:
-    - GET /enterprise/stats/all
-  AdminService.RenameOrg:
-    - PATCH /admin/organizations/{org}
-  AdminService.RenameOrgByName:
-    - PATCH /admin/organizations/{org}
-  AdminService.UpdateTeamLDAPMapping:
-    - PATCH /admin/ldap/teams/{team_id}/mapping
-  AdminService.UpdateUserLDAPMapping:
-    - PATCH /admin/ldap/users/{username}/mapping
-  AppsService.AddRepository:
-    - PUT /user/installations/{installation_id}/repositories/{repository_id}
-  AppsService.CompleteAppManifest:
-    - POST /app-manifests/{code}/conversions
-  AppsService.CreateAttachment:
-    - POST /repos/{owner}/{repo}/content_references/{content_reference_id}/attachments
-  AppsService.CreateInstallationToken:
-    - POST /app/installations/{installation_id}/access_tokens
-  AppsService.DeleteInstallation:
-    - DELETE /app/installations/{installation_id}
-  AppsService.FindOrganizationInstallation:
-    - GET /orgs/{org}/installation
-  AppsService.FindRepositoryInstallation:
-    - GET /repos/{owner}/{repo}/installation
-  AppsService.FindUserInstallation:
-    - GET /users/{username}/installation
-  AppsService.Get:
-    - GET /app
-    - GET /apps/{app_slug}
-  AppsService.GetHookConfig:
-    - GET /app/hook/config
-  AppsService.GetHookDelivery:
-    - GET /app/hook/deliveries/{delivery_id}
-  AppsService.GetInstallation:
-    - GET /app/installations/{installation_id}
-  AppsService.ListHookDeliveries:
-    - GET /app/hook/deliveries
-  AppsService.ListInstallations:
-    - GET /app/installations
-  AppsService.ListRepos:
-    - GET /installation/repositories
-  AppsService.ListUserInstallations:
-    - GET /user/installations
-  AppsService.ListUserRepos:
-    - GET /user/installations/{installation_id}/repositories
-  AppsService.RedeliverHookDelivery:
-    - POST /app/hook/deliveries/{delivery_id}/attempts
-  AppsService.RemoveRepository:
-    - DELETE /user/installations/{installation_id}/repositories/{repository_id}
-  AppsService.RevokeInstallationToken:
-    - DELETE /installation/token
-  AppsService.SuspendInstallation:
-    - PUT /app/installations/{installation_id}/suspended
-  AppsService.UnsuspendInstallation:
-    - DELETE /app/installations/{installation_id}/suspended
-  AppsService.UpdateHookConfig:
-    - PATCH /app/hook/config
-  AuthorizationsService.Check:
-    - POST /applications/{client_id}/token
-  AuthorizationsService.CreateImpersonation:
-    - POST /admin/users/{username}/authorizations
-  AuthorizationsService.DeleteGrant:
-    - DELETE /applications/{client_id}/grant
-  AuthorizationsService.DeleteImpersonation:
-    - DELETE /admin/users/{username}/authorizations
-  AuthorizationsService.Reset:
-    - PATCH /applications/{client_id}/token
-  AuthorizationsService.Revoke:
-    - DELETE /applications/{client_id}/token
-  BillingService.GetActionsBillingOrg:
-    - GET /orgs/{org}/settings/billing/actions
-  BillingService.GetActionsBillingUser:
-    - GET /users/{username}/settings/billing/actions
-  BillingService.GetAdvancedSecurityActiveCommittersOrg:
-    - GET /orgs/{org}/settings/billing/advanced-security
-  BillingService.GetPackagesBillingOrg:
-    - GET /orgs/{org}/settings/billing/packages
-  BillingService.GetPackagesBillingUser:
-    - GET /users/{username}/settings/billing/packages
-  BillingService.GetStorageBillingOrg:
-    - GET /orgs/{org}/settings/billing/shared-storage
-  BillingService.GetStorageBillingUser:
-    - GET /users/{username}/settings/billing/shared-storage
-  ChecksService.CreateCheckRun:
-    - POST /repos/{owner}/{repo}/check-runs
-  ChecksService.CreateCheckSuite:
-    - POST /repos/{owner}/{repo}/check-suites
-  ChecksService.GetCheckRun:
-    - GET /repos/{owner}/{repo}/check-runs/{check_run_id}
-  ChecksService.GetCheckSuite:
-    - GET /repos/{owner}/{repo}/check-suites/{check_suite_id}
-  ChecksService.ListCheckRunAnnotations:
-    - GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations
-  ChecksService.ListCheckRunsCheckSuite:
-    - GET /repos/{owner}/{repo}/check-suites/{check_suite_id}/check-runs
-  ChecksService.ListCheckRunsForRef:
-    - GET /repos/{owner}/{repo}/commits/{ref}/check-runs
-  ChecksService.ListCheckSuitesForRef:
-    - GET /repos/{owner}/{repo}/commits/{ref}/check-suites
-  ChecksService.ReRequestCheckRun:
-    - POST /repos/{owner}/{repo}/check-runs/{check_run_id}/rerequest
-  ChecksService.ReRequestCheckSuite:
-    - POST /repos/{owner}/{repo}/check-suites/{check_suite_id}/rerequest
-  ChecksService.SetCheckSuitePreferences:
-    - PATCH /repos/{owner}/{repo}/check-suites/preferences
-  ChecksService.UpdateCheckRun:
-    - PATCH /repos/{owner}/{repo}/check-runs/{check_run_id}
-  Client.APIMeta:
-    - GET /meta
-  Client.GetCodeOfConduct:
-    - GET /codes_of_conduct/{key}
-  Client.ListCodesOfConduct:
-    - GET /codes_of_conduct
-  Client.ListEmojis:
-    - GET /emojis
-  Client.Markdown:
-    - POST /markdown
-  Client.Octocat:
-    - GET /octocat
-  Client.Zen:
-    - GET /zen
-  CodeScanningService.DeleteAnalysis:
-    - DELETE /repos/{owner}/{repo}/code-scanning/analyses/{analysis_id}
-  CodeScanningService.GetAlert:
-    - GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}
-  CodeScanningService.GetAnalysis:
-    - GET /repos/{owner}/{repo}/code-scanning/analyses/{analysis_id}
-  CodeScanningService.GetCodeQLDatabase:
-    - GET /repos/{owner}/{repo}/code-scanning/codeql/databases/{language}
-  CodeScanningService.GetDefaultSetupConfiguration:
-    - GET /repos/{owner}/{repo}/code-scanning/default-setup
-  CodeScanningService.GetSARIF:
-    - GET /repos/{owner}/{repo}/code-scanning/sarifs/{sarif_id}
-  CodeScanningService.ListAlertInstances:
-    - GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances
-  CodeScanningService.ListAlertsForOrg:
-    - GET /orgs/{org}/code-scanning/alerts
-  CodeScanningService.ListAlertsForRepo:
-    - GET /repos/{owner}/{repo}/code-scanning/alerts
-  CodeScanningService.ListAnalysesForRepo:
-    - GET /repos/{owner}/{repo}/code-scanning/analyses
-  CodeScanningService.ListCodeQLDatabases:
-    - GET /repos/{owner}/{repo}/code-scanning/codeql/databases
-  CodeScanningService.UpdateAlert:
-    - PATCH /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}
-  CodeScanningService.UpdateDefaultSetupConfiguration:
-    - PATCH /repos/{owner}/{repo}/code-scanning/default-setup
-  CodeScanningService.UploadSarif:
-    - POST /repos/{owner}/{repo}/code-scanning/sarifs
-  CodespacesService.AddSelectedRepoToOrgSecret:
-    - PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}
-  CodespacesService.AddSelectedRepoToUserSecret:
-    - PUT /user/codespaces/secrets/{secret_name}/repositories/{repository_id}
-  CodespacesService.CreateInRepo:
-    - POST /repos/{owner}/{repo}/codespaces
-  CodespacesService.CreateOrUpdateOrgSecret:
-    - PUT /orgs/{org}/codespaces/secrets/{secret_name}
-  CodespacesService.CreateOrUpdateRepoSecret:
-    - PUT /repos/{owner}/{repo}/codespaces/secrets/{secret_name}
-  CodespacesService.CreateOrUpdateUserSecret:
-    - PUT /user/codespaces/secrets/{secret_name}
-  CodespacesService.Delete:
-    - DELETE /user/codespaces/{codespace_name}
-  CodespacesService.DeleteOrgSecret:
-    - DELETE /orgs/{org}/codespaces/secrets/{secret_name}
-  CodespacesService.DeleteRepoSecret:
-    - DELETE /repos/{owner}/{repo}/codespaces/secrets/{secret_name}
-  CodespacesService.DeleteUserSecret:
-    - DELETE /user/codespaces/secrets/{secret_name}
-  CodespacesService.GetOrgPublicKey:
-    - GET /orgs/{org}/codespaces/secrets/public-key
-  CodespacesService.GetOrgSecret:
-    - GET /orgs/{org}/codespaces/secrets/{secret_name}
-  CodespacesService.GetRepoPublicKey:
-    - GET /repos/{owner}/{repo}/codespaces/secrets/public-key
-  CodespacesService.GetRepoSecret:
-    - GET /repos/{owner}/{repo}/codespaces/secrets/{secret_name}
-  CodespacesService.GetUserPublicKey:
-    - GET /user/codespaces/secrets/public-key
-  CodespacesService.GetUserSecret:
-    - GET /user/codespaces/secrets/{secret_name}
-  CodespacesService.List:
-    - GET /user/codespaces
-  CodespacesService.ListInRepo:
-    - GET /repos/{owner}/{repo}/codespaces
-  CodespacesService.ListOrgSecrets:
-    - GET /orgs/{org}/codespaces/secrets
-  CodespacesService.ListRepoSecrets:
-    - GET /repos/{owner}/{repo}/codespaces/secrets
-  CodespacesService.ListSelectedReposForOrgSecret:
-    - GET /orgs/{org}/codespaces/secrets/{secret_name}/repositories
-  CodespacesService.ListSelectedReposForUserSecret:
-    - GET /user/codespaces/secrets/{secret_name}/repositories
-  CodespacesService.ListUserSecrets:
-    - GET /user/codespaces/secrets
-  CodespacesService.RemoveSelectedRepoFromOrgSecret:
-    - DELETE /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}
-  CodespacesService.RemoveSelectedRepoFromUserSecret:
-    - DELETE /user/codespaces/secrets/{secret_name}/repositories/{repository_id}
-  CodespacesService.SetSelectedReposForOrgSecret:
-    - PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories
-  CodespacesService.SetSelectedReposForUserSecret:
-    - PUT /user/codespaces/secrets/{secret_name}/repositories
-  CodespacesService.Start:
-    - POST /user/codespaces/{codespace_name}/start
-  CodespacesService.Stop:
-    - POST /user/codespaces/{codespace_name}/stop
-  DependabotService.AddSelectedRepoToOrgSecret:
-    - PUT /orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}
-  DependabotService.CreateOrUpdateOrgSecret:
-    - PUT /orgs/{org}/dependabot/secrets/{secret_name}
-  DependabotService.CreateOrUpdateRepoSecret:
-    - PUT /repos/{owner}/{repo}/dependabot/secrets/{secret_name}
-  DependabotService.DeleteOrgSecret:
-    - DELETE /orgs/{org}/dependabot/secrets/{secret_name}
-  DependabotService.DeleteRepoSecret:
-    - DELETE /repos/{owner}/{repo}/dependabot/secrets/{secret_name}
-  DependabotService.GetOrgPublicKey:
-    - GET /orgs/{org}/dependabot/secrets/public-key
-  DependabotService.GetOrgSecret:
-    - GET /orgs/{org}/dependabot/secrets/{secret_name}
-  DependabotService.GetRepoAlert:
-    - GET /repos/{owner}/{repo}/dependabot/alerts/{alert_number}
-  DependabotService.GetRepoPublicKey:
-    - GET /repos/{owner}/{repo}/dependabot/secrets/public-key
-  DependabotService.GetRepoSecret:
-    - GET /repos/{owner}/{repo}/dependabot/secrets/{secret_name}
-  DependabotService.ListOrgAlerts:
-    - GET /orgs/{org}/dependabot/alerts
-  DependabotService.ListOrgSecrets:
-    - GET /orgs/{org}/dependabot/secrets
-  DependabotService.ListRepoAlerts:
-    - GET /repos/{owner}/{repo}/dependabot/alerts
-  DependabotService.ListRepoSecrets:
-    - GET /repos/{owner}/{repo}/dependabot/secrets
-  DependabotService.ListSelectedReposForOrgSecret:
-    - GET /orgs/{org}/dependabot/secrets/{secret_name}/repositories
-  DependabotService.RemoveSelectedRepoFromOrgSecret:
-    - DELETE /orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}
-  DependabotService.SetSelectedReposForOrgSecret:
-    - PUT /orgs/{org}/dependabot/secrets/{secret_name}/repositories
-  DependencyGraphService.GetSBOM:
-    - GET /repos/{owner}/{repo}/dependency-graph/sbom
-  EnterpriseService.AddOrganizationAccessRunnerGroup:
-    - PUT /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations/{org_id}
-  EnterpriseService.AddRunnerGroupRunners:
-    - PUT /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/runners/{runner_id}
-  EnterpriseService.CreateEnterpriseRunnerGroup:
-    - POST /enterprises/{enterprise}/actions/runner-groups
-  EnterpriseService.CreateRegistrationToken:
-    - POST /enterprises/{enterprise}/actions/runners/registration-token
-  EnterpriseService.DeleteEnterpriseRunnerGroup:
-    - DELETE /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}
-  EnterpriseService.EnableDisableSecurityFeature:
-    - POST /enterprises/{enterprise}/{security_product}/{enablement}
-  EnterpriseService.GenerateEnterpriseJITConfig:
-    - POST /enterprises/{enterprise}/actions/runners/generate-jitconfig
-  EnterpriseService.GetAuditLog:
-    - GET /enterprises/{enterprise}/audit-log
-  EnterpriseService.GetCodeSecurityAndAnalysis:
-    - GET /enterprises/{enterprise}/code_security_and_analysis
-  EnterpriseService.GetEnterpriseRunnerGroup:
-    - GET /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}
-  EnterpriseService.ListOrganizationAccessRunnerGroup:
-    - GET /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations
-  EnterpriseService.ListRunnerApplicationDownloads:
-    - GET /enterprises/{enterprise}/actions/runners/downloads
-  EnterpriseService.ListRunnerGroupRunners:
-    - GET /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/runners
-  EnterpriseService.ListRunnerGroups:
-    - GET /enterprises/{enterprise}/actions/runner-groups
-  EnterpriseService.ListRunners:
-    - GET /enterprises/{enterprise}/actions/runners
-  EnterpriseService.RemoveOrganizationAccessRunnerGroup:
-    - DELETE /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations/{org_id}
-  EnterpriseService.RemoveRunner:
-    - DELETE /enterprises/{enterprise}/actions/runners/{runner_id}
-  EnterpriseService.RemoveRunnerGroupRunners:
-    - DELETE /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/runners/{runner_id}
-  EnterpriseService.SetOrganizationAccessRunnerGroup:
-    - PUT /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations
-  EnterpriseService.SetRunnerGroupRunners:
-    - PUT /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/runners
-  EnterpriseService.UpdateCodeSecurityAndAnalysis:
-    - PATCH /enterprises/{enterprise}/code_security_and_analysis
-  EnterpriseService.UpdateEnterpriseRunnerGroup:
-    - PATCH /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}
-  GistsService.Create:
-    - POST /gists
-  GistsService.CreateComment:
-    - POST /gists/{gist_id}/comments
-  GistsService.Delete:
-    - DELETE /gists/{gist_id}
-  GistsService.DeleteComment:
-    - DELETE /gists/{gist_id}/comments/{comment_id}
-  GistsService.Edit:
-    - PATCH /gists/{gist_id}
-  GistsService.EditComment:
-    - PATCH /gists/{gist_id}/comments/{comment_id}
-  GistsService.Fork:
-    - POST /gists/{gist_id}/forks
-  GistsService.Get:
-    - GET /gists/{gist_id}
-  GistsService.GetComment:
-    - GET /gists/{gist_id}/comments/{comment_id}
-  GistsService.GetRevision:
-    - GET /gists/{gist_id}/{sha}
-  GistsService.IsStarred:
-    - GET /gists/{gist_id}/star
-  GistsService.List:
-    - GET /gists
-    - GET /users/{username}/gists
-  GistsService.ListAll:
-    - GET /gists/public
-  GistsService.ListComments:
-    - GET /gists/{gist_id}/comments
-  GistsService.ListCommits:
-    - GET /gists/{gist_id}/commits
-  GistsService.ListForks:
-    - GET /gists/{gist_id}/forks
-  GistsService.ListStarred:
-    - GET /gists/starred
-  GistsService.Star:
-    - PUT /gists/{gist_id}/star
-  GistsService.Unstar:
-    - DELETE /gists/{gist_id}/star
-  GitService.CreateBlob:
-    - POST /repos/{owner}/{repo}/git/blobs
-  GitService.CreateCommit:
-    - POST /repos/{owner}/{repo}/git/commits
-  GitService.CreateRef:
-    - POST /repos/{owner}/{repo}/git/refs
-  GitService.CreateTag:
-    - POST /repos/{owner}/{repo}/git/tags
-  GitService.CreateTree:
-    - POST /repos/{owner}/{repo}/git/trees
-  GitService.DeleteRef:
-    - DELETE /repos/{owner}/{repo}/git/refs/{ref}
-  GitService.GetBlob:
-    - GET /repos/{owner}/{repo}/git/blobs/{file_sha}
-  GitService.GetBlobRaw:
-    - GET /repos/{owner}/{repo}/git/blobs/{file_sha}
-  GitService.GetCommit:
-    - GET /repos/{owner}/{repo}/git/commits/{commit_sha}
-  GitService.GetRef:
-    - GET /repos/{owner}/{repo}/git/ref/{ref}
-  GitService.GetTag:
-    - GET /repos/{owner}/{repo}/git/tags/{tag_sha}
-  GitService.GetTree:
-    - GET /repos/{owner}/{repo}/git/trees/{tree_sha}
-  GitService.ListMatchingRefs:
-    - GET /repos/{owner}/{repo}/git/matching-refs/{ref}
-  GitService.UpdateRef:
-    - PATCH /repos/{owner}/{repo}/git/refs/{ref}
-  GitignoresService.Get:
-    - GET /gitignore/templates/{name}
-  GitignoresService.List:
-    - GET /gitignore/templates
-  InteractionsService.GetRestrictionsForOrg:
-    - GET /orgs/{org}/interaction-limits
-  InteractionsService.GetRestrictionsForRepo:
-    - GET /repos/{owner}/{repo}/interaction-limits
-  InteractionsService.RemoveRestrictionsFromOrg:
-    - DELETE /orgs/{org}/interaction-limits
-  InteractionsService.RemoveRestrictionsFromRepo:
-    - DELETE /repos/{owner}/{repo}/interaction-limits
-  InteractionsService.UpdateRestrictionsForOrg:
-    - PUT /orgs/{org}/interaction-limits
-  InteractionsService.UpdateRestrictionsForRepo:
-    - PUT /repos/{owner}/{repo}/interaction-limits
-  IssueImportService.CheckStatus:
-    - GET /repos/{owner}/{repo}/import/issues/{issue_number}
-  IssueImportService.CheckStatusSince:
-    - GET /repos/{owner}/{repo}/import/issues
-  IssueImportService.Create:
-    - POST /repos/{owner}/{repo}/import/issues
-  IssuesService.AddAssignees:
-    - POST /repos/{owner}/{repo}/issues/{issue_number}/assignees
-  IssuesService.AddLabelsToIssue:
-    - POST /repos/{owner}/{repo}/issues/{issue_number}/labels
-  IssuesService.Create:
-    - POST /repos/{owner}/{repo}/issues
-  IssuesService.CreateComment:
-    - POST /repos/{owner}/{repo}/issues/{issue_number}/comments
-  IssuesService.CreateLabel:
-    - POST /repos/{owner}/{repo}/labels
-  IssuesService.CreateMilestone:
-    - POST /repos/{owner}/{repo}/milestones
-  IssuesService.DeleteComment:
-    - DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}
-  IssuesService.DeleteLabel:
-    - DELETE /repos/{owner}/{repo}/labels/{name}
-  IssuesService.DeleteMilestone:
-    - DELETE /repos/{owner}/{repo}/milestones/{milestone_number}
-  IssuesService.Edit:
-    - PATCH /repos/{owner}/{repo}/issues/{issue_number}
-  IssuesService.EditComment:
-    - PATCH /repos/{owner}/{repo}/issues/comments/{comment_id}
-  IssuesService.EditLabel:
-    - PATCH /repos/{owner}/{repo}/labels/{name}
-  IssuesService.EditMilestone:
-    - PATCH /repos/{owner}/{repo}/milestones/{milestone_number}
-  IssuesService.Get:
-    - GET /repos/{owner}/{repo}/issues/{issue_number}
-  IssuesService.GetComment:
-    - GET /repos/{owner}/{repo}/issues/comments/{comment_id}
-  IssuesService.GetEvent:
-    - GET /repos/{owner}/{repo}/issues/events/{event_id}
-  IssuesService.GetLabel:
-    - GET /repos/{owner}/{repo}/labels/{name}
-  IssuesService.GetMilestone:
-    - GET /repos/{owner}/{repo}/milestones/{milestone_number}
-  IssuesService.IsAssignee:
-    - GET /repos/{owner}/{repo}/assignees/{assignee}
-  IssuesService.List:
-    - GET /issues
-    - GET /user/issues
-  IssuesService.ListAssignees:
-    - GET /repos/{owner}/{repo}/assignees
-  IssuesService.ListByOrg:
-    - GET /orgs/{org}/issues
-  IssuesService.ListByRepo:
-    - GET /repos/{owner}/{repo}/issues
-  IssuesService.ListComments:
-    - GET /repos/{owner}/{repo}/issues/comments
-    - GET /repos/{owner}/{repo}/issues/{issue_number}/comments
-  IssuesService.ListIssueEvents:
-    - GET /repos/{owner}/{repo}/issues/{issue_number}/events
-  IssuesService.ListIssueTimeline:
-    - GET /repos/{owner}/{repo}/issues/{issue_number}/timeline
-  IssuesService.ListLabels:
-    - GET /repos/{owner}/{repo}/labels
-  IssuesService.ListLabelsByIssue:
-    - GET /repos/{owner}/{repo}/issues/{issue_number}/labels
-  IssuesService.ListLabelsForMilestone:
-    - GET /repos/{owner}/{repo}/milestones/{milestone_number}/labels
-  IssuesService.ListMilestones:
-    - GET /repos/{owner}/{repo}/milestones
-  IssuesService.ListRepositoryEvents:
-    - GET /repos/{owner}/{repo}/issues/events
-  IssuesService.Lock:
-    - PUT /repos/{owner}/{repo}/issues/{issue_number}/lock
-  IssuesService.RemoveAssignees:
-    - DELETE /repos/{owner}/{repo}/issues/{issue_number}/assignees
-  IssuesService.RemoveLabelForIssue:
-    - DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels/{name}
-  IssuesService.RemoveLabelsForIssue:
-    - DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels
-  IssuesService.RemoveMilestone:
-    - PATCH /repos/{owner}/{repo}/issues/{issue_number}
-  IssuesService.ReplaceLabelsForIssue:
-    - PUT /repos/{owner}/{repo}/issues/{issue_number}/labels
-  IssuesService.Unlock:
-    - DELETE /repos/{owner}/{repo}/issues/{issue_number}/lock
-  LicensesService.Get:
-    - GET /licenses/{license}
-  LicensesService.List:
-    - GET /licenses
-  MarketplaceService.GetPlanAccountForAccount:
-    - GET /marketplace_listing/accounts/{account_id}
-    - GET /marketplace_listing/stubbed/accounts/{account_id}
-  MarketplaceService.ListMarketplacePurchasesForUser:
-    - GET /user/marketplace_purchases
-    - GET /user/marketplace_purchases/stubbed
-  MarketplaceService.ListPlanAccountsForPlan:
-    - GET /marketplace_listing/plans/{plan_id}/accounts
-    - GET /marketplace_listing/stubbed/plans/{plan_id}/accounts
-  MarketplaceService.ListPlans:
-    - GET /marketplace_listing/plans
-    - GET /marketplace_listing/stubbed/plans
-  MigrationService.CancelImport:
-    - DELETE /repos/{owner}/{repo}/import
-  MigrationService.CommitAuthors:
-    - GET /repos/{owner}/{repo}/import/authors
-  MigrationService.DeleteMigration:
-    - DELETE /orgs/{org}/migrations/{migration_id}/archive
-  MigrationService.DeleteUserMigration:
-    - DELETE /user/migrations/{migration_id}/archive
-  MigrationService.ImportProgress:
-    - GET /repos/{owner}/{repo}/import
-  MigrationService.LargeFiles:
-    - GET /repos/{owner}/{repo}/import/large_files
-  MigrationService.ListMigrations:
-    - GET /orgs/{org}/migrations
-  MigrationService.ListUserMigrations:
-    - GET /user/migrations
-  MigrationService.MapCommitAuthor:
-    - PATCH /repos/{owner}/{repo}/import/authors/{author_id}
-  MigrationService.MigrationArchiveURL:
-    - GET /orgs/{org}/migrations/{migration_id}/archive
-  MigrationService.MigrationStatus:
-    - GET /orgs/{org}/migrations/{migration_id}
-  MigrationService.SetLFSPreference:
-    - PATCH /repos/{owner}/{repo}/import/lfs
-  MigrationService.StartImport:
-    - PUT /repos/{owner}/{repo}/import
-  MigrationService.StartMigration:
-    - POST /orgs/{org}/migrations
-  MigrationService.StartUserMigration:
-    - POST /user/migrations
-  MigrationService.UnlockRepo:
-    - DELETE /orgs/{org}/migrations/{migration_id}/repos/{repo_name}/lock
-  MigrationService.UnlockUserRepo:
-    - DELETE /user/migrations/{migration_id}/repos/{repo_name}/lock
-  MigrationService.UpdateImport:
-    - PATCH /repos/{owner}/{repo}/import
-  MigrationService.UserMigrationArchiveURL:
-    - GET /user/migrations/{migration_id}/archive
-  MigrationService.UserMigrationStatus:
-    - GET /user/migrations/{migration_id}
-  OrganizationsService.AddSecurityManagerTeam:
-    - PUT /orgs/{org}/security-managers/teams/{team_slug}
-  OrganizationsService.BlockUser:
-    - PUT /orgs/{org}/blocks/{username}
-  OrganizationsService.ConcealMembership:
-    - DELETE /orgs/{org}/public_members/{username}
-  OrganizationsService.ConvertMemberToOutsideCollaborator:
-    - PUT /orgs/{org}/outside_collaborators/{username}
-  OrganizationsService.CreateCustomRepoRole:
-    - POST /orgs/{org}/custom-repository-roles
-  OrganizationsService.CreateHook:
-    - POST /orgs/{org}/hooks
-  OrganizationsService.CreateOrgInvitation:
-    - POST /orgs/{org}/invitations
-  OrganizationsService.CreateOrganizationRuleset:
-    - POST /orgs/{org}/rulesets
-  OrganizationsService.CreateProject:
-    - POST /orgs/{org}/projects
-  OrganizationsService.Delete:
-    - DELETE /orgs/{org}
-  OrganizationsService.DeleteCustomRepoRole:
-    - DELETE /orgs/{org}/custom-repository-roles/{role_id}
-  OrganizationsService.DeleteHook:
-    - DELETE /orgs/{org}/hooks/{hook_id}
-  OrganizationsService.DeleteOrganizationRuleset:
-    - DELETE /orgs/{org}/rulesets/{ruleset_id}
-  OrganizationsService.DeletePackage:
-    - DELETE /orgs/{org}/packages/{package_type}/{package_name}
-  OrganizationsService.Edit:
-    - PATCH /orgs/{org}
-  OrganizationsService.EditActionsAllowed:
-    - PUT /orgs/{org}/actions/permissions/selected-actions
-  OrganizationsService.EditActionsPermissions:
-    - PUT /orgs/{org}/actions/permissions
-  OrganizationsService.EditHook:
-    - PATCH /orgs/{org}/hooks/{hook_id}
-  OrganizationsService.EditHookConfiguration:
-    - PATCH /orgs/{org}/hooks/{hook_id}/config
-  OrganizationsService.EditOrgMembership:
-    - PATCH /user/memberships/orgs/{org}
-    - PUT /orgs/{org}/memberships/{username}
-  OrganizationsService.Get:
-    - GET /orgs/{org}
-  OrganizationsService.GetActionsAllowed:
-    - GET /orgs/{org}/actions/permissions/selected-actions
-  OrganizationsService.GetActionsPermissions:
-    - GET /orgs/{org}/actions/permissions
-  OrganizationsService.GetAllOrganizationRulesets:
-    - GET /orgs/{org}/rulesets
-  OrganizationsService.GetAuditLog:
-    - GET /orgs/{org}/audit-log
-  OrganizationsService.GetHook:
-    - GET /orgs/{org}/hooks/{hook_id}
-  OrganizationsService.GetHookConfiguration:
-    - GET /orgs/{org}/hooks/{hook_id}/config
-  OrganizationsService.GetHookDelivery:
-    - GET /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}
-  OrganizationsService.GetOrgMembership:
-    - GET /orgs/{org}/memberships/{username}
-    - GET /user/memberships/orgs/{org}
-  OrganizationsService.GetOrganizationRuleset:
-    - GET /orgs/{org}/rulesets/{ruleset_id}
-  OrganizationsService.GetPackage:
-    - GET /orgs/{org}/packages/{package_type}/{package_name}
-  OrganizationsService.IsBlocked:
-    - GET /orgs/{org}/blocks/{username}
-  OrganizationsService.IsMember:
-    - GET /orgs/{org}/members/{username}
-  OrganizationsService.IsPublicMember:
-    - GET /orgs/{org}/public_members/{username}
-  OrganizationsService.List:
-    - GET /user/orgs
-    - GET /users/{username}/orgs
-  OrganizationsService.ListAll:
-    - GET /organizations
-  OrganizationsService.ListBlockedUsers:
-    - GET /orgs/{org}/blocks
-  OrganizationsService.ListCredentialAuthorizations:
-    - GET /orgs/{org}/credential-authorizations
-  OrganizationsService.ListCustomRepoRoles:
-    - GET /orgs/{org}/custom-repository-roles
-  OrganizationsService.ListFailedOrgInvitations:
-    - GET /orgs/{org}/failed_invitations
-  OrganizationsService.ListHookDeliveries:
-    - GET /orgs/{org}/hooks/{hook_id}/deliveries
-  OrganizationsService.ListHooks:
-    - GET /orgs/{org}/hooks
-  OrganizationsService.ListInstallations:
-    - GET /orgs/{org}/installations
-  OrganizationsService.ListMembers:
-    - GET /orgs/{org}/members
-    - GET /orgs/{org}/public_members
-  OrganizationsService.ListOrgInvitationTeams:
-    - GET /orgs/{org}/invitations/{invitation_id}/teams
-  OrganizationsService.ListOrgMemberships:
-    - GET /user/memberships/orgs
-  OrganizationsService.ListOutsideCollaborators:
-    - GET /orgs/{org}/outside_collaborators
-  OrganizationsService.ListPackages:
-    - GET /orgs/{org}/packages
-  OrganizationsService.ListPendingOrgInvitations:
-    - GET /orgs/{org}/invitations
-  OrganizationsService.ListProjects:
-    - GET /orgs/{org}/projects
-  OrganizationsService.ListSecurityManagerTeams:
-    - GET /orgs/{org}/security-managers
-  OrganizationsService.PackageDeleteVersion:
-    - DELETE /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}
-  OrganizationsService.PackageGetAllVersions:
-    - GET /orgs/{org}/packages/{package_type}/{package_name}/versions
-  OrganizationsService.PackageGetVersion:
-    - GET /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}
-  OrganizationsService.PackageRestoreVersion:
-    - POST /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore
-  OrganizationsService.PingHook:
-    - POST /orgs/{org}/hooks/{hook_id}/pings
-  OrganizationsService.PublicizeMembership:
-    - PUT /orgs/{org}/public_members/{username}
-  OrganizationsService.RedeliverHookDelivery:
-    - POST /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}/attempts
-  OrganizationsService.RemoveCredentialAuthorization:
-    - DELETE /orgs/{org}/credential-authorizations/{credential_id}
-  OrganizationsService.RemoveMember:
-    - DELETE /orgs/{org}/members/{username}
-  OrganizationsService.RemoveOrgMembership:
-    - DELETE /orgs/{org}/memberships/{username}
-  OrganizationsService.RemoveOutsideCollaborator:
-    - DELETE /orgs/{org}/outside_collaborators/{username}
-  OrganizationsService.RemoveSecurityManagerTeam:
-    - DELETE /orgs/{org}/security-managers/teams/{team_slug}
-  OrganizationsService.RestorePackage:
-    - POST /orgs/{org}/packages/{package_type}/{package_name}/restore
-  OrganizationsService.ReviewPersonalAccessTokenRequest:
-    - POST /orgs/{org}/personal-access-token-requests/{pat_request_id}
-  OrganizationsService.UnblockUser:
-    - DELETE /orgs/{org}/blocks/{username}
-  OrganizationsService.UpdateCustomRepoRole:
-    - PATCH /orgs/{org}/custom-repository-roles/{role_id}
-  OrganizationsService.UpdateOrganizationRuleset:
-    - PUT /orgs/{org}/rulesets/{ruleset_id}
-  ProjectsService.AddProjectCollaborator:
-    - PUT /projects/{project_id}/collaborators/{username}
-  ProjectsService.CreateProjectCard:
-    - POST /projects/columns/{column_id}/cards
-  ProjectsService.CreateProjectColumn:
-    - POST /projects/{project_id}/columns
-  ProjectsService.DeleteProject:
-    - DELETE /projects/{project_id}
-  ProjectsService.DeleteProjectCard:
-    - DELETE /projects/columns/cards/{card_id}
-  ProjectsService.DeleteProjectColumn:
-    - DELETE /projects/columns/{column_id}
-  ProjectsService.GetProject:
-    - GET /projects/{project_id}
-  ProjectsService.GetProjectCard:
-    - GET /projects/columns/cards/{card_id}
-  ProjectsService.GetProjectColumn:
-    - GET /projects/columns/{column_id}
-  ProjectsService.ListProjectCards:
-    - GET /projects/columns/{column_id}/cards
-  ProjectsService.ListProjectCollaborators:
-    - GET /projects/{project_id}/collaborators
-  ProjectsService.ListProjectColumns:
-    - GET /projects/{project_id}/columns
-  ProjectsService.MoveProjectCard:
-    - POST /projects/columns/cards/{card_id}/moves
-  ProjectsService.MoveProjectColumn:
-    - POST /projects/columns/{column_id}/moves
-  ProjectsService.RemoveProjectCollaborator:
-    - DELETE /projects/{project_id}/collaborators/{username}
-  ProjectsService.ReviewProjectCollaboratorPermission:
-    - GET /projects/{project_id}/collaborators/{username}/permission
-  ProjectsService.UpdateProject:
-    - PATCH /projects/{project_id}
-  ProjectsService.UpdateProjectCard:
-    - PATCH /projects/columns/cards/{card_id}
-  ProjectsService.UpdateProjectColumn:
-    - PATCH /projects/columns/{column_id}
-  PullRequestsService.Create:
-    - POST /repos/{owner}/{repo}/pulls
-  PullRequestsService.CreateComment:
-    - POST /repos/{owner}/{repo}/pulls/{pull_number}/comments
-  PullRequestsService.CreateCommentInReplyTo:
-    - POST /repos/{owner}/{repo}/pulls/{pull_number}/comments
-  PullRequestsService.CreateReview:
-    - POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews
-  PullRequestsService.DeleteComment:
-    - DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}
-  PullRequestsService.DeletePendingReview:
-    - DELETE /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}
-  PullRequestsService.DismissReview:
-    - PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/dismissals
-  PullRequestsService.Edit:
-    - PATCH /repos/{owner}/{repo}/pulls/{pull_number}
-  PullRequestsService.EditComment:
-    - PATCH /repos/{owner}/{repo}/pulls/comments/{comment_id}
-  PullRequestsService.Get:
-    - GET /repos/{owner}/{repo}/pulls/{pull_number}
-  PullRequestsService.GetComment:
-    - GET /repos/{owner}/{repo}/pulls/comments/{comment_id}
-  PullRequestsService.GetRaw:
-    - GET /repos/{owner}/{repo}/pulls/{pull_number}
-  PullRequestsService.GetReview:
-    - GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}
-  PullRequestsService.IsMerged:
-    - GET /repos/{owner}/{repo}/pulls/{pull_number}/merge
-  PullRequestsService.List:
-    - GET /repos/{owner}/{repo}/pulls
-  PullRequestsService.ListComments:
-    - GET /repos/{owner}/{repo}/pulls/comments
-    - GET /repos/{owner}/{repo}/pulls/{pull_number}/comments
-  PullRequestsService.ListCommits:
-    - GET /repos/{owner}/{repo}/pulls/{pull_number}/commits
-  PullRequestsService.ListFiles:
-    - GET /repos/{owner}/{repo}/pulls/{pull_number}/files
-  PullRequestsService.ListPullRequestsWithCommit:
-    - GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls
-  PullRequestsService.ListReviewComments:
-    - GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments
-  PullRequestsService.ListReviewers:
-    - GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers
-  PullRequestsService.ListReviews:
-    - GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews
-  PullRequestsService.Merge:
-    - PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge
-  PullRequestsService.RemoveReviewers:
-    - DELETE /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers
-  PullRequestsService.RequestReviewers:
-    - POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers
-  PullRequestsService.SubmitReview:
-    - POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/events
-  PullRequestsService.UpdateBranch:
-    - PUT /repos/{owner}/{repo}/pulls/{pull_number}/update-branch
-  PullRequestsService.UpdateReview:
-    - PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}
-  ReactionsService.CreateCommentReaction:
-    - POST /repos/{owner}/{repo}/comments/{comment_id}/reactions
-  ReactionsService.CreateIssueCommentReaction:
-    - POST /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions
-  ReactionsService.CreateIssueReaction:
-    - POST /repos/{owner}/{repo}/issues/{issue_number}/reactions
-  ReactionsService.CreatePullRequestCommentReaction:
-    - POST /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions
-  ReactionsService.CreateReleaseReaction:
-    - POST /repos/{owner}/{repo}/releases/{release_id}/reactions
-  ReactionsService.CreateTeamDiscussionCommentReaction:
-    - POST /teams/{team_id}/discussions/{discussion_number}/comments/{comment_number}/reactions
-  ReactionsService.CreateTeamDiscussionReaction:
-    - POST /teams/{team_id}/discussions/{discussion_number}/reactions
-  ReactionsService.DeleteCommentReaction:
-    - DELETE /repos/{owner}/{repo}/comments/{comment_id}/reactions/{reaction_id}
-  ReactionsService.DeleteCommentReactionByID:
-    - DELETE /repos/{owner}/{repo}/comments/{comment_id}/reactions/{reaction_id}
-  ReactionsService.DeleteIssueCommentReaction:
-    - DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions/{reaction_id}
-  ReactionsService.DeleteIssueCommentReactionByID:
-    - DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions/{reaction_id}
-  ReactionsService.DeleteIssueReaction:
-    - DELETE /repos/{owner}/{repo}/issues/{issue_number}/reactions/{reaction_id}
-  ReactionsService.DeleteIssueReactionByID:
-    - DELETE /repos/{owner}/{repo}/issues/{issue_number}/reactions/{reaction_id}
-  ReactionsService.DeletePullRequestCommentReaction:
-    - DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions/{reaction_id}
-  ReactionsService.DeletePullRequestCommentReactionByID:
-    - DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions/{reaction_id}
-  ReactionsService.DeleteTeamDiscussionCommentReaction:
-    - DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}/reactions/{reaction_id}
-  ReactionsService.DeleteTeamDiscussionCommentReactionByOrgIDAndTeamID:
-    - POST /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}/reactions
-  ReactionsService.DeleteTeamDiscussionReaction:
-    - DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/reactions/{reaction_id}
-  ReactionsService.DeleteTeamDiscussionReactionByOrgIDAndTeamID:
-    - POST /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/reactions
-  ReactionsService.ListCommentReactions:
-    - GET /repos/{owner}/{repo}/comments/{comment_id}/reactions
-  ReactionsService.ListIssueCommentReactions:
-    - GET /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions
-  ReactionsService.ListIssueReactions:
-    - GET /repos/{owner}/{repo}/issues/{issue_number}/reactions
-  ReactionsService.ListPullRequestCommentReactions:
-    - GET /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions
-  ReactionsService.ListTeamDiscussionCommentReactions:
-    - GET /teams/{team_id}/discussions/{discussion_number}/comments/{comment_number}/reactions
-  ReactionsService.ListTeamDiscussionReactions:
-    - GET /teams/{team_id}/discussions/{discussion_number}/reactions
-  RepositoriesService.AddAdminEnforcement:
-    - POST /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins
-  RepositoriesService.AddAppRestrictions:
-    - POST /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps
-  RepositoriesService.AddAutolink:
-    - POST /repos/{owner}/{repo}/autolinks
-  RepositoriesService.AddCollaborator:
-    - PUT /repos/{owner}/{repo}/collaborators/{username}
-  RepositoriesService.AddTeamRestrictions:
-    - POST /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams
-  RepositoriesService.AddUserRestrictions:
-    - POST /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users
-  RepositoriesService.CompareCommits:
-    - GET /repos/{owner}/{repo}/compare/{basehead}
-  RepositoriesService.CompareCommitsRaw:
-    - GET /repos/{owner}/{repo}/compare/{basehead}
-  RepositoriesService.Create:
-    - POST /orgs/{org}/repos
-    - POST /user/repos
-  RepositoriesService.CreateComment:
-    - POST /repos/{owner}/{repo}/commits/{commit_sha}/comments
-  RepositoriesService.CreateDeployment:
-    - POST /repos/{owner}/{repo}/deployments
-  RepositoriesService.CreateDeploymentBranchPolicy:
-    - POST /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies
-  RepositoriesService.CreateDeploymentStatus:
-    - POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses
-  RepositoriesService.CreateFile:
-    - PUT /repos/{owner}/{repo}/contents/{path}
-  RepositoriesService.CreateFork:
-    - POST /repos/{owner}/{repo}/forks
-  RepositoriesService.CreateFromTemplate:
-    - POST /repos/{template_owner}/{template_repo}/generate
-  RepositoriesService.CreateHook:
-    - POST /repos/{owner}/{repo}/hooks
-  RepositoriesService.CreateKey:
-    - POST /repos/{owner}/{repo}/keys
-  RepositoriesService.CreateProject:
-    - POST /repos/{owner}/{repo}/projects
-  RepositoriesService.CreateRelease:
-    - POST /repos/{owner}/{repo}/releases
-  RepositoriesService.CreateRuleset:
-    - POST /repos/{owner}/{repo}/rulesets
-  RepositoriesService.CreateStatus:
-    - POST /repos/{owner}/{repo}/statuses/{sha}
-  RepositoriesService.CreateTagProtection:
-    - POST /repos/{owner}/{repo}/tags/protection
-  RepositoriesService.CreateUpdateEnvironment:
-    - PUT /repos/{owner}/{repo}/environments/{environment_name}
-  RepositoriesService.Delete:
-    - DELETE /repos/{owner}/{repo}
-  RepositoriesService.DeleteAutolink:
-    - DELETE /repos/{owner}/{repo}/autolinks/{autolink_id}
-  RepositoriesService.DeleteComment:
-    - DELETE /repos/{owner}/{repo}/comments/{comment_id}
-  RepositoriesService.DeleteDeployment:
-    - DELETE /repos/{owner}/{repo}/deployments/{deployment_id}
-  RepositoriesService.DeleteDeploymentBranchPolicy:
-    - DELETE /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies/{branch_policy_id}
-  RepositoriesService.DeleteEnvironment:
-    - DELETE /repos/{owner}/{repo}/environments/{environment_name}
-  RepositoriesService.DeleteFile:
-    - DELETE /repos/{owner}/{repo}/contents/{path}
-  RepositoriesService.DeleteHook:
-    - DELETE /repos/{owner}/{repo}/hooks/{hook_id}
-  RepositoriesService.DeleteInvitation:
-    - DELETE /repos/{owner}/{repo}/invitations/{invitation_id}
-  RepositoriesService.DeleteKey:
-    - DELETE /repos/{owner}/{repo}/keys/{key_id}
-  RepositoriesService.DeletePreReceiveHook:
-    - DELETE /repos/{owner}/{repo}/pre-receive-hooks/{pre_receive_hook_id}
-  RepositoriesService.DeleteRelease:
-    - DELETE /repos/{owner}/{repo}/releases/{release_id}
-  RepositoriesService.DeleteReleaseAsset:
-    - DELETE /repos/{owner}/{repo}/releases/assets/{asset_id}
-  RepositoriesService.DeleteRuleset:
-    - DELETE /repos/{owner}/{repo}/rulesets/{ruleset_id}
-  RepositoriesService.DeleteTagProtection:
-    - DELETE /repos/{owner}/{repo}/tags/protection/{tag_protection_id}
-  RepositoriesService.DisableAutomatedSecurityFixes:
-    - DELETE /repos/{owner}/{repo}/automated-security-fixes
-  RepositoriesService.DisableDismissalRestrictions:
-    - PATCH /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews
-  RepositoriesService.DisableLFS:
-    - DELETE /repos/{owner}/{repo}/lfs
-  RepositoriesService.DisablePages:
-    - DELETE /repos/{owner}/{repo}/pages
-  RepositoriesService.DisablePrivateReporting:
-    - DELETE /repos/{owner}/{repo}/private-vulnerability-reporting
-  RepositoriesService.DisableVulnerabilityAlerts:
-    - DELETE /repos/{owner}/{repo}/vulnerability-alerts
-  RepositoriesService.Dispatch:
-    - POST /repos/{owner}/{repo}/dispatches
-  RepositoriesService.DownloadContents:
-    - GET /repos/{owner}/{repo}/contents/{path}
-  RepositoriesService.DownloadContentsWithMeta:
-    - GET /repos/{owner}/{repo}/contents/{path}
-  RepositoriesService.DownloadReleaseAsset:
-    - GET /repos/{owner}/{repo}/releases/assets/{asset_id}
-  RepositoriesService.Edit:
-    - PATCH /repos/{owner}/{repo}
-  RepositoriesService.EditActionsAccessLevel:
-    - PUT /repos/{owner}/{repo}/actions/permissions/access
-  RepositoriesService.EditActionsAllowed:
-    - PUT /repos/{owner}/{repo}/actions/permissions/selected-actions
-  RepositoriesService.EditActionsPermissions:
-    - PUT /repos/{owner}/{repo}/actions/permissions
-  RepositoriesService.EditHook:
-    - PATCH /repos/{owner}/{repo}/hooks/{hook_id}
-  RepositoriesService.EditHookConfiguration:
-    - PATCH /repos/{owner}/{repo}/hooks/{hook_id}/config
-  RepositoriesService.EditRelease:
-    - PATCH /repos/{owner}/{repo}/releases/{release_id}
-  RepositoriesService.EditReleaseAsset:
-    - PATCH /repos/{owner}/{repo}/releases/assets/{asset_id}
-  RepositoriesService.EnableAutomatedSecurityFixes:
-    - PUT /repos/{owner}/{repo}/automated-security-fixes
-  RepositoriesService.EnableLFS:
-    - PUT /repos/{owner}/{repo}/lfs
-  RepositoriesService.EnablePages:
-    - POST /repos/{owner}/{repo}/pages
-  RepositoriesService.EnablePrivateReporting:
-    - PUT /repos/{owner}/{repo}/private-vulnerability-reporting
-  RepositoriesService.EnableVulnerabilityAlerts:
-    - PUT /repos/{owner}/{repo}/vulnerability-alerts
-  RepositoriesService.GenerateReleaseNotes:
-    - POST /repos/{owner}/{repo}/releases/generate-notes
-  RepositoriesService.Get:
-    - GET /repos/{owner}/{repo}
-  RepositoriesService.GetActionsAccessLevel:
-    - GET /repos/{owner}/{repo}/actions/permissions/access
-  RepositoriesService.GetActionsAllowed:
-    - GET /repos/{owner}/{repo}/actions/permissions/selected-actions
-  RepositoriesService.GetActionsPermissions:
-    - GET /repos/{owner}/{repo}/actions/permissions
-  RepositoriesService.GetAdminEnforcement:
-    - GET /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins
-  RepositoriesService.GetAllRulesets:
-    - GET /repos/{owner}/{repo}/rulesets
-  RepositoriesService.GetArchiveLink:
-    - GET /repos/{owner}/{repo}/tarball/{ref}
-    - GET /repos/{owner}/{repo}/zipball/{ref}
-  RepositoriesService.GetAutolink:
-    - GET /repos/{owner}/{repo}/autolinks/{autolink_id}
-  RepositoriesService.GetAutomatedSecurityFixes:
-    - GET /repos/{owner}/{repo}/automated-security-fixes
-  RepositoriesService.GetBranch:
-    - GET /repos/{owner}/{repo}/branches/{branch}
-  RepositoriesService.GetBranchProtection:
-    - GET /repos/{owner}/{repo}/branches/{branch}/protection
-  RepositoriesService.GetCodeOfConduct:
-    - GET /repos/{owner}/{repo}
-  RepositoriesService.GetCodeownersErrors:
-    - GET /repos/{owner}/{repo}/codeowners/errors
-  RepositoriesService.GetCombinedStatus:
-    - GET /repos/{owner}/{repo}/commits/{ref}/status
-  RepositoriesService.GetComment:
-    - GET /repos/{owner}/{repo}/comments/{comment_id}
-  RepositoriesService.GetCommit:
-    - GET /repos/{owner}/{repo}/commits/{ref}
-  RepositoriesService.GetCommitRaw:
-    - GET /repos/{owner}/{repo}/commits/{ref}
-  RepositoriesService.GetCommitSHA1:
-    - GET /repos/{owner}/{repo}/commits/{ref}
-  RepositoriesService.GetCommunityHealthMetrics:
-    - GET /repos/{owner}/{repo}/community/profile
-  RepositoriesService.GetContents:
-    - GET /repos/{owner}/{repo}/contents/{path}
-  RepositoriesService.GetDeployment:
-    - GET /repos/{owner}/{repo}/deployments/{deployment_id}
-  RepositoriesService.GetDeploymentBranchPolicy:
-    - GET /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies/{branch_policy_id}
-  RepositoriesService.GetDeploymentStatus:
-    - GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses/{status_id}
-  RepositoriesService.GetEnvironment:
-    - GET /repos/{owner}/{repo}/environments/{environment_name}
-  RepositoriesService.GetHook:
-    - GET /repos/{owner}/{repo}/hooks/{hook_id}
-  RepositoriesService.GetHookConfiguration:
-    - GET /repos/{owner}/{repo}/hooks/{hook_id}/config
-  RepositoriesService.GetHookDelivery:
-    - GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}
-  RepositoriesService.GetKey:
-    - GET /repos/{owner}/{repo}/keys/{key_id}
-  RepositoriesService.GetLatestPagesBuild:
-    - GET /repos/{owner}/{repo}/pages/builds/latest
-  RepositoriesService.GetLatestRelease:
-    - GET /repos/{owner}/{repo}/releases/latest
-  RepositoriesService.GetPageBuild:
-    - GET /repos/{owner}/{repo}/pages/builds/{build_id}
-  RepositoriesService.GetPageHealthCheck:
-    - GET /repos/{owner}/{repo}/pages/health
-  RepositoriesService.GetPagesInfo:
-    - GET /repos/{owner}/{repo}/pages
-  RepositoriesService.GetPermissionLevel:
-    - GET /repos/{owner}/{repo}/collaborators/{username}/permission
-  RepositoriesService.GetPreReceiveHook:
-    - GET /repos/{owner}/{repo}/pre-receive-hooks/{pre_receive_hook_id}
-  RepositoriesService.GetPullRequestReviewEnforcement:
-    - GET /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews
-  RepositoriesService.GetReadme:
-    - GET /repos/{owner}/{repo}/readme
-  RepositoriesService.GetRelease:
-    - GET /repos/{owner}/{repo}/releases/{release_id}
-  RepositoriesService.GetReleaseAsset:
-    - GET /repos/{owner}/{repo}/releases/assets/{asset_id}
-  RepositoriesService.GetReleaseByTag:
-    - GET /repos/{owner}/{repo}/releases/tags/{tag}
-  RepositoriesService.GetRequiredStatusChecks:
-    - GET /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks
-  RepositoriesService.GetRulesForBranch:
-    - GET /repos/{owner}/{repo}/rules/branches/{branch}
-  RepositoriesService.GetRuleset:
-    - GET /repos/{owner}/{repo}/rulesets/{ruleset_id}
-  RepositoriesService.GetSignaturesProtectedBranch:
-    - GET /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures
-  RepositoriesService.GetVulnerabilityAlerts:
-    - GET /repos/{owner}/{repo}/vulnerability-alerts
-  RepositoriesService.IsCollaborator:
-    - GET /repos/{owner}/{repo}/collaborators/{username}
-  RepositoriesService.License:
-    - GET /repos/{owner}/{repo}/license
-  RepositoriesService.List:
-    - GET /user/repos
-    - GET /users/{username}/repos
-  RepositoriesService.ListAll:
-    - GET /repositories
-  RepositoriesService.ListAllTopics:
-    - GET /repos/{owner}/{repo}/topics
-  RepositoriesService.ListAppRestrictions:
-    - GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps
-  RepositoriesService.ListApps:
-    - GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps
-  RepositoriesService.ListAutolinks:
-    - GET /repos/{owner}/{repo}/autolinks
-  RepositoriesService.ListBranches:
-    - GET /repos/{owner}/{repo}/branches
-  RepositoriesService.ListBranchesHeadCommit:
-    - GET /repos/{owner}/{repo}/commits/{commit_sha}/branches-where-head
-  RepositoriesService.ListByOrg:
-    - GET /orgs/{org}/repos
-  RepositoriesService.ListCodeFrequency:
-    - GET /repos/{owner}/{repo}/stats/code_frequency
-  RepositoriesService.ListCollaborators:
-    - GET /repos/{owner}/{repo}/collaborators
-  RepositoriesService.ListComments:
-    - GET /repos/{owner}/{repo}/comments
-  RepositoriesService.ListCommitActivity:
-    - GET /repos/{owner}/{repo}/stats/commit_activity
-  RepositoriesService.ListCommitComments:
-    - GET /repos/{owner}/{repo}/commits/{commit_sha}/comments
-  RepositoriesService.ListCommits:
-    - GET /repos/{owner}/{repo}/commits
-  RepositoriesService.ListContributors:
-    - GET /repos/{owner}/{repo}/contributors
-  RepositoriesService.ListContributorsStats:
-    - GET /repos/{owner}/{repo}/stats/contributors
-  RepositoriesService.ListDeploymentBranchPolicies:
-    - GET /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies
-  RepositoriesService.ListDeploymentStatuses:
-    - GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses
-  RepositoriesService.ListDeployments:
-    - GET /repos/{owner}/{repo}/deployments
-  RepositoriesService.ListEnvironments:
-    - GET /repos/{owner}/{repo}/environments
-  RepositoriesService.ListForks:
-    - GET /repos/{owner}/{repo}/forks
-  RepositoriesService.ListHookDeliveries:
-    - GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries
-  RepositoriesService.ListHooks:
-    - GET /repos/{owner}/{repo}/hooks
-  RepositoriesService.ListInvitations:
-    - GET /repos/{owner}/{repo}/invitations
-  RepositoriesService.ListKeys:
-    - GET /repos/{owner}/{repo}/keys
-  RepositoriesService.ListLanguages:
-    - GET /repos/{owner}/{repo}/languages
-  RepositoriesService.ListPagesBuilds:
-    - GET /repos/{owner}/{repo}/pages/builds
-  RepositoriesService.ListParticipation:
-    - GET /repos/{owner}/{repo}/stats/participation
-  RepositoriesService.ListPreReceiveHooks:
-    - GET /repos/{owner}/{repo}/pre-receive-hooks
-  RepositoriesService.ListProjects:
-    - GET /repos/{owner}/{repo}/projects
-  RepositoriesService.ListPunchCard:
-    - GET /repos/{owner}/{repo}/stats/punch_card
-  RepositoriesService.ListReleaseAssets:
-    - GET /repos/{owner}/{repo}/releases/{release_id}/assets
-  RepositoriesService.ListReleases:
-    - GET /repos/{owner}/{repo}/releases
-  RepositoriesService.ListRequiredStatusChecksContexts:
-    - GET /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks/contexts
-  RepositoriesService.ListStatuses:
-    - GET /repos/{owner}/{repo}/commits/{ref}/statuses
-  RepositoriesService.ListTagProtection:
-    - GET /repos/{owner}/{repo}/tags/protection
-  RepositoriesService.ListTags:
-    - GET /repos/{owner}/{repo}/tags
-  RepositoriesService.ListTeamRestrictions:
-    - GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams
-  RepositoriesService.ListTeams:
-    - GET /repos/{owner}/{repo}/teams
-  RepositoriesService.ListTrafficClones:
-    - GET /repos/{owner}/{repo}/traffic/clones
-  RepositoriesService.ListTrafficPaths:
-    - GET /repos/{owner}/{repo}/traffic/popular/paths
-  RepositoriesService.ListTrafficReferrers:
-    - GET /repos/{owner}/{repo}/traffic/popular/referrers
-  RepositoriesService.ListTrafficViews:
-    - GET /repos/{owner}/{repo}/traffic/views
-  RepositoriesService.ListUserRestrictions:
-    - GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users
-  RepositoriesService.Merge:
-    - POST /repos/{owner}/{repo}/merges
-  RepositoriesService.MergeUpstream:
-    - POST /repos/{owner}/{repo}/merge-upstream
-  RepositoriesService.OptionalSignaturesOnProtectedBranch:
-    - DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures
-  RepositoriesService.PingHook:
-    - POST /repos/{owner}/{repo}/hooks/{hook_id}/pings
-  RepositoriesService.RedeliverHookDelivery:
-    - POST /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}/attempts
-  RepositoriesService.RemoveAdminEnforcement:
-    - DELETE /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins
-  RepositoriesService.RemoveAppRestrictions:
-    - DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps
-  RepositoriesService.RemoveBranchProtection:
-    - DELETE /repos/{owner}/{repo}/branches/{branch}/protection
-  RepositoriesService.RemoveCollaborator:
-    - DELETE /repos/{owner}/{repo}/collaborators/{username}
-  RepositoriesService.RemovePullRequestReviewEnforcement:
-    - DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews
-  RepositoriesService.RemoveRequiredStatusChecks:
-    - DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks
-  RepositoriesService.RemoveTeamRestrictions:
-    - DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams
-  RepositoriesService.RemoveUserRestrictions:
-    - DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users
-  RepositoriesService.RenameBranch:
-    - POST /repos/{owner}/{repo}/branches/{branch}/rename
-  RepositoriesService.ReplaceAllTopics:
-    - PUT /repos/{owner}/{repo}/topics
-  RepositoriesService.ReplaceAppRestrictions:
-    - PUT /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps
-  RepositoriesService.ReplaceTeamRestrictions:
-    - PUT /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams
-  RepositoriesService.ReplaceUserRestrictions:
-    - PUT /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users
-  RepositoriesService.RequestPageBuild:
-    - POST /repos/{owner}/{repo}/pages/builds
-  RepositoriesService.RequireSignaturesOnProtectedBranch:
-    - POST /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures
-  RepositoriesService.Subscribe:
-    - POST /hub
-  RepositoriesService.TestHook:
-    - POST /repos/{owner}/{repo}/hooks/{hook_id}/tests
-  RepositoriesService.Transfer:
-    - POST /repos/{owner}/{repo}/transfer
-  RepositoriesService.Unsubscribe:
-    - POST /hub
-  RepositoriesService.UpdateBranchProtection:
-    - PUT /repos/{owner}/{repo}/branches/{branch}/protection
-  RepositoriesService.UpdateComment:
-    - PATCH /repos/{owner}/{repo}/comments/{comment_id}
-  RepositoriesService.UpdateDeploymentBranchPolicy:
-    - PUT /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies/{branch_policy_id}
-  RepositoriesService.UpdateFile:
-    - PUT /repos/{owner}/{repo}/contents/{path}
-  RepositoriesService.UpdateInvitation:
-    - PATCH /repos/{owner}/{repo}/invitations/{invitation_id}
-  RepositoriesService.UpdatePages:
-    - PUT /repos/{owner}/{repo}/pages
-  RepositoriesService.UpdatePreReceiveHook:
-    - PATCH /repos/{owner}/{repo}/pre-receive-hooks/{pre_receive_hook_id}
-  RepositoriesService.UpdatePullRequestReviewEnforcement:
-    - PATCH /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews
-  RepositoriesService.UpdateRequiredStatusChecks:
-    - PATCH /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks
-  RepositoriesService.UpdateRuleset:
-    - PUT /repos/{owner}/{repo}/rulesets/{ruleset_id}
-  RepositoriesService.UploadReleaseAsset:
-    - POST /repos/{owner}/{repo}/releases/{release_id}/assets
-  SCIMService.DeleteSCIMUserFromOrg:
-    - DELETE /scim/v2/organizations/{org}/Users/{scim_user_id}
-  SCIMService.GetSCIMProvisioningInfoForUser:
-    - GET /scim/v2/organizations/{org}/Users/{scim_user_id}
-  SCIMService.ListSCIMProvisionedIdentities:
-    - GET /scim/v2/organizations/{org}/Users
-  SCIMService.ProvisionAndInviteSCIMUser:
-    - POST /scim/v2/organizations/{org}/Users
-  SCIMService.UpdateAttributeForSCIMUser:
-    - PATCH /scim/v2/organizations/{org}/Users/{scim_user_id}
-  SCIMService.UpdateProvisionedOrgMembership:
-    - PUT /scim/v2/organizations/{org}/Users/{scim_user_id}
-  SearchService.Code:
-    - GET /search/code
-  SearchService.Commits:
-    - GET /search/commits
-  SearchService.Issues:
-    - GET /search/issues
-  SearchService.Labels:
-    - GET /search/labels
-  SearchService.Repositories:
-    - GET /search/repositories
-  SearchService.Topics:
-    - GET /search/topics
-  SearchService.Users:
-    - GET /search/users
-  SecretScanningService.GetAlert:
-    - GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}
-  SecretScanningService.ListAlertsForEnterprise:
-    - GET /enterprises/{enterprise}/secret-scanning/alerts
-  SecretScanningService.ListAlertsForOrg:
-    - GET /orgs/{org}/secret-scanning/alerts
-  SecretScanningService.ListAlertsForRepo:
-    - GET /repos/{owner}/{repo}/secret-scanning/alerts
-  SecretScanningService.ListLocationsForAlert:
-    - GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations
-  SecretScanningService.UpdateAlert:
-    - PATCH /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}
-  SecurityAdvisoriesService.RequestCVE:
-    - POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/cve
-  TeamsService.AddTeamMembershipByID:
-    - PUT /orgs/{org}/teams/{team_slug}/memberships/{username}
-  TeamsService.AddTeamMembershipBySlug:
-    - PUT /orgs/{org}/teams/{team_slug}/memberships/{username}
-  TeamsService.AddTeamProjectByID:
-    - PUT /orgs/{org}/teams/{team_slug}/projects/{project_id}
-  TeamsService.AddTeamProjectBySlug:
-    - PUT /orgs/{org}/teams/{team_slug}/projects/{project_id}
-  TeamsService.AddTeamRepoByID:
-    - PUT /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}
-  TeamsService.AddTeamRepoBySlug:
-    - PUT /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}
-  TeamsService.CreateCommentByID:
-    - POST /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments
-  TeamsService.CreateCommentBySlug:
-    - POST /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments
-  TeamsService.CreateDiscussionByID:
-    - POST /orgs/{org}/teams/{team_slug}/discussions
-  TeamsService.CreateDiscussionBySlug:
-    - POST /orgs/{org}/teams/{team_slug}/discussions
-  TeamsService.CreateOrUpdateIDPGroupConnectionsByID:
-    - PATCH /orgs/{org}/teams/{team_slug}/team-sync/group-mappings
-  TeamsService.CreateOrUpdateIDPGroupConnectionsBySlug:
-    - PATCH /orgs/{org}/teams/{team_slug}/team-sync/group-mappings
-  TeamsService.CreateTeam:
-    - POST /orgs/{org}/teams
-  TeamsService.DeleteCommentByID:
-    - DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}
-  TeamsService.DeleteCommentBySlug:
-    - DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}
-  TeamsService.DeleteDiscussionByID:
-    - DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}
-  TeamsService.DeleteDiscussionBySlug:
-    - DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}
-  TeamsService.DeleteTeamByID:
-    - DELETE /orgs/{org}/teams/{team_slug}
-  TeamsService.DeleteTeamBySlug:
-    - DELETE /orgs/{org}/teams/{team_slug}
-  TeamsService.EditCommentByID:
-    - PATCH /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}
-  TeamsService.EditCommentBySlug:
-    - PATCH /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}
-  TeamsService.EditDiscussionByID:
-    - PATCH /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}
-  TeamsService.EditDiscussionBySlug:
-    - PATCH /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}
-  TeamsService.EditTeamByID:
-    - PATCH /orgs/{org}/teams/{team_slug}
-  TeamsService.EditTeamBySlug:
-    - PATCH /orgs/{org}/teams/{team_slug}
-  TeamsService.GetCommentByID:
-    - GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}
-  TeamsService.GetCommentBySlug:
-    - GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}
-  TeamsService.GetDiscussionByID:
-    - GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}
-  TeamsService.GetDiscussionBySlug:
-    - GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}
-  TeamsService.GetExternalGroup:
-    - GET /orgs/{org}/external-group/{group_id}
-  TeamsService.GetTeamByID:
-    - GET /orgs/{org}/teams/{team_slug}
-  TeamsService.GetTeamBySlug:
-    - GET /orgs/{org}/teams/{team_slug}
-  TeamsService.GetTeamMembershipByID:
-    - GET /orgs/{org}/teams/{team_slug}/members
-  TeamsService.GetTeamMembershipBySlug:
-    - GET /orgs/{org}/teams/{team_slug}/memberships/{username}
-  TeamsService.IsTeamRepoByID:
-    - GET /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}
-  TeamsService.IsTeamRepoBySlug:
-    - GET /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}
-  TeamsService.ListChildTeamsByParentID:
-    - GET /orgs/{org}/teams/{team_slug}/teams
-  TeamsService.ListChildTeamsByParentSlug:
-    - GET /orgs/{org}/teams/{team_slug}/teams
-  TeamsService.ListCommentsByID:
-    - GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments
-  TeamsService.ListCommentsBySlug:
-    - GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments
-  TeamsService.ListDiscussionsByID:
-    - GET /orgs/{org}/teams/{team_slug}/discussions
-  TeamsService.ListDiscussionsBySlug:
-    - GET /orgs/{org}/teams/{team_slug}/discussions
-  TeamsService.ListExternalGroups:
-    - GET /orgs/{org}/external-groups
-  TeamsService.ListExternalGroupsForTeamBySlug:
-    - GET /orgs/{org}/teams/{team_slug}/external-groups
-  TeamsService.ListIDPGroupsForTeamByID:
-    - GET /orgs/{org}/teams/{team_slug}/team-sync/group-mappings
-  TeamsService.ListIDPGroupsForTeamBySlug:
-    - GET /orgs/{org}/teams/{team_slug}/team-sync/group-mappings
-  TeamsService.ListIDPGroupsInOrganization:
-    - GET /orgs/{org}/team-sync/groups
-  TeamsService.ListPendingTeamInvitationsByID:
-    - GET /orgs/{org}/teams/{team_slug}/invitations
-  TeamsService.ListPendingTeamInvitationsBySlug:
-    - GET /orgs/{org}/teams/{team_slug}/invitations
-  TeamsService.ListTeamMembersByID:
-    - GET /orgs/{org}/teams/{team_slug}/members
-  TeamsService.ListTeamMembersBySlug:
-    - GET /orgs/{org}/teams/{team_slug}/members
-  TeamsService.ListTeamProjectsByID:
-    - GET /orgs/{org}/teams/{team_slug}/projects
-  TeamsService.ListTeamProjectsBySlug:
-    - GET /orgs/{org}/teams/{team_slug}/projects
-  TeamsService.ListTeamReposByID:
-    - GET /orgs/{org}/teams/{team_slug}/repos
-  TeamsService.ListTeamReposBySlug:
-    - GET /orgs/{org}/teams/{team_slug}/repos
-  TeamsService.ListTeams:
-    - GET /orgs/{org}/teams
-  TeamsService.ListUserTeams:
-    - GET /user/teams
-  TeamsService.RemoveConnectedExternalGroup:
-    - DELETE /orgs/{org}/teams/{team_slug}/external-groups
-  TeamsService.RemoveTeamMembershipByID:
-    - DELETE /orgs/{org}/teams/{team_slug}/memberships/{username}
-  TeamsService.RemoveTeamMembershipBySlug:
-    - DELETE /orgs/{org}/teams/{team_slug}/memberships/{username}
-  TeamsService.RemoveTeamProjectByID:
-    - DELETE /orgs/{org}/teams/{team_slug}/projects/{project_id}
-  TeamsService.RemoveTeamProjectBySlug:
-    - DELETE /orgs/{org}/teams/{team_slug}/projects/{project_id}
-  TeamsService.RemoveTeamRepoByID:
-    - DELETE /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}
-  TeamsService.RemoveTeamRepoBySlug:
-    - DELETE /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}
-  TeamsService.ReviewTeamProjectsByID:
-    - GET /orgs/{org}/teams/{team_slug}/projects/{project_id}
-  TeamsService.ReviewTeamProjectsBySlug:
-    - GET /orgs/{org}/teams/{team_slug}/projects/{project_id}
-  TeamsService.UpdateConnectedExternalGroup:
-    - PATCH /orgs/{org}/teams/{team_slug}/external-groups
-  UsersService.AcceptInvitation:
-    - PATCH /user/repository_invitations/{invitation_id}
-  UsersService.AddEmails:
-    - POST /user/emails
-  UsersService.BlockUser:
-    - PUT /user/blocks/{username}
-  UsersService.CreateGPGKey:
-    - POST /user/gpg_keys
-  UsersService.CreateKey:
-    - POST /user/keys
-  UsersService.CreateProject:
-    - POST /user/projects
-  UsersService.CreateSSHSigningKey:
-    - POST /user/ssh_signing_keys
-  UsersService.DeclineInvitation:
-    - DELETE /user/repository_invitations/{invitation_id}
-  UsersService.DeleteEmails:
-    - DELETE /user/emails
-  UsersService.DeleteGPGKey:
-    - DELETE /user/gpg_keys/{gpg_key_id}
-  UsersService.DeleteKey:
-    - DELETE /user/keys/{key_id}
-  UsersService.DeletePackage:
-    - DELETE /user/packages/{package_type}/{package_name}
-    - DELETE /users/{username}/packages/{package_type}/{package_name}
-  UsersService.DeleteSSHSigningKey:
-    - DELETE /user/ssh_signing_keys/{ssh_signing_key_id}
-  UsersService.DemoteSiteAdmin:
-    - DELETE /users/{username}/site_admin
-  UsersService.Edit:
-    - PATCH /user
-  UsersService.Follow:
-    - PUT /user/following/{username}
-  UsersService.Get:
-    - GET /user
-    - GET /users/{username}
-  UsersService.GetGPGKey:
-    - GET /user/gpg_keys/{gpg_key_id}
-  UsersService.GetHovercard:
-    - GET /users/{username}/hovercard
-  UsersService.GetKey:
-    - GET /user/keys/{key_id}
-  UsersService.GetPackage:
-    - GET /user/packages/{package_type}/{package_name}
-    - GET /users/{username}/packages/{package_type}/{package_name}
-  UsersService.GetSSHSigningKey:
-    - GET /user/ssh_signing_keys/{ssh_signing_key_id}
-  UsersService.IsBlocked:
-    - GET /user/blocks/{username}
-  UsersService.IsFollowing:
-    - GET /user/following/{username}
-    - GET /users/{username}/following/{target_user}
-  UsersService.ListAll:
-    - GET /users
-  UsersService.ListBlockedUsers:
-    - GET /user/blocks
-  UsersService.ListEmails:
-    - GET /user/emails
-  UsersService.ListFollowers:
-    - GET /user/followers
-    - GET /users/{username}/followers
-  UsersService.ListFollowing:
-    - GET /user/following
-    - GET /users/{username}/following
-  UsersService.ListGPGKeys:
-    - GET /user/gpg_keys
-    - GET /users/{username}/gpg_keys
-  UsersService.ListInvitations:
-    - GET /user/repository_invitations
-  UsersService.ListKeys:
-    - GET /user/keys
-    - GET /users/{username}/keys
-  UsersService.ListPackages:
-    - GET /user/packages
-    - GET /users/{username}/packages
-  UsersService.ListProjects:
-    - GET /users/{username}/projects
-  UsersService.ListSSHSigningKeys:
-    - GET /user/ssh_signing_keys
-    - GET /users/{username}/ssh_signing_keys
-  UsersService.PackageDeleteVersion:
-    - DELETE /user/packages/{package_type}/{package_name}/versions/{package_version_id}
-    - DELETE /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}
-  UsersService.PackageGetAllVersions:
-    - GET /user/packages/{package_type}/{package_name}/versions
-    - GET /users/{username}/packages/{package_type}/{package_name}/versions
-  UsersService.PackageGetVersion:
-    - GET /user/packages/{package_type}/{package_name}/versions/{package_version_id}
-    - GET /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}
-  UsersService.PackageRestoreVersion:
-    - POST /user/packages/{package_type}/{package_name}/versions/{package_version_id}/restore
-    - POST /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore
-  UsersService.PromoteSiteAdmin:
-    - PUT /users/{username}/site_admin
-  UsersService.RestorePackage:
-    - POST /user/packages/{package_type}/{package_name}/restore
-    - POST /users/{username}/packages/{package_type}/{package_name}/restore
-  UsersService.SetEmailVisibility:
-    - PATCH /user/email/visibility
-  UsersService.Suspend:
-    - PUT /users/{username}/suspended
-  UsersService.UnblockUser:
-    - DELETE /user/blocks/{username}
-  UsersService.Unfollow:
-    - DELETE /user/following/{username}
-  UsersService.Unsuspend:
-    - DELETE /users/{username}/suspended
+methods:
+  - name: ActionsService.AddEnabledReposInOrg
+    operations:
+      - PUT /orgs/{org}/actions/permissions/repositories/{repository_id}
+  - name: ActionsService.AddRepoToRequiredWorkflow
+    operations:
+      - PUT /orgs/{org}/actions/required_workflows/{workflow_id}/repositories/{repository_id}
+  - name: ActionsService.AddRepositoryAccessRunnerGroup
+    operations:
+      - PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories/{repository_id}
+  - name: ActionsService.AddRunnerGroupRunners
+    operations:
+      - PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/runners/{runner_id}
+  - name: ActionsService.AddSelectedRepoToOrgSecret
+    operations:
+      - PUT /orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}
+  - name: ActionsService.AddSelectedRepoToOrgVariable
+    operations:
+      - PUT /orgs/{org}/actions/variables/{name}/repositories/{repository_id}
+  - name: ActionsService.CancelWorkflowRunByID
+    operations:
+      - POST /repos/{owner}/{repo}/actions/runs/{run_id}/cancel
+  - name: ActionsService.CreateEnvVariable
+    operations:
+      - POST /repositories/{repository_id}/environments/{environment_name}/variables
+  - name: ActionsService.CreateOrUpdateEnvSecret
+    operations:
+      - PUT /repositories/{repository_id}/environments/{environment_name}/secrets/{secret_name}
+  - name: ActionsService.CreateOrUpdateOrgSecret
+    operations:
+      - PUT /orgs/{org}/actions/secrets/{secret_name}
+  - name: ActionsService.CreateOrUpdateRepoSecret
+    operations:
+      - PUT /repos/{owner}/{repo}/actions/secrets/{secret_name}
+  - name: ActionsService.CreateOrgVariable
+    operations:
+      - POST /orgs/{org}/actions/variables
+  - name: ActionsService.CreateOrganizationRegistrationToken
+    operations:
+      - POST /orgs/{org}/actions/runners/registration-token
+  - name: ActionsService.CreateOrganizationRemoveToken
+    operations:
+      - POST /orgs/{org}/actions/runners/remove-token
+  - name: ActionsService.CreateOrganizationRunnerGroup
+    operations:
+      - POST /orgs/{org}/actions/runner-groups
+  - name: ActionsService.CreateRegistrationToken
+    operations:
+      - POST /repos/{owner}/{repo}/actions/runners/registration-token
+  - name: ActionsService.CreateRemoveToken
+    operations:
+      - POST /repos/{owner}/{repo}/actions/runners/remove-token
+  - name: ActionsService.CreateRepoVariable
+    operations:
+      - POST /repos/{owner}/{repo}/actions/variables
+  - name: ActionsService.CreateRequiredWorkflow
+    operations:
+      - POST /orgs/{org}/actions/required_workflows
+  - name: ActionsService.CreateWorkflowDispatchEventByFileName
+    operations:
+      - POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches
+  - name: ActionsService.CreateWorkflowDispatchEventByID
+    operations:
+      - POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches
+  - name: ActionsService.DeleteArtifact
+    operations:
+      - DELETE /repos/{owner}/{repo}/actions/artifacts/{artifact_id}
+  - name: ActionsService.DeleteCachesByID
+    operations:
+      - DELETE /repos/{owner}/{repo}/actions/caches/{cache_id}
+  - name: ActionsService.DeleteCachesByKey
+    operations:
+      - DELETE /repos/{owner}/{repo}/actions/caches
+  - name: ActionsService.DeleteEnvSecret
+    operations:
+      - DELETE /repositories/{repository_id}/environments/{environment_name}/secrets/{secret_name}
+  - name: ActionsService.DeleteEnvVariable
+    operations:
+      - DELETE /repositories/{repository_id}/environments/{environment_name}/variables/{name}
+  - name: ActionsService.DeleteOrgSecret
+    operations:
+      - DELETE /orgs/{org}/actions/secrets/{secret_name}
+  - name: ActionsService.DeleteOrgVariable
+    operations:
+      - DELETE /orgs/{org}/actions/variables/{name}
+  - name: ActionsService.DeleteOrganizationRunnerGroup
+    operations:
+      - DELETE /orgs/{org}/actions/runner-groups/{runner_group_id}
+  - name: ActionsService.DeleteRepoSecret
+    operations:
+      - DELETE /repos/{owner}/{repo}/actions/secrets/{secret_name}
+  - name: ActionsService.DeleteRepoVariable
+    operations:
+      - DELETE /repos/{owner}/{repo}/actions/variables/{name}
+  - name: ActionsService.DeleteRequiredWorkflow
+    operations:
+      - DELETE /orgs/{org}/actions/required_workflows/{workflow_id}
+  - name: ActionsService.DeleteWorkflowRun
+    operations:
+      - DELETE /repos/{owner}/{repo}/actions/runs/{run_id}
+  - name: ActionsService.DeleteWorkflowRunLogs
+    operations:
+      - DELETE /repos/{owner}/{repo}/actions/runs/{run_id}/logs
+  - name: ActionsService.DisableWorkflowByFileName
+    operations:
+      - PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/disable
+  - name: ActionsService.DisableWorkflowByID
+    operations:
+      - PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/disable
+  - name: ActionsService.DownloadArtifact
+    operations:
+      - GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/{archive_format}
+  - name: ActionsService.EnableWorkflowByFileName
+    operations:
+      - PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/enable
+  - name: ActionsService.EnableWorkflowByID
+    operations:
+      - PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/enable
+  - name: ActionsService.GenerateOrgJITConfig
+    operations:
+      - POST /orgs/{org}/actions/runners/generate-jitconfig
+  - name: ActionsService.GenerateRepoJITConfig
+    operations:
+      - POST /repos/{owner}/{repo}/actions/runners/generate-jitconfig
+  - name: ActionsService.GetArtifact
+    operations:
+      - GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}
+  - name: ActionsService.GetCacheUsageForRepo
+    operations:
+      - GET /repos/{owner}/{repo}/actions/cache/usage
+  - name: ActionsService.GetEnvPublicKey
+    operations:
+      - GET /repositories/{repository_id}/environments/{environment_name}/secrets/public-key
+  - name: ActionsService.GetEnvSecret
+    operations:
+      - GET /repositories/{repository_id}/environments/{environment_name}/secrets/{secret_name}
+  - name: ActionsService.GetEnvVariable
+    operations:
+      - GET /repositories/{repository_id}/environments/{environment_name}/variables/{name}
+  - name: ActionsService.GetOrgOIDCSubjectClaimCustomTemplate
+    operations:
+      - GET /orgs/{org}/actions/oidc/customization/sub
+  - name: ActionsService.GetOrgPublicKey
+    operations:
+      - GET /orgs/{org}/actions/secrets/public-key
+  - name: ActionsService.GetOrgSecret
+    operations:
+      - GET /orgs/{org}/actions/secrets/{secret_name}
+  - name: ActionsService.GetOrgVariable
+    operations:
+      - GET /orgs/{org}/actions/variables/{name}
+  - name: ActionsService.GetOrganizationRunner
+    operations:
+      - GET /orgs/{org}/actions/runners/{runner_id}
+  - name: ActionsService.GetOrganizationRunnerGroup
+    operations:
+      - GET /orgs/{org}/actions/runner-groups/{runner_group_id}
+  - name: ActionsService.GetRepoOIDCSubjectClaimCustomTemplate
+    operations:
+      - GET /repos/{owner}/{repo}/actions/oidc/customization/sub
+  - name: ActionsService.GetRepoPublicKey
+    operations:
+      - GET /repos/{owner}/{repo}/actions/secrets/public-key
+  - name: ActionsService.GetRepoSecret
+    operations:
+      - GET /repos/{owner}/{repo}/actions/secrets/{secret_name}
+  - name: ActionsService.GetRepoVariable
+    operations:
+      - GET /repos/{owner}/{repo}/actions/variables/{name}
+  - name: ActionsService.GetRequiredWorkflowByID
+    operations:
+      - GET /orgs/{org}/actions/required_workflows/{workflow_id}
+  - name: ActionsService.GetRunner
+    operations:
+      - GET /repos/{owner}/{repo}/actions/runners/{runner_id}
+  - name: ActionsService.GetTotalCacheUsageForEnterprise
+    operations:
+      - GET /enterprises/{enterprise}/actions/cache/usage
+  - name: ActionsService.GetTotalCacheUsageForOrg
+    operations:
+      - GET /orgs/{org}/actions/cache/usage
+  - name: ActionsService.GetWorkflowByFileName
+    operations:
+      - GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}
+  - name: ActionsService.GetWorkflowByID
+    operations:
+      - GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}
+  - name: ActionsService.GetWorkflowJobByID
+    operations:
+      - GET /repos/{owner}/{repo}/actions/jobs/{job_id}
+  - name: ActionsService.GetWorkflowJobLogs
+    operations:
+      - GET /repos/{owner}/{repo}/actions/jobs/{job_id}/logs
+  - name: ActionsService.GetWorkflowRunAttempt
+    operations:
+      - GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}
+  - name: ActionsService.GetWorkflowRunAttemptLogs
+    operations:
+      - GET /repos/{owner}/{repo}/actions/runs/{run_id}/attempts/{attempt_number}/logs
+  - name: ActionsService.GetWorkflowRunByID
+    operations:
+      - GET /repos/{owner}/{repo}/actions/runs/{run_id}
+  - name: ActionsService.GetWorkflowRunLogs
+    operations:
+      - GET /repos/{owner}/{repo}/actions/runs/{run_id}/logs
+  - name: ActionsService.GetWorkflowRunUsageByID
+    operations:
+      - GET /repos/{owner}/{repo}/actions/runs/{run_id}/timing
+  - name: ActionsService.GetWorkflowUsageByFileName
+    operations:
+      - GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/timing
+  - name: ActionsService.GetWorkflowUsageByID
+    operations:
+      - GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/timing
+  - name: ActionsService.ListArtifacts
+    operations:
+      - GET /repos/{owner}/{repo}/actions/artifacts
+  - name: ActionsService.ListCacheUsageByRepoForOrg
+    operations:
+      - GET /orgs/{org}/actions/cache/usage-by-repository
+  - name: ActionsService.ListCaches
+    operations:
+      - GET /repos/{owner}/{repo}/actions/caches
+  - name: ActionsService.ListEnabledReposInOrg
+    operations:
+      - GET /orgs/{org}/actions/permissions/repositories
+  - name: ActionsService.ListEnvSecrets
+    operations:
+      - GET /repositories/{repository_id}/environments/{environment_name}/secrets
+  - name: ActionsService.ListEnvVariables
+    operations:
+      - GET /repositories/{repository_id}/environments/{environment_name}/variables
+  - name: ActionsService.ListOrgRequiredWorkflows
+    operations:
+      - GET /orgs/{org}/actions/required_workflows
+  - name: ActionsService.ListOrgSecrets
+    operations:
+      - GET /orgs/{org}/actions/secrets
+  - name: ActionsService.ListOrgVariables
+    operations:
+      - GET /orgs/{org}/actions/variables
+  - name: ActionsService.ListOrganizationRunnerApplicationDownloads
+    operations:
+      - GET /orgs/{org}/actions/runners/downloads
+  - name: ActionsService.ListOrganizationRunnerGroups
+    operations:
+      - GET /orgs/{org}/actions/runner-groups
+  - name: ActionsService.ListOrganizationRunners
+    operations:
+      - GET /orgs/{org}/actions/runners
+  - name: ActionsService.ListRepoRequiredWorkflows
+    operations:
+      - GET /repos/{owner}/{repo}/actions/required_workflows
+  - name: ActionsService.ListRepoSecrets
+    operations:
+      - GET /repos/{owner}/{repo}/actions/secrets
+  - name: ActionsService.ListRepoVariables
+    operations:
+      - GET /repos/{owner}/{repo}/actions/variables
+  - name: ActionsService.ListRepositoryAccessRunnerGroup
+    operations:
+      - GET /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories
+  - name: ActionsService.ListRepositoryWorkflowRuns
+    operations:
+      - GET /repos/{owner}/{repo}/actions/runs
+  - name: ActionsService.ListRequiredWorkflowSelectedRepos
+    operations:
+      - GET /orgs/{org}/actions/required_workflows/{workflow_id}/repositories
+  - name: ActionsService.ListRunnerApplicationDownloads
+    operations:
+      - GET /repos/{owner}/{repo}/actions/runners/downloads
+  - name: ActionsService.ListRunnerGroupRunners
+    operations:
+      - GET /orgs/{org}/actions/runner-groups/{runner_group_id}/runners
+  - name: ActionsService.ListRunners
+    operations:
+      - GET /repos/{owner}/{repo}/actions/runners
+  - name: ActionsService.ListSelectedReposForOrgSecret
+    operations:
+      - GET /orgs/{org}/actions/secrets/{secret_name}/repositories
+  - name: ActionsService.ListSelectedReposForOrgVariable
+    operations:
+      - GET /orgs/{org}/actions/variables/{name}/repositories
+  - name: ActionsService.ListWorkflowJobs
+    operations:
+      - GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs
+  - name: ActionsService.ListWorkflowRunArtifacts
+    operations:
+      - GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts
+  - name: ActionsService.ListWorkflowRunsByFileName
+    operations:
+      - GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs
+  - name: ActionsService.ListWorkflowRunsByID
+    operations:
+      - GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs
+  - name: ActionsService.ListWorkflows
+    operations:
+      - GET /repos/{owner}/{repo}/actions/workflows
+  - name: ActionsService.PendingDeployments
+    operations:
+      - POST /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments
+  - name: ActionsService.RemoveEnabledRepoInOrg
+    operations:
+      - DELETE /orgs/{org}/actions/permissions/repositories/{repository_id}
+  - name: ActionsService.RemoveOrganizationRunner
+    operations:
+      - DELETE /orgs/{org}/actions/runners/{runner_id}
+  - name: ActionsService.RemoveRepoFromRequiredWorkflow
+    operations:
+      - DELETE /orgs/{org}/actions/required_workflows/{workflow_id}/repositories/{repository_id}
+  - name: ActionsService.RemoveRepositoryAccessRunnerGroup
+    operations:
+      - DELETE /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories/{repository_id}
+  - name: ActionsService.RemoveRunner
+    operations:
+      - DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}
+  - name: ActionsService.RemoveRunnerGroupRunners
+    operations:
+      - DELETE /orgs/{org}/actions/runner-groups/{runner_group_id}/runners/{runner_id}
+  - name: ActionsService.RemoveSelectedRepoFromOrgSecret
+    operations:
+      - DELETE /orgs/{org}/actions/secrets/{secret_name}/repositories/{repository_id}
+  - name: ActionsService.RemoveSelectedRepoFromOrgVariable
+    operations:
+      - DELETE /orgs/{org}/actions/variables/{name}/repositories/{repository_id}
+  - name: ActionsService.RerunFailedJobsByID
+    operations:
+      - POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun-failed-jobs
+  - name: ActionsService.RerunJobByID
+    operations:
+      - POST /repos/{owner}/{repo}/actions/jobs/{job_id}/rerun
+  - name: ActionsService.RerunWorkflowByID
+    operations:
+      - POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun
+  - name: ActionsService.SetEnabledReposInOrg
+    operations:
+      - PUT /orgs/{org}/actions/permissions/repositories
+  - name: ActionsService.SetOrgOIDCSubjectClaimCustomTemplate
+    operations:
+      - PUT /orgs/{org}/actions/oidc/customization/sub
+  - name: ActionsService.SetRepoOIDCSubjectClaimCustomTemplate
+    operations:
+      - PUT /repos/{owner}/{repo}/actions/oidc/customization/sub
+  - name: ActionsService.SetRepositoryAccessRunnerGroup
+    operations:
+      - PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/repositories
+  - name: ActionsService.SetRequiredWorkflowSelectedRepos
+    operations:
+      - PUT /orgs/{org}/actions/required_workflows/{workflow_id}/repositories
+  - name: ActionsService.SetRunnerGroupRunners
+    operations:
+      - PUT /orgs/{org}/actions/runner-groups/{runner_group_id}/runners
+  - name: ActionsService.SetSelectedReposForOrgSecret
+    operations:
+      - PUT /orgs/{org}/actions/secrets/{secret_name}/repositories
+  - name: ActionsService.SetSelectedReposForOrgVariable
+    operations:
+      - PUT /orgs/{org}/actions/variables/{name}/repositories
+  - name: ActionsService.UpdateEnvVariable
+    operations:
+      - PATCH /repositories/{repository_id}/environments/{environment_name}/variables/{name}
+  - name: ActionsService.UpdateOrgVariable
+    operations:
+      - PATCH /orgs/{org}/actions/variables/{name}
+  - name: ActionsService.UpdateOrganizationRunnerGroup
+    operations:
+      - PATCH /orgs/{org}/actions/runner-groups/{runner_group_id}
+  - name: ActionsService.UpdateRepoVariable
+    operations:
+      - PATCH /repos/{owner}/{repo}/actions/variables/{name}
+  - name: ActionsService.UpdateRequiredWorkflow
+    operations:
+      - PATCH /orgs/{org}/actions/required_workflows/{workflow_id}
+  - name: ActivityService.DeleteRepositorySubscription
+    operations:
+      - DELETE /repos/{owner}/{repo}/subscription
+  - name: ActivityService.DeleteThreadSubscription
+    operations:
+      - DELETE /notifications/threads/{thread_id}/subscription
+  - name: ActivityService.GetRepositorySubscription
+    operations:
+      - GET /repos/{owner}/{repo}/subscription
+  - name: ActivityService.GetThread
+    operations:
+      - GET /notifications/threads/{thread_id}
+  - name: ActivityService.GetThreadSubscription
+    operations:
+      - GET /notifications/threads/{thread_id}/subscription
+  - name: ActivityService.IsStarred
+    operations:
+      - GET /user/starred/{owner}/{repo}
+  - name: ActivityService.ListEvents
+    operations:
+      - GET /events
+  - name: ActivityService.ListEventsForOrganization
+    operations:
+      - GET /orgs/{org}/events
+  - name: ActivityService.ListEventsForRepoNetwork
+    operations:
+      - GET /networks/{owner}/{repo}/events
+  - name: ActivityService.ListEventsPerformedByUser
+    operations:
+      - GET /users/{username}/events
+      - GET /users/{username}/events/public
+  - name: ActivityService.ListEventsReceivedByUser
+    operations:
+      - GET /users/{username}/received_events
+      - GET /users/{username}/received_events/public
+  - name: ActivityService.ListFeeds
+    operations:
+      - GET /feeds
+  - name: ActivityService.ListIssueEventsForRepository
+    operations:
+      - GET /repos/{owner}/{repo}/issues/events
+  - name: ActivityService.ListNotifications
+    operations:
+      - GET /notifications
+  - name: ActivityService.ListRepositoryEvents
+    operations:
+      - GET /repos/{owner}/{repo}/events
+  - name: ActivityService.ListRepositoryNotifications
+    operations:
+      - GET /repos/{owner}/{repo}/notifications
+  - name: ActivityService.ListStargazers
+    operations:
+      - GET /repos/{owner}/{repo}/stargazers
+  - name: ActivityService.ListStarred
+    operations:
+      - GET /user/starred
+      - GET /users/{username}/starred
+  - name: ActivityService.ListUserEventsForOrganization
+    operations:
+      - GET /users/{username}/events/orgs/{org}
+  - name: ActivityService.ListWatched
+    operations:
+      - GET /user/subscriptions
+      - GET /users/{username}/subscriptions
+  - name: ActivityService.ListWatchers
+    operations:
+      - GET /repos/{owner}/{repo}/subscribers
+  - name: ActivityService.MarkNotificationsRead
+    operations:
+      - PUT /notifications
+  - name: ActivityService.MarkRepositoryNotificationsRead
+    operations:
+      - PUT /repos/{owner}/{repo}/notifications
+  - name: ActivityService.MarkThreadRead
+    operations:
+      - PATCH /notifications/threads/{thread_id}
+  - name: ActivityService.SetRepositorySubscription
+    operations:
+      - PUT /repos/{owner}/{repo}/subscription
+  - name: ActivityService.SetThreadSubscription
+    operations:
+      - PUT /notifications/threads/{thread_id}/subscription
+  - name: ActivityService.Star
+    operations:
+      - PUT /user/starred/{owner}/{repo}
+  - name: ActivityService.Unstar
+    operations:
+      - DELETE /user/starred/{owner}/{repo}
+  - name: AdminService.CreateOrg
+    operations:
+      - POST /admin/organizations
+  - name: AdminService.CreateUser
+    operations:
+      - POST /admin/users
+  - name: AdminService.CreateUserImpersonation
+    operations:
+      - POST /admin/users/{username}/authorizations
+  - name: AdminService.DeleteUser
+    operations:
+      - DELETE /admin/users/{username}
+  - name: AdminService.DeleteUserImpersonation
+    operations:
+      - DELETE /admin/users/{username}/authorizations
+  - name: AdminService.GetAdminStats
+    operations:
+      - GET /enterprise/stats/all
+  - name: AdminService.RenameOrg
+    operations:
+      - PATCH /admin/organizations/{org}
+  - name: AdminService.RenameOrgByName
+    operations:
+      - PATCH /admin/organizations/{org}
+  - name: AdminService.UpdateTeamLDAPMapping
+    operations:
+      - PATCH /admin/ldap/teams/{team_id}/mapping
+  - name: AdminService.UpdateUserLDAPMapping
+    operations:
+      - PATCH /admin/ldap/users/{username}/mapping
+  - name: AppsService.AddRepository
+    operations:
+      - PUT /user/installations/{installation_id}/repositories/{repository_id}
+  - name: AppsService.CompleteAppManifest
+    operations:
+      - POST /app-manifests/{code}/conversions
+  - name: AppsService.CreateAttachment
+    operations:
+      - POST /repos/{owner}/{repo}/content_references/{content_reference_id}/attachments
+  - name: AppsService.CreateInstallationToken
+    operations:
+      - POST /app/installations/{installation_id}/access_tokens
+  - name: AppsService.DeleteInstallation
+    operations:
+      - DELETE /app/installations/{installation_id}
+  - name: AppsService.FindOrganizationInstallation
+    operations:
+      - GET /orgs/{org}/installation
+  - name: AppsService.FindRepositoryInstallation
+    operations:
+      - GET /repos/{owner}/{repo}/installation
+  - name: AppsService.FindUserInstallation
+    operations:
+      - GET /users/{username}/installation
+  - name: AppsService.Get
+    operations:
+      - GET /app
+      - GET /apps/{app_slug}
+  - name: AppsService.GetHookConfig
+    operations:
+      - GET /app/hook/config
+  - name: AppsService.GetHookDelivery
+    operations:
+      - GET /app/hook/deliveries/{delivery_id}
+  - name: AppsService.GetInstallation
+    operations:
+      - GET /app/installations/{installation_id}
+  - name: AppsService.ListHookDeliveries
+    operations:
+      - GET /app/hook/deliveries
+  - name: AppsService.ListInstallations
+    operations:
+      - GET /app/installations
+  - name: AppsService.ListRepos
+    operations:
+      - GET /installation/repositories
+  - name: AppsService.ListUserInstallations
+    operations:
+      - GET /user/installations
+  - name: AppsService.ListUserRepos
+    operations:
+      - GET /user/installations/{installation_id}/repositories
+  - name: AppsService.RedeliverHookDelivery
+    operations:
+      - POST /app/hook/deliveries/{delivery_id}/attempts
+  - name: AppsService.RemoveRepository
+    operations:
+      - DELETE /user/installations/{installation_id}/repositories/{repository_id}
+  - name: AppsService.RevokeInstallationToken
+    operations:
+      - DELETE /installation/token
+  - name: AppsService.SuspendInstallation
+    operations:
+      - PUT /app/installations/{installation_id}/suspended
+  - name: AppsService.UnsuspendInstallation
+    operations:
+      - DELETE /app/installations/{installation_id}/suspended
+  - name: AppsService.UpdateHookConfig
+    operations:
+      - PATCH /app/hook/config
+  - name: AuthorizationsService.Check
+    operations:
+      - POST /applications/{client_id}/token
+  - name: AuthorizationsService.CreateImpersonation
+    operations:
+      - POST /admin/users/{username}/authorizations
+  - name: AuthorizationsService.DeleteGrant
+    operations:
+      - DELETE /applications/{client_id}/grant
+  - name: AuthorizationsService.DeleteImpersonation
+    operations:
+      - DELETE /admin/users/{username}/authorizations
+  - name: AuthorizationsService.Reset
+    operations:
+      - PATCH /applications/{client_id}/token
+  - name: AuthorizationsService.Revoke
+    operations:
+      - DELETE /applications/{client_id}/token
+  - name: BillingService.GetActionsBillingOrg
+    operations:
+      - GET /orgs/{org}/settings/billing/actions
+  - name: BillingService.GetActionsBillingUser
+    operations:
+      - GET /users/{username}/settings/billing/actions
+  - name: BillingService.GetAdvancedSecurityActiveCommittersOrg
+    operations:
+      - GET /orgs/{org}/settings/billing/advanced-security
+  - name: BillingService.GetPackagesBillingOrg
+    operations:
+      - GET /orgs/{org}/settings/billing/packages
+  - name: BillingService.GetPackagesBillingUser
+    operations:
+      - GET /users/{username}/settings/billing/packages
+  - name: BillingService.GetStorageBillingOrg
+    operations:
+      - GET /orgs/{org}/settings/billing/shared-storage
+  - name: BillingService.GetStorageBillingUser
+    operations:
+      - GET /users/{username}/settings/billing/shared-storage
+  - name: ChecksService.CreateCheckRun
+    operations:
+      - POST /repos/{owner}/{repo}/check-runs
+  - name: ChecksService.CreateCheckSuite
+    operations:
+      - POST /repos/{owner}/{repo}/check-suites
+  - name: ChecksService.GetCheckRun
+    operations:
+      - GET /repos/{owner}/{repo}/check-runs/{check_run_id}
+  - name: ChecksService.GetCheckSuite
+    operations:
+      - GET /repos/{owner}/{repo}/check-suites/{check_suite_id}
+  - name: ChecksService.ListCheckRunAnnotations
+    operations:
+      - GET /repos/{owner}/{repo}/check-runs/{check_run_id}/annotations
+  - name: ChecksService.ListCheckRunsCheckSuite
+    operations:
+      - GET /repos/{owner}/{repo}/check-suites/{check_suite_id}/check-runs
+  - name: ChecksService.ListCheckRunsForRef
+    operations:
+      - GET /repos/{owner}/{repo}/commits/{ref}/check-runs
+  - name: ChecksService.ListCheckSuitesForRef
+    operations:
+      - GET /repos/{owner}/{repo}/commits/{ref}/check-suites
+  - name: ChecksService.ReRequestCheckRun
+    operations:
+      - POST /repos/{owner}/{repo}/check-runs/{check_run_id}/rerequest
+  - name: ChecksService.ReRequestCheckSuite
+    operations:
+      - POST /repos/{owner}/{repo}/check-suites/{check_suite_id}/rerequest
+  - name: ChecksService.SetCheckSuitePreferences
+    operations:
+      - PATCH /repos/{owner}/{repo}/check-suites/preferences
+  - name: ChecksService.UpdateCheckRun
+    operations:
+      - PATCH /repos/{owner}/{repo}/check-runs/{check_run_id}
+  - name: Client.APIMeta
+    operations:
+      - GET /meta
+  - name: Client.GetCodeOfConduct
+    operations:
+      - GET /codes_of_conduct/{key}
+  - name: Client.ListCodesOfConduct
+    operations:
+      - GET /codes_of_conduct
+  - name: Client.ListEmojis
+    operations:
+      - GET /emojis
+  - name: Client.Markdown
+    operations:
+      - POST /markdown
+  - name: Client.Octocat
+    operations:
+      - GET /octocat
+  - name: Client.Zen
+    operations:
+      - GET /zen
+  - name: CodeScanningService.DeleteAnalysis
+    operations:
+      - DELETE /repos/{owner}/{repo}/code-scanning/analyses/{analysis_id}
+  - name: CodeScanningService.GetAlert
+    operations:
+      - GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}
+  - name: CodeScanningService.GetAnalysis
+    operations:
+      - GET /repos/{owner}/{repo}/code-scanning/analyses/{analysis_id}
+  - name: CodeScanningService.GetCodeQLDatabase
+    operations:
+      - GET /repos/{owner}/{repo}/code-scanning/codeql/databases/{language}
+  - name: CodeScanningService.GetDefaultSetupConfiguration
+    operations:
+      - GET /repos/{owner}/{repo}/code-scanning/default-setup
+  - name: CodeScanningService.GetSARIF
+    operations:
+      - GET /repos/{owner}/{repo}/code-scanning/sarifs/{sarif_id}
+  - name: CodeScanningService.ListAlertInstances
+    operations:
+      - GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/instances
+  - name: CodeScanningService.ListAlertsForOrg
+    operations:
+      - GET /orgs/{org}/code-scanning/alerts
+  - name: CodeScanningService.ListAlertsForRepo
+    operations:
+      - GET /repos/{owner}/{repo}/code-scanning/alerts
+  - name: CodeScanningService.ListAnalysesForRepo
+    operations:
+      - GET /repos/{owner}/{repo}/code-scanning/analyses
+  - name: CodeScanningService.ListCodeQLDatabases
+    operations:
+      - GET /repos/{owner}/{repo}/code-scanning/codeql/databases
+  - name: CodeScanningService.UpdateAlert
+    operations:
+      - PATCH /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}
+  - name: CodeScanningService.UpdateDefaultSetupConfiguration
+    operations:
+      - PATCH /repos/{owner}/{repo}/code-scanning/default-setup
+  - name: CodeScanningService.UploadSarif
+    operations:
+      - POST /repos/{owner}/{repo}/code-scanning/sarifs
+  - name: CodespacesService.AddSelectedRepoToOrgSecret
+    operations:
+      - PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}
+  - name: CodespacesService.AddSelectedRepoToUserSecret
+    operations:
+      - PUT /user/codespaces/secrets/{secret_name}/repositories/{repository_id}
+  - name: CodespacesService.CreateInRepo
+    operations:
+      - POST /repos/{owner}/{repo}/codespaces
+  - name: CodespacesService.CreateOrUpdateOrgSecret
+    operations:
+      - PUT /orgs/{org}/codespaces/secrets/{secret_name}
+  - name: CodespacesService.CreateOrUpdateRepoSecret
+    operations:
+      - PUT /repos/{owner}/{repo}/codespaces/secrets/{secret_name}
+  - name: CodespacesService.CreateOrUpdateUserSecret
+    operations:
+      - PUT /user/codespaces/secrets/{secret_name}
+  - name: CodespacesService.Delete
+    operations:
+      - DELETE /user/codespaces/{codespace_name}
+  - name: CodespacesService.DeleteOrgSecret
+    operations:
+      - DELETE /orgs/{org}/codespaces/secrets/{secret_name}
+  - name: CodespacesService.DeleteRepoSecret
+    operations:
+      - DELETE /repos/{owner}/{repo}/codespaces/secrets/{secret_name}
+  - name: CodespacesService.DeleteUserSecret
+    operations:
+      - DELETE /user/codespaces/secrets/{secret_name}
+  - name: CodespacesService.GetOrgPublicKey
+    operations:
+      - GET /orgs/{org}/codespaces/secrets/public-key
+  - name: CodespacesService.GetOrgSecret
+    operations:
+      - GET /orgs/{org}/codespaces/secrets/{secret_name}
+  - name: CodespacesService.GetRepoPublicKey
+    operations:
+      - GET /repos/{owner}/{repo}/codespaces/secrets/public-key
+  - name: CodespacesService.GetRepoSecret
+    operations:
+      - GET /repos/{owner}/{repo}/codespaces/secrets/{secret_name}
+  - name: CodespacesService.GetUserPublicKey
+    operations:
+      - GET /user/codespaces/secrets/public-key
+  - name: CodespacesService.GetUserSecret
+    operations:
+      - GET /user/codespaces/secrets/{secret_name}
+  - name: CodespacesService.List
+    operations:
+      - GET /user/codespaces
+  - name: CodespacesService.ListInRepo
+    operations:
+      - GET /repos/{owner}/{repo}/codespaces
+  - name: CodespacesService.ListOrgSecrets
+    operations:
+      - GET /orgs/{org}/codespaces/secrets
+  - name: CodespacesService.ListRepoSecrets
+    operations:
+      - GET /repos/{owner}/{repo}/codespaces/secrets
+  - name: CodespacesService.ListSelectedReposForOrgSecret
+    operations:
+      - GET /orgs/{org}/codespaces/secrets/{secret_name}/repositories
+  - name: CodespacesService.ListSelectedReposForUserSecret
+    operations:
+      - GET /user/codespaces/secrets/{secret_name}/repositories
+  - name: CodespacesService.ListUserSecrets
+    operations:
+      - GET /user/codespaces/secrets
+  - name: CodespacesService.RemoveSelectedRepoFromOrgSecret
+    operations:
+      - DELETE /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}
+  - name: CodespacesService.RemoveSelectedRepoFromUserSecret
+    operations:
+      - DELETE /user/codespaces/secrets/{secret_name}/repositories/{repository_id}
+  - name: CodespacesService.SetSelectedReposForOrgSecret
+    operations:
+      - PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories
+  - name: CodespacesService.SetSelectedReposForUserSecret
+    operations:
+      - PUT /user/codespaces/secrets/{secret_name}/repositories
+  - name: CodespacesService.Start
+    operations:
+      - POST /user/codespaces/{codespace_name}/start
+  - name: CodespacesService.Stop
+    operations:
+      - POST /user/codespaces/{codespace_name}/stop
+  - name: DependabotService.AddSelectedRepoToOrgSecret
+    operations:
+      - PUT /orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}
+  - name: DependabotService.CreateOrUpdateOrgSecret
+    operations:
+      - PUT /orgs/{org}/dependabot/secrets/{secret_name}
+  - name: DependabotService.CreateOrUpdateRepoSecret
+    operations:
+      - PUT /repos/{owner}/{repo}/dependabot/secrets/{secret_name}
+  - name: DependabotService.DeleteOrgSecret
+    operations:
+      - DELETE /orgs/{org}/dependabot/secrets/{secret_name}
+  - name: DependabotService.DeleteRepoSecret
+    operations:
+      - DELETE /repos/{owner}/{repo}/dependabot/secrets/{secret_name}
+  - name: DependabotService.GetOrgPublicKey
+    operations:
+      - GET /orgs/{org}/dependabot/secrets/public-key
+  - name: DependabotService.GetOrgSecret
+    operations:
+      - GET /orgs/{org}/dependabot/secrets/{secret_name}
+  - name: DependabotService.GetRepoAlert
+    operations:
+      - GET /repos/{owner}/{repo}/dependabot/alerts/{alert_number}
+  - name: DependabotService.GetRepoPublicKey
+    operations:
+      - GET /repos/{owner}/{repo}/dependabot/secrets/public-key
+  - name: DependabotService.GetRepoSecret
+    operations:
+      - GET /repos/{owner}/{repo}/dependabot/secrets/{secret_name}
+  - name: DependabotService.ListOrgAlerts
+    operations:
+      - GET /orgs/{org}/dependabot/alerts
+  - name: DependabotService.ListOrgSecrets
+    operations:
+      - GET /orgs/{org}/dependabot/secrets
+  - name: DependabotService.ListRepoAlerts
+    operations:
+      - GET /repos/{owner}/{repo}/dependabot/alerts
+  - name: DependabotService.ListRepoSecrets
+    operations:
+      - GET /repos/{owner}/{repo}/dependabot/secrets
+  - name: DependabotService.ListSelectedReposForOrgSecret
+    operations:
+      - GET /orgs/{org}/dependabot/secrets/{secret_name}/repositories
+  - name: DependabotService.RemoveSelectedRepoFromOrgSecret
+    operations:
+      - DELETE /orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}
+  - name: DependabotService.SetSelectedReposForOrgSecret
+    operations:
+      - PUT /orgs/{org}/dependabot/secrets/{secret_name}/repositories
+  - name: DependencyGraphService.GetSBOM
+    operations:
+      - GET /repos/{owner}/{repo}/dependency-graph/sbom
+  - name: EnterpriseService.AddOrganizationAccessRunnerGroup
+    operations:
+      - PUT /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations/{org_id}
+  - name: EnterpriseService.AddRunnerGroupRunners
+    operations:
+      - PUT /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/runners/{runner_id}
+  - name: EnterpriseService.CreateEnterpriseRunnerGroup
+    operations:
+      - POST /enterprises/{enterprise}/actions/runner-groups
+  - name: EnterpriseService.CreateRegistrationToken
+    operations:
+      - POST /enterprises/{enterprise}/actions/runners/registration-token
+  - name: EnterpriseService.DeleteEnterpriseRunnerGroup
+    operations:
+      - DELETE /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}
+  - name: EnterpriseService.EnableDisableSecurityFeature
+    operations:
+      - POST /enterprises/{enterprise}/{security_product}/{enablement}
+  - name: EnterpriseService.GenerateEnterpriseJITConfig
+    operations:
+      - POST /enterprises/{enterprise}/actions/runners/generate-jitconfig
+  - name: EnterpriseService.GetAuditLog
+    operations:
+      - GET /enterprises/{enterprise}/audit-log
+  - name: EnterpriseService.GetCodeSecurityAndAnalysis
+    operations:
+      - GET /enterprises/{enterprise}/code_security_and_analysis
+  - name: EnterpriseService.GetEnterpriseRunnerGroup
+    operations:
+      - GET /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}
+  - name: EnterpriseService.ListOrganizationAccessRunnerGroup
+    operations:
+      - GET /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations
+  - name: EnterpriseService.ListRunnerApplicationDownloads
+    operations:
+      - GET /enterprises/{enterprise}/actions/runners/downloads
+  - name: EnterpriseService.ListRunnerGroupRunners
+    operations:
+      - GET /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/runners
+  - name: EnterpriseService.ListRunnerGroups
+    operations:
+      - GET /enterprises/{enterprise}/actions/runner-groups
+  - name: EnterpriseService.ListRunners
+    operations:
+      - GET /enterprises/{enterprise}/actions/runners
+  - name: EnterpriseService.RemoveOrganizationAccessRunnerGroup
+    operations:
+      - DELETE /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations/{org_id}
+  - name: EnterpriseService.RemoveRunner
+    operations:
+      - DELETE /enterprises/{enterprise}/actions/runners/{runner_id}
+  - name: EnterpriseService.RemoveRunnerGroupRunners
+    operations:
+      - DELETE /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/runners/{runner_id}
+  - name: EnterpriseService.SetOrganizationAccessRunnerGroup
+    operations:
+      - PUT /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations
+  - name: EnterpriseService.SetRunnerGroupRunners
+    operations:
+      - PUT /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/runners
+  - name: EnterpriseService.UpdateCodeSecurityAndAnalysis
+    operations:
+      - PATCH /enterprises/{enterprise}/code_security_and_analysis
+  - name: EnterpriseService.UpdateEnterpriseRunnerGroup
+    operations:
+      - PATCH /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}
+  - name: GistsService.Create
+    operations:
+      - POST /gists
+  - name: GistsService.CreateComment
+    operations:
+      - POST /gists/{gist_id}/comments
+  - name: GistsService.Delete
+    operations:
+      - DELETE /gists/{gist_id}
+  - name: GistsService.DeleteComment
+    operations:
+      - DELETE /gists/{gist_id}/comments/{comment_id}
+  - name: GistsService.Edit
+    operations:
+      - PATCH /gists/{gist_id}
+  - name: GistsService.EditComment
+    operations:
+      - PATCH /gists/{gist_id}/comments/{comment_id}
+  - name: GistsService.Fork
+    operations:
+      - POST /gists/{gist_id}/forks
+  - name: GistsService.Get
+    operations:
+      - GET /gists/{gist_id}
+  - name: GistsService.GetComment
+    operations:
+      - GET /gists/{gist_id}/comments/{comment_id}
+  - name: GistsService.GetRevision
+    operations:
+      - GET /gists/{gist_id}/{sha}
+  - name: GistsService.IsStarred
+    operations:
+      - GET /gists/{gist_id}/star
+  - name: GistsService.List
+    operations:
+      - GET /gists
+      - GET /users/{username}/gists
+  - name: GistsService.ListAll
+    operations:
+      - GET /gists/public
+  - name: GistsService.ListComments
+    operations:
+      - GET /gists/{gist_id}/comments
+  - name: GistsService.ListCommits
+    operations:
+      - GET /gists/{gist_id}/commits
+  - name: GistsService.ListForks
+    operations:
+      - GET /gists/{gist_id}/forks
+  - name: GistsService.ListStarred
+    operations:
+      - GET /gists/starred
+  - name: GistsService.Star
+    operations:
+      - PUT /gists/{gist_id}/star
+  - name: GistsService.Unstar
+    operations:
+      - DELETE /gists/{gist_id}/star
+  - name: GitService.CreateBlob
+    operations:
+      - POST /repos/{owner}/{repo}/git/blobs
+  - name: GitService.CreateCommit
+    operations:
+      - POST /repos/{owner}/{repo}/git/commits
+  - name: GitService.CreateRef
+    operations:
+      - POST /repos/{owner}/{repo}/git/refs
+  - name: GitService.CreateTag
+    operations:
+      - POST /repos/{owner}/{repo}/git/tags
+  - name: GitService.CreateTree
+    operations:
+      - POST /repos/{owner}/{repo}/git/trees
+  - name: GitService.DeleteRef
+    operations:
+      - DELETE /repos/{owner}/{repo}/git/refs/{ref}
+  - name: GitService.GetBlob
+    operations:
+      - GET /repos/{owner}/{repo}/git/blobs/{file_sha}
+  - name: GitService.GetBlobRaw
+    operations:
+      - GET /repos/{owner}/{repo}/git/blobs/{file_sha}
+  - name: GitService.GetCommit
+    operations:
+      - GET /repos/{owner}/{repo}/git/commits/{commit_sha}
+  - name: GitService.GetRef
+    operations:
+      - GET /repos/{owner}/{repo}/git/ref/{ref}
+  - name: GitService.GetTag
+    operations:
+      - GET /repos/{owner}/{repo}/git/tags/{tag_sha}
+  - name: GitService.GetTree
+    operations:
+      - GET /repos/{owner}/{repo}/git/trees/{tree_sha}
+  - name: GitService.ListMatchingRefs
+    operations:
+      - GET /repos/{owner}/{repo}/git/matching-refs/{ref}
+  - name: GitService.UpdateRef
+    operations:
+      - PATCH /repos/{owner}/{repo}/git/refs/{ref}
+  - name: GitignoresService.Get
+    operations:
+      - GET /gitignore/templates/{name}
+  - name: GitignoresService.List
+    operations:
+      - GET /gitignore/templates
+  - name: InteractionsService.GetRestrictionsForOrg
+    operations:
+      - GET /orgs/{org}/interaction-limits
+  - name: InteractionsService.GetRestrictionsForRepo
+    operations:
+      - GET /repos/{owner}/{repo}/interaction-limits
+  - name: InteractionsService.RemoveRestrictionsFromOrg
+    operations:
+      - DELETE /orgs/{org}/interaction-limits
+  - name: InteractionsService.RemoveRestrictionsFromRepo
+    operations:
+      - DELETE /repos/{owner}/{repo}/interaction-limits
+  - name: InteractionsService.UpdateRestrictionsForOrg
+    operations:
+      - PUT /orgs/{org}/interaction-limits
+  - name: InteractionsService.UpdateRestrictionsForRepo
+    operations:
+      - PUT /repos/{owner}/{repo}/interaction-limits
+  - name: IssueImportService.CheckStatus
+    operations:
+      - GET /repos/{owner}/{repo}/import/issues/{issue_number}
+  - name: IssueImportService.CheckStatusSince
+    operations:
+      - GET /repos/{owner}/{repo}/import/issues
+  - name: IssueImportService.Create
+    operations:
+      - POST /repos/{owner}/{repo}/import/issues
+  - name: IssuesService.AddAssignees
+    operations:
+      - POST /repos/{owner}/{repo}/issues/{issue_number}/assignees
+  - name: IssuesService.AddLabelsToIssue
+    operations:
+      - POST /repos/{owner}/{repo}/issues/{issue_number}/labels
+  - name: IssuesService.Create
+    operations:
+      - POST /repos/{owner}/{repo}/issues
+  - name: IssuesService.CreateComment
+    operations:
+      - POST /repos/{owner}/{repo}/issues/{issue_number}/comments
+  - name: IssuesService.CreateLabel
+    operations:
+      - POST /repos/{owner}/{repo}/labels
+  - name: IssuesService.CreateMilestone
+    operations:
+      - POST /repos/{owner}/{repo}/milestones
+  - name: IssuesService.DeleteComment
+    operations:
+      - DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}
+  - name: IssuesService.DeleteLabel
+    operations:
+      - DELETE /repos/{owner}/{repo}/labels/{name}
+  - name: IssuesService.DeleteMilestone
+    operations:
+      - DELETE /repos/{owner}/{repo}/milestones/{milestone_number}
+  - name: IssuesService.Edit
+    operations:
+      - PATCH /repos/{owner}/{repo}/issues/{issue_number}
+  - name: IssuesService.EditComment
+    operations:
+      - PATCH /repos/{owner}/{repo}/issues/comments/{comment_id}
+  - name: IssuesService.EditLabel
+    operations:
+      - PATCH /repos/{owner}/{repo}/labels/{name}
+  - name: IssuesService.EditMilestone
+    operations:
+      - PATCH /repos/{owner}/{repo}/milestones/{milestone_number}
+  - name: IssuesService.Get
+    operations:
+      - GET /repos/{owner}/{repo}/issues/{issue_number}
+  - name: IssuesService.GetComment
+    operations:
+      - GET /repos/{owner}/{repo}/issues/comments/{comment_id}
+  - name: IssuesService.GetEvent
+    operations:
+      - GET /repos/{owner}/{repo}/issues/events/{event_id}
+  - name: IssuesService.GetLabel
+    operations:
+      - GET /repos/{owner}/{repo}/labels/{name}
+  - name: IssuesService.GetMilestone
+    operations:
+      - GET /repos/{owner}/{repo}/milestones/{milestone_number}
+  - name: IssuesService.IsAssignee
+    operations:
+      - GET /repos/{owner}/{repo}/assignees/{assignee}
+  - name: IssuesService.List
+    operations:
+      - GET /issues
+      - GET /user/issues
+  - name: IssuesService.ListAssignees
+    operations:
+      - GET /repos/{owner}/{repo}/assignees
+  - name: IssuesService.ListByOrg
+    operations:
+      - GET /orgs/{org}/issues
+  - name: IssuesService.ListByRepo
+    operations:
+      - GET /repos/{owner}/{repo}/issues
+  - name: IssuesService.ListComments
+    operations:
+      - GET /repos/{owner}/{repo}/issues/comments
+      - GET /repos/{owner}/{repo}/issues/{issue_number}/comments
+  - name: IssuesService.ListIssueEvents
+    operations:
+      - GET /repos/{owner}/{repo}/issues/{issue_number}/events
+  - name: IssuesService.ListIssueTimeline
+    operations:
+      - GET /repos/{owner}/{repo}/issues/{issue_number}/timeline
+  - name: IssuesService.ListLabels
+    operations:
+      - GET /repos/{owner}/{repo}/labels
+  - name: IssuesService.ListLabelsByIssue
+    operations:
+      - GET /repos/{owner}/{repo}/issues/{issue_number}/labels
+  - name: IssuesService.ListLabelsForMilestone
+    operations:
+      - GET /repos/{owner}/{repo}/milestones/{milestone_number}/labels
+  - name: IssuesService.ListMilestones
+    operations:
+      - GET /repos/{owner}/{repo}/milestones
+  - name: IssuesService.ListRepositoryEvents
+    operations:
+      - GET /repos/{owner}/{repo}/issues/events
+  - name: IssuesService.Lock
+    operations:
+      - PUT /repos/{owner}/{repo}/issues/{issue_number}/lock
+  - name: IssuesService.RemoveAssignees
+    operations:
+      - DELETE /repos/{owner}/{repo}/issues/{issue_number}/assignees
+  - name: IssuesService.RemoveLabelForIssue
+    operations:
+      - DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels/{name}
+  - name: IssuesService.RemoveLabelsForIssue
+    operations:
+      - DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels
+  - name: IssuesService.RemoveMilestone
+    operations:
+      - PATCH /repos/{owner}/{repo}/issues/{issue_number}
+  - name: IssuesService.ReplaceLabelsForIssue
+    operations:
+      - PUT /repos/{owner}/{repo}/issues/{issue_number}/labels
+  - name: IssuesService.Unlock
+    operations:
+      - DELETE /repos/{owner}/{repo}/issues/{issue_number}/lock
+  - name: LicensesService.Get
+    operations:
+      - GET /licenses/{license}
+  - name: LicensesService.List
+    operations:
+      - GET /licenses
+  - name: MarketplaceService.GetPlanAccountForAccount
+    operations:
+      - GET /marketplace_listing/accounts/{account_id}
+      - GET /marketplace_listing/stubbed/accounts/{account_id}
+  - name: MarketplaceService.ListMarketplacePurchasesForUser
+    operations:
+      - GET /user/marketplace_purchases
+      - GET /user/marketplace_purchases/stubbed
+  - name: MarketplaceService.ListPlanAccountsForPlan
+    operations:
+      - GET /marketplace_listing/plans/{plan_id}/accounts
+      - GET /marketplace_listing/stubbed/plans/{plan_id}/accounts
+  - name: MarketplaceService.ListPlans
+    operations:
+      - GET /marketplace_listing/plans
+      - GET /marketplace_listing/stubbed/plans
+  - name: MigrationService.CancelImport
+    operations:
+      - DELETE /repos/{owner}/{repo}/import
+  - name: MigrationService.CommitAuthors
+    operations:
+      - GET /repos/{owner}/{repo}/import/authors
+  - name: MigrationService.DeleteMigration
+    operations:
+      - DELETE /orgs/{org}/migrations/{migration_id}/archive
+  - name: MigrationService.DeleteUserMigration
+    operations:
+      - DELETE /user/migrations/{migration_id}/archive
+  - name: MigrationService.ImportProgress
+    operations:
+      - GET /repos/{owner}/{repo}/import
+  - name: MigrationService.LargeFiles
+    operations:
+      - GET /repos/{owner}/{repo}/import/large_files
+  - name: MigrationService.ListMigrations
+    operations:
+      - GET /orgs/{org}/migrations
+  - name: MigrationService.ListUserMigrations
+    operations:
+      - GET /user/migrations
+  - name: MigrationService.MapCommitAuthor
+    operations:
+      - PATCH /repos/{owner}/{repo}/import/authors/{author_id}
+  - name: MigrationService.MigrationArchiveURL
+    operations:
+      - GET /orgs/{org}/migrations/{migration_id}/archive
+  - name: MigrationService.MigrationStatus
+    operations:
+      - GET /orgs/{org}/migrations/{migration_id}
+  - name: MigrationService.SetLFSPreference
+    operations:
+      - PATCH /repos/{owner}/{repo}/import/lfs
+  - name: MigrationService.StartImport
+    operations:
+      - PUT /repos/{owner}/{repo}/import
+  - name: MigrationService.StartMigration
+    operations:
+      - POST /orgs/{org}/migrations
+  - name: MigrationService.StartUserMigration
+    operations:
+      - POST /user/migrations
+  - name: MigrationService.UnlockRepo
+    operations:
+      - DELETE /orgs/{org}/migrations/{migration_id}/repos/{repo_name}/lock
+  - name: MigrationService.UnlockUserRepo
+    operations:
+      - DELETE /user/migrations/{migration_id}/repos/{repo_name}/lock
+  - name: MigrationService.UpdateImport
+    operations:
+      - PATCH /repos/{owner}/{repo}/import
+  - name: MigrationService.UserMigrationArchiveURL
+    operations:
+      - GET /user/migrations/{migration_id}/archive
+  - name: MigrationService.UserMigrationStatus
+    operations:
+      - GET /user/migrations/{migration_id}
+  - name: OrganizationsService.AddSecurityManagerTeam
+    operations:
+      - PUT /orgs/{org}/security-managers/teams/{team_slug}
+  - name: OrganizationsService.BlockUser
+    operations:
+      - PUT /orgs/{org}/blocks/{username}
+  - name: OrganizationsService.ConcealMembership
+    operations:
+      - DELETE /orgs/{org}/public_members/{username}
+  - name: OrganizationsService.ConvertMemberToOutsideCollaborator
+    operations:
+      - PUT /orgs/{org}/outside_collaborators/{username}
+  - name: OrganizationsService.CreateCustomRepoRole
+    operations:
+      - POST /orgs/{org}/custom-repository-roles
+  - name: OrganizationsService.CreateHook
+    operations:
+      - POST /orgs/{org}/hooks
+  - name: OrganizationsService.CreateOrgInvitation
+    operations:
+      - POST /orgs/{org}/invitations
+  - name: OrganizationsService.CreateOrganizationRuleset
+    operations:
+      - POST /orgs/{org}/rulesets
+  - name: OrganizationsService.CreateProject
+    operations:
+      - POST /orgs/{org}/projects
+  - name: OrganizationsService.Delete
+    operations:
+      - DELETE /orgs/{org}
+  - name: OrganizationsService.DeleteCustomRepoRole
+    operations:
+      - DELETE /orgs/{org}/custom-repository-roles/{role_id}
+  - name: OrganizationsService.DeleteHook
+    operations:
+      - DELETE /orgs/{org}/hooks/{hook_id}
+  - name: OrganizationsService.DeleteOrganizationRuleset
+    operations:
+      - DELETE /orgs/{org}/rulesets/{ruleset_id}
+  - name: OrganizationsService.DeletePackage
+    operations:
+      - DELETE /orgs/{org}/packages/{package_type}/{package_name}
+  - name: OrganizationsService.Edit
+    operations:
+      - PATCH /orgs/{org}
+  - name: OrganizationsService.EditActionsAllowed
+    operations:
+      - PUT /orgs/{org}/actions/permissions/selected-actions
+  - name: OrganizationsService.EditActionsPermissions
+    operations:
+      - PUT /orgs/{org}/actions/permissions
+  - name: OrganizationsService.EditHook
+    operations:
+      - PATCH /orgs/{org}/hooks/{hook_id}
+  - name: OrganizationsService.EditHookConfiguration
+    operations:
+      - PATCH /orgs/{org}/hooks/{hook_id}/config
+  - name: OrganizationsService.EditOrgMembership
+    operations:
+      - PATCH /user/memberships/orgs/{org}
+      - PUT /orgs/{org}/memberships/{username}
+  - name: OrganizationsService.Get
+    operations:
+      - GET /orgs/{org}
+  - name: OrganizationsService.GetActionsAllowed
+    operations:
+      - GET /orgs/{org}/actions/permissions/selected-actions
+  - name: OrganizationsService.GetActionsPermissions
+    operations:
+      - GET /orgs/{org}/actions/permissions
+  - name: OrganizationsService.GetAllOrganizationRulesets
+    operations:
+      - GET /orgs/{org}/rulesets
+  - name: OrganizationsService.GetAuditLog
+    operations:
+      - GET /orgs/{org}/audit-log
+  - name: OrganizationsService.GetHook
+    operations:
+      - GET /orgs/{org}/hooks/{hook_id}
+  - name: OrganizationsService.GetHookConfiguration
+    operations:
+      - GET /orgs/{org}/hooks/{hook_id}/config
+  - name: OrganizationsService.GetHookDelivery
+    operations:
+      - GET /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}
+  - name: OrganizationsService.GetOrgMembership
+    operations:
+      - GET /orgs/{org}/memberships/{username}
+      - GET /user/memberships/orgs/{org}
+  - name: OrganizationsService.GetOrganizationRuleset
+    operations:
+      - GET /orgs/{org}/rulesets/{ruleset_id}
+  - name: OrganizationsService.GetPackage
+    operations:
+      - GET /orgs/{org}/packages/{package_type}/{package_name}
+  - name: OrganizationsService.IsBlocked
+    operations:
+      - GET /orgs/{org}/blocks/{username}
+  - name: OrganizationsService.IsMember
+    operations:
+      - GET /orgs/{org}/members/{username}
+  - name: OrganizationsService.IsPublicMember
+    operations:
+      - GET /orgs/{org}/public_members/{username}
+  - name: OrganizationsService.List
+    operations:
+      - GET /user/orgs
+      - GET /users/{username}/orgs
+  - name: OrganizationsService.ListAll
+    operations:
+      - GET /organizations
+  - name: OrganizationsService.ListBlockedUsers
+    operations:
+      - GET /orgs/{org}/blocks
+  - name: OrganizationsService.ListCredentialAuthorizations
+    operations:
+      - GET /orgs/{org}/credential-authorizations
+  - name: OrganizationsService.ListCustomRepoRoles
+    operations:
+      - GET /orgs/{org}/custom-repository-roles
+  - name: OrganizationsService.ListFailedOrgInvitations
+    operations:
+      - GET /orgs/{org}/failed_invitations
+  - name: OrganizationsService.ListHookDeliveries
+    operations:
+      - GET /orgs/{org}/hooks/{hook_id}/deliveries
+  - name: OrganizationsService.ListHooks
+    operations:
+      - GET /orgs/{org}/hooks
+  - name: OrganizationsService.ListInstallations
+    operations:
+      - GET /orgs/{org}/installations
+  - name: OrganizationsService.ListMembers
+    operations:
+      - GET /orgs/{org}/members
+      - GET /orgs/{org}/public_members
+  - name: OrganizationsService.ListOrgInvitationTeams
+    operations:
+      - GET /orgs/{org}/invitations/{invitation_id}/teams
+  - name: OrganizationsService.ListOrgMemberships
+    operations:
+      - GET /user/memberships/orgs
+  - name: OrganizationsService.ListOutsideCollaborators
+    operations:
+      - GET /orgs/{org}/outside_collaborators
+  - name: OrganizationsService.ListPackages
+    operations:
+      - GET /orgs/{org}/packages
+  - name: OrganizationsService.ListPendingOrgInvitations
+    operations:
+      - GET /orgs/{org}/invitations
+  - name: OrganizationsService.ListProjects
+    operations:
+      - GET /orgs/{org}/projects
+  - name: OrganizationsService.ListSecurityManagerTeams
+    operations:
+      - GET /orgs/{org}/security-managers
+  - name: OrganizationsService.PackageDeleteVersion
+    operations:
+      - DELETE /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}
+  - name: OrganizationsService.PackageGetAllVersions
+    operations:
+      - GET /orgs/{org}/packages/{package_type}/{package_name}/versions
+  - name: OrganizationsService.PackageGetVersion
+    operations:
+      - GET /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}
+  - name: OrganizationsService.PackageRestoreVersion
+    operations:
+      - POST /orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore
+  - name: OrganizationsService.PingHook
+    operations:
+      - POST /orgs/{org}/hooks/{hook_id}/pings
+  - name: OrganizationsService.PublicizeMembership
+    operations:
+      - PUT /orgs/{org}/public_members/{username}
+  - name: OrganizationsService.RedeliverHookDelivery
+    operations:
+      - POST /orgs/{org}/hooks/{hook_id}/deliveries/{delivery_id}/attempts
+  - name: OrganizationsService.RemoveCredentialAuthorization
+    operations:
+      - DELETE /orgs/{org}/credential-authorizations/{credential_id}
+  - name: OrganizationsService.RemoveMember
+    operations:
+      - DELETE /orgs/{org}/members/{username}
+  - name: OrganizationsService.RemoveOrgMembership
+    operations:
+      - DELETE /orgs/{org}/memberships/{username}
+  - name: OrganizationsService.RemoveOutsideCollaborator
+    operations:
+      - DELETE /orgs/{org}/outside_collaborators/{username}
+  - name: OrganizationsService.RemoveSecurityManagerTeam
+    operations:
+      - DELETE /orgs/{org}/security-managers/teams/{team_slug}
+  - name: OrganizationsService.RestorePackage
+    operations:
+      - POST /orgs/{org}/packages/{package_type}/{package_name}/restore
+  - name: OrganizationsService.ReviewPersonalAccessTokenRequest
+    operations:
+      - POST /orgs/{org}/personal-access-token-requests/{pat_request_id}
+  - name: OrganizationsService.UnblockUser
+    operations:
+      - DELETE /orgs/{org}/blocks/{username}
+  - name: OrganizationsService.UpdateCustomRepoRole
+    operations:
+      - PATCH /orgs/{org}/custom-repository-roles/{role_id}
+  - name: OrganizationsService.UpdateOrganizationRuleset
+    operations:
+      - PUT /orgs/{org}/rulesets/{ruleset_id}
+  - name: ProjectsService.AddProjectCollaborator
+    operations:
+      - PUT /projects/{project_id}/collaborators/{username}
+  - name: ProjectsService.CreateProjectCard
+    operations:
+      - POST /projects/columns/{column_id}/cards
+  - name: ProjectsService.CreateProjectColumn
+    operations:
+      - POST /projects/{project_id}/columns
+  - name: ProjectsService.DeleteProject
+    operations:
+      - DELETE /projects/{project_id}
+  - name: ProjectsService.DeleteProjectCard
+    operations:
+      - DELETE /projects/columns/cards/{card_id}
+  - name: ProjectsService.DeleteProjectColumn
+    operations:
+      - DELETE /projects/columns/{column_id}
+  - name: ProjectsService.GetProject
+    operations:
+      - GET /projects/{project_id}
+  - name: ProjectsService.GetProjectCard
+    operations:
+      - GET /projects/columns/cards/{card_id}
+  - name: ProjectsService.GetProjectColumn
+    operations:
+      - GET /projects/columns/{column_id}
+  - name: ProjectsService.ListProjectCards
+    operations:
+      - GET /projects/columns/{column_id}/cards
+  - name: ProjectsService.ListProjectCollaborators
+    operations:
+      - GET /projects/{project_id}/collaborators
+  - name: ProjectsService.ListProjectColumns
+    operations:
+      - GET /projects/{project_id}/columns
+  - name: ProjectsService.MoveProjectCard
+    operations:
+      - POST /projects/columns/cards/{card_id}/moves
+  - name: ProjectsService.MoveProjectColumn
+    operations:
+      - POST /projects/columns/{column_id}/moves
+  - name: ProjectsService.RemoveProjectCollaborator
+    operations:
+      - DELETE /projects/{project_id}/collaborators/{username}
+  - name: ProjectsService.ReviewProjectCollaboratorPermission
+    operations:
+      - GET /projects/{project_id}/collaborators/{username}/permission
+  - name: ProjectsService.UpdateProject
+    operations:
+      - PATCH /projects/{project_id}
+  - name: ProjectsService.UpdateProjectCard
+    operations:
+      - PATCH /projects/columns/cards/{card_id}
+  - name: ProjectsService.UpdateProjectColumn
+    operations:
+      - PATCH /projects/columns/{column_id}
+  - name: PullRequestsService.Create
+    operations:
+      - POST /repos/{owner}/{repo}/pulls
+  - name: PullRequestsService.CreateComment
+    operations:
+      - POST /repos/{owner}/{repo}/pulls/{pull_number}/comments
+  - name: PullRequestsService.CreateCommentInReplyTo
+    operations:
+      - POST /repos/{owner}/{repo}/pulls/{pull_number}/comments
+  - name: PullRequestsService.CreateReview
+    operations:
+      - POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews
+  - name: PullRequestsService.DeleteComment
+    operations:
+      - DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}
+  - name: PullRequestsService.DeletePendingReview
+    operations:
+      - DELETE /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}
+  - name: PullRequestsService.DismissReview
+    operations:
+      - PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/dismissals
+  - name: PullRequestsService.Edit
+    operations:
+      - PATCH /repos/{owner}/{repo}/pulls/{pull_number}
+  - name: PullRequestsService.EditComment
+    operations:
+      - PATCH /repos/{owner}/{repo}/pulls/comments/{comment_id}
+  - name: PullRequestsService.Get
+    operations:
+      - GET /repos/{owner}/{repo}/pulls/{pull_number}
+  - name: PullRequestsService.GetComment
+    operations:
+      - GET /repos/{owner}/{repo}/pulls/comments/{comment_id}
+  - name: PullRequestsService.GetRaw
+    operations:
+      - GET /repos/{owner}/{repo}/pulls/{pull_number}
+  - name: PullRequestsService.GetReview
+    operations:
+      - GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}
+  - name: PullRequestsService.IsMerged
+    operations:
+      - GET /repos/{owner}/{repo}/pulls/{pull_number}/merge
+  - name: PullRequestsService.List
+    operations:
+      - GET /repos/{owner}/{repo}/pulls
+  - name: PullRequestsService.ListComments
+    operations:
+      - GET /repos/{owner}/{repo}/pulls/comments
+      - GET /repos/{owner}/{repo}/pulls/{pull_number}/comments
+  - name: PullRequestsService.ListCommits
+    operations:
+      - GET /repos/{owner}/{repo}/pulls/{pull_number}/commits
+  - name: PullRequestsService.ListFiles
+    operations:
+      - GET /repos/{owner}/{repo}/pulls/{pull_number}/files
+  - name: PullRequestsService.ListPullRequestsWithCommit
+    operations:
+      - GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls
+  - name: PullRequestsService.ListReviewComments
+    operations:
+      - GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments
+  - name: PullRequestsService.ListReviewers
+    operations:
+      - GET /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers
+  - name: PullRequestsService.ListReviews
+    operations:
+      - GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews
+  - name: PullRequestsService.Merge
+    operations:
+      - PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge
+  - name: PullRequestsService.RemoveReviewers
+    operations:
+      - DELETE /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers
+  - name: PullRequestsService.RequestReviewers
+    operations:
+      - POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers
+  - name: PullRequestsService.SubmitReview
+    operations:
+      - POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/events
+  - name: PullRequestsService.UpdateBranch
+    operations:
+      - PUT /repos/{owner}/{repo}/pulls/{pull_number}/update-branch
+  - name: PullRequestsService.UpdateReview
+    operations:
+      - PUT /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}
+  - name: ReactionsService.CreateCommentReaction
+    operations:
+      - POST /repos/{owner}/{repo}/comments/{comment_id}/reactions
+  - name: ReactionsService.CreateIssueCommentReaction
+    operations:
+      - POST /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions
+  - name: ReactionsService.CreateIssueReaction
+    operations:
+      - POST /repos/{owner}/{repo}/issues/{issue_number}/reactions
+  - name: ReactionsService.CreatePullRequestCommentReaction
+    operations:
+      - POST /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions
+  - name: ReactionsService.CreateReleaseReaction
+    operations:
+      - POST /repos/{owner}/{repo}/releases/{release_id}/reactions
+  - name: ReactionsService.CreateTeamDiscussionCommentReaction
+    operations:
+      - POST /teams/{team_id}/discussions/{discussion_number}/comments/{comment_number}/reactions
+  - name: ReactionsService.CreateTeamDiscussionReaction
+    operations:
+      - POST /teams/{team_id}/discussions/{discussion_number}/reactions
+  - name: ReactionsService.DeleteCommentReaction
+    operations:
+      - DELETE /repos/{owner}/{repo}/comments/{comment_id}/reactions/{reaction_id}
+  - name: ReactionsService.DeleteCommentReactionByID
+    operations:
+      - DELETE /repos/{owner}/{repo}/comments/{comment_id}/reactions/{reaction_id}
+  - name: ReactionsService.DeleteIssueCommentReaction
+    operations:
+      - DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions/{reaction_id}
+  - name: ReactionsService.DeleteIssueCommentReactionByID
+    operations:
+      - DELETE /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions/{reaction_id}
+  - name: ReactionsService.DeleteIssueReaction
+    operations:
+      - DELETE /repos/{owner}/{repo}/issues/{issue_number}/reactions/{reaction_id}
+  - name: ReactionsService.DeleteIssueReactionByID
+    operations:
+      - DELETE /repos/{owner}/{repo}/issues/{issue_number}/reactions/{reaction_id}
+  - name: ReactionsService.DeletePullRequestCommentReaction
+    operations:
+      - DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions/{reaction_id}
+  - name: ReactionsService.DeletePullRequestCommentReactionByID
+    operations:
+      - DELETE /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions/{reaction_id}
+  - name: ReactionsService.DeleteTeamDiscussionCommentReaction
+    operations:
+      - DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}/reactions/{reaction_id}
+  - name: ReactionsService.DeleteTeamDiscussionCommentReactionByOrgIDAndTeamID
+    operations:
+      - POST /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}/reactions
+  - name: ReactionsService.DeleteTeamDiscussionReaction
+    operations:
+      - DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/reactions/{reaction_id}
+  - name: ReactionsService.DeleteTeamDiscussionReactionByOrgIDAndTeamID
+    operations:
+      - POST /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/reactions
+  - name: ReactionsService.ListCommentReactions
+    operations:
+      - GET /repos/{owner}/{repo}/comments/{comment_id}/reactions
+  - name: ReactionsService.ListIssueCommentReactions
+    operations:
+      - GET /repos/{owner}/{repo}/issues/comments/{comment_id}/reactions
+  - name: ReactionsService.ListIssueReactions
+    operations:
+      - GET /repos/{owner}/{repo}/issues/{issue_number}/reactions
+  - name: ReactionsService.ListPullRequestCommentReactions
+    operations:
+      - GET /repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions
+  - name: ReactionsService.ListTeamDiscussionCommentReactions
+    operations:
+      - GET /teams/{team_id}/discussions/{discussion_number}/comments/{comment_number}/reactions
+  - name: ReactionsService.ListTeamDiscussionReactions
+    operations:
+      - GET /teams/{team_id}/discussions/{discussion_number}/reactions
+  - name: RepositoriesService.AddAdminEnforcement
+    operations:
+      - POST /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins
+  - name: RepositoriesService.AddAppRestrictions
+    operations:
+      - POST /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps
+  - name: RepositoriesService.AddAutolink
+    operations:
+      - POST /repos/{owner}/{repo}/autolinks
+  - name: RepositoriesService.AddCollaborator
+    operations:
+      - PUT /repos/{owner}/{repo}/collaborators/{username}
+  - name: RepositoriesService.AddTeamRestrictions
+    operations:
+      - POST /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams
+  - name: RepositoriesService.AddUserRestrictions
+    operations:
+      - POST /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users
+  - name: RepositoriesService.CompareCommits
+    operations:
+      - GET /repos/{owner}/{repo}/compare/{basehead}
+  - name: RepositoriesService.CompareCommitsRaw
+    operations:
+      - GET /repos/{owner}/{repo}/compare/{basehead}
+  - name: RepositoriesService.Create
+    operations:
+      - POST /orgs/{org}/repos
+      - POST /user/repos
+  - name: RepositoriesService.CreateComment
+    operations:
+      - POST /repos/{owner}/{repo}/commits/{commit_sha}/comments
+  - name: RepositoriesService.CreateDeployment
+    operations:
+      - POST /repos/{owner}/{repo}/deployments
+  - name: RepositoriesService.CreateDeploymentBranchPolicy
+    operations:
+      - POST /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies
+  - name: RepositoriesService.CreateDeploymentStatus
+    operations:
+      - POST /repos/{owner}/{repo}/deployments/{deployment_id}/statuses
+  - name: RepositoriesService.CreateFile
+    operations:
+      - PUT /repos/{owner}/{repo}/contents/{path}
+  - name: RepositoriesService.CreateFork
+    operations:
+      - POST /repos/{owner}/{repo}/forks
+  - name: RepositoriesService.CreateFromTemplate
+    operations:
+      - POST /repos/{template_owner}/{template_repo}/generate
+  - name: RepositoriesService.CreateHook
+    operations:
+      - POST /repos/{owner}/{repo}/hooks
+  - name: RepositoriesService.CreateKey
+    operations:
+      - POST /repos/{owner}/{repo}/keys
+  - name: RepositoriesService.CreateProject
+    operations:
+      - POST /repos/{owner}/{repo}/projects
+  - name: RepositoriesService.CreateRelease
+    operations:
+      - POST /repos/{owner}/{repo}/releases
+  - name: RepositoriesService.CreateRuleset
+    operations:
+      - POST /repos/{owner}/{repo}/rulesets
+  - name: RepositoriesService.CreateStatus
+    operations:
+      - POST /repos/{owner}/{repo}/statuses/{sha}
+  - name: RepositoriesService.CreateTagProtection
+    operations:
+      - POST /repos/{owner}/{repo}/tags/protection
+  - name: RepositoriesService.CreateUpdateEnvironment
+    operations:
+      - PUT /repos/{owner}/{repo}/environments/{environment_name}
+  - name: RepositoriesService.Delete
+    operations:
+      - DELETE /repos/{owner}/{repo}
+  - name: RepositoriesService.DeleteAutolink
+    operations:
+      - DELETE /repos/{owner}/{repo}/autolinks/{autolink_id}
+  - name: RepositoriesService.DeleteComment
+    operations:
+      - DELETE /repos/{owner}/{repo}/comments/{comment_id}
+  - name: RepositoriesService.DeleteDeployment
+    operations:
+      - DELETE /repos/{owner}/{repo}/deployments/{deployment_id}
+  - name: RepositoriesService.DeleteDeploymentBranchPolicy
+    operations:
+      - DELETE /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies/{branch_policy_id}
+  - name: RepositoriesService.DeleteEnvironment
+    operations:
+      - DELETE /repos/{owner}/{repo}/environments/{environment_name}
+  - name: RepositoriesService.DeleteFile
+    operations:
+      - DELETE /repos/{owner}/{repo}/contents/{path}
+  - name: RepositoriesService.DeleteHook
+    operations:
+      - DELETE /repos/{owner}/{repo}/hooks/{hook_id}
+  - name: RepositoriesService.DeleteInvitation
+    operations:
+      - DELETE /repos/{owner}/{repo}/invitations/{invitation_id}
+  - name: RepositoriesService.DeleteKey
+    operations:
+      - DELETE /repos/{owner}/{repo}/keys/{key_id}
+  - name: RepositoriesService.DeletePreReceiveHook
+    operations:
+      - DELETE /repos/{owner}/{repo}/pre-receive-hooks/{pre_receive_hook_id}
+  - name: RepositoriesService.DeleteRelease
+    operations:
+      - DELETE /repos/{owner}/{repo}/releases/{release_id}
+  - name: RepositoriesService.DeleteReleaseAsset
+    operations:
+      - DELETE /repos/{owner}/{repo}/releases/assets/{asset_id}
+  - name: RepositoriesService.DeleteRuleset
+    operations:
+      - DELETE /repos/{owner}/{repo}/rulesets/{ruleset_id}
+  - name: RepositoriesService.DeleteTagProtection
+    operations:
+      - DELETE /repos/{owner}/{repo}/tags/protection/{tag_protection_id}
+  - name: RepositoriesService.DisableAutomatedSecurityFixes
+    operations:
+      - DELETE /repos/{owner}/{repo}/automated-security-fixes
+  - name: RepositoriesService.DisableDismissalRestrictions
+    operations:
+      - PATCH /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews
+  - name: RepositoriesService.DisableLFS
+    operations:
+      - DELETE /repos/{owner}/{repo}/lfs
+  - name: RepositoriesService.DisablePages
+    operations:
+      - DELETE /repos/{owner}/{repo}/pages
+  - name: RepositoriesService.DisablePrivateReporting
+    operations:
+      - DELETE /repos/{owner}/{repo}/private-vulnerability-reporting
+  - name: RepositoriesService.DisableVulnerabilityAlerts
+    operations:
+      - DELETE /repos/{owner}/{repo}/vulnerability-alerts
+  - name: RepositoriesService.Dispatch
+    operations:
+      - POST /repos/{owner}/{repo}/dispatches
+  - name: RepositoriesService.DownloadContents
+    operations:
+      - GET /repos/{owner}/{repo}/contents/{path}
+  - name: RepositoriesService.DownloadContentsWithMeta
+    operations:
+      - GET /repos/{owner}/{repo}/contents/{path}
+  - name: RepositoriesService.DownloadReleaseAsset
+    operations:
+      - GET /repos/{owner}/{repo}/releases/assets/{asset_id}
+  - name: RepositoriesService.Edit
+    operations:
+      - PATCH /repos/{owner}/{repo}
+  - name: RepositoriesService.EditActionsAccessLevel
+    operations:
+      - PUT /repos/{owner}/{repo}/actions/permissions/access
+  - name: RepositoriesService.EditActionsAllowed
+    operations:
+      - PUT /repos/{owner}/{repo}/actions/permissions/selected-actions
+  - name: RepositoriesService.EditActionsPermissions
+    operations:
+      - PUT /repos/{owner}/{repo}/actions/permissions
+  - name: RepositoriesService.EditHook
+    operations:
+      - PATCH /repos/{owner}/{repo}/hooks/{hook_id}
+  - name: RepositoriesService.EditHookConfiguration
+    operations:
+      - PATCH /repos/{owner}/{repo}/hooks/{hook_id}/config
+  - name: RepositoriesService.EditRelease
+    operations:
+      - PATCH /repos/{owner}/{repo}/releases/{release_id}
+  - name: RepositoriesService.EditReleaseAsset
+    operations:
+      - PATCH /repos/{owner}/{repo}/releases/assets/{asset_id}
+  - name: RepositoriesService.EnableAutomatedSecurityFixes
+    operations:
+      - PUT /repos/{owner}/{repo}/automated-security-fixes
+  - name: RepositoriesService.EnableLFS
+    operations:
+      - PUT /repos/{owner}/{repo}/lfs
+  - name: RepositoriesService.EnablePages
+    operations:
+      - POST /repos/{owner}/{repo}/pages
+  - name: RepositoriesService.EnablePrivateReporting
+    operations:
+      - PUT /repos/{owner}/{repo}/private-vulnerability-reporting
+  - name: RepositoriesService.EnableVulnerabilityAlerts
+    operations:
+      - PUT /repos/{owner}/{repo}/vulnerability-alerts
+  - name: RepositoriesService.GenerateReleaseNotes
+    operations:
+      - POST /repos/{owner}/{repo}/releases/generate-notes
+  - name: RepositoriesService.Get
+    operations:
+      - GET /repos/{owner}/{repo}
+  - name: RepositoriesService.GetActionsAccessLevel
+    operations:
+      - GET /repos/{owner}/{repo}/actions/permissions/access
+  - name: RepositoriesService.GetActionsAllowed
+    operations:
+      - GET /repos/{owner}/{repo}/actions/permissions/selected-actions
+  - name: RepositoriesService.GetActionsPermissions
+    operations:
+      - GET /repos/{owner}/{repo}/actions/permissions
+  - name: RepositoriesService.GetAdminEnforcement
+    operations:
+      - GET /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins
+  - name: RepositoriesService.GetAllRulesets
+    operations:
+      - GET /repos/{owner}/{repo}/rulesets
+  - name: RepositoriesService.GetArchiveLink
+    operations:
+      - GET /repos/{owner}/{repo}/tarball/{ref}
+      - GET /repos/{owner}/{repo}/zipball/{ref}
+  - name: RepositoriesService.GetAutolink
+    operations:
+      - GET /repos/{owner}/{repo}/autolinks/{autolink_id}
+  - name: RepositoriesService.GetAutomatedSecurityFixes
+    operations:
+      - GET /repos/{owner}/{repo}/automated-security-fixes
+  - name: RepositoriesService.GetBranch
+    operations:
+      - GET /repos/{owner}/{repo}/branches/{branch}
+  - name: RepositoriesService.GetBranchProtection
+    operations:
+      - GET /repos/{owner}/{repo}/branches/{branch}/protection
+  - name: RepositoriesService.GetCodeOfConduct
+    operations:
+      - GET /repos/{owner}/{repo}
+  - name: RepositoriesService.GetCodeownersErrors
+    operations:
+      - GET /repos/{owner}/{repo}/codeowners/errors
+  - name: RepositoriesService.GetCombinedStatus
+    operations:
+      - GET /repos/{owner}/{repo}/commits/{ref}/status
+  - name: RepositoriesService.GetComment
+    operations:
+      - GET /repos/{owner}/{repo}/comments/{comment_id}
+  - name: RepositoriesService.GetCommit
+    operations:
+      - GET /repos/{owner}/{repo}/commits/{ref}
+  - name: RepositoriesService.GetCommitRaw
+    operations:
+      - GET /repos/{owner}/{repo}/commits/{ref}
+  - name: RepositoriesService.GetCommitSHA1
+    operations:
+      - GET /repos/{owner}/{repo}/commits/{ref}
+  - name: RepositoriesService.GetCommunityHealthMetrics
+    operations:
+      - GET /repos/{owner}/{repo}/community/profile
+  - name: RepositoriesService.GetContents
+    operations:
+      - GET /repos/{owner}/{repo}/contents/{path}
+  - name: RepositoriesService.GetDeployment
+    operations:
+      - GET /repos/{owner}/{repo}/deployments/{deployment_id}
+  - name: RepositoriesService.GetDeploymentBranchPolicy
+    operations:
+      - GET /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies/{branch_policy_id}
+  - name: RepositoriesService.GetDeploymentStatus
+    operations:
+      - GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses/{status_id}
+  - name: RepositoriesService.GetEnvironment
+    operations:
+      - GET /repos/{owner}/{repo}/environments/{environment_name}
+  - name: RepositoriesService.GetHook
+    operations:
+      - GET /repos/{owner}/{repo}/hooks/{hook_id}
+  - name: RepositoriesService.GetHookConfiguration
+    operations:
+      - GET /repos/{owner}/{repo}/hooks/{hook_id}/config
+  - name: RepositoriesService.GetHookDelivery
+    operations:
+      - GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}
+  - name: RepositoriesService.GetKey
+    operations:
+      - GET /repos/{owner}/{repo}/keys/{key_id}
+  - name: RepositoriesService.GetLatestPagesBuild
+    operations:
+      - GET /repos/{owner}/{repo}/pages/builds/latest
+  - name: RepositoriesService.GetLatestRelease
+    operations:
+      - GET /repos/{owner}/{repo}/releases/latest
+  - name: RepositoriesService.GetPageBuild
+    operations:
+      - GET /repos/{owner}/{repo}/pages/builds/{build_id}
+  - name: RepositoriesService.GetPageHealthCheck
+    operations:
+      - GET /repos/{owner}/{repo}/pages/health
+  - name: RepositoriesService.GetPagesInfo
+    operations:
+      - GET /repos/{owner}/{repo}/pages
+  - name: RepositoriesService.GetPermissionLevel
+    operations:
+      - GET /repos/{owner}/{repo}/collaborators/{username}/permission
+  - name: RepositoriesService.GetPreReceiveHook
+    operations:
+      - GET /repos/{owner}/{repo}/pre-receive-hooks/{pre_receive_hook_id}
+  - name: RepositoriesService.GetPullRequestReviewEnforcement
+    operations:
+      - GET /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews
+  - name: RepositoriesService.GetReadme
+    operations:
+      - GET /repos/{owner}/{repo}/readme
+  - name: RepositoriesService.GetRelease
+    operations:
+      - GET /repos/{owner}/{repo}/releases/{release_id}
+  - name: RepositoriesService.GetReleaseAsset
+    operations:
+      - GET /repos/{owner}/{repo}/releases/assets/{asset_id}
+  - name: RepositoriesService.GetReleaseByTag
+    operations:
+      - GET /repos/{owner}/{repo}/releases/tags/{tag}
+  - name: RepositoriesService.GetRequiredStatusChecks
+    operations:
+      - GET /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks
+  - name: RepositoriesService.GetRulesForBranch
+    operations:
+      - GET /repos/{owner}/{repo}/rules/branches/{branch}
+  - name: RepositoriesService.GetRuleset
+    operations:
+      - GET /repos/{owner}/{repo}/rulesets/{ruleset_id}
+  - name: RepositoriesService.GetSignaturesProtectedBranch
+    operations:
+      - GET /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures
+  - name: RepositoriesService.GetVulnerabilityAlerts
+    operations:
+      - GET /repos/{owner}/{repo}/vulnerability-alerts
+  - name: RepositoriesService.IsCollaborator
+    operations:
+      - GET /repos/{owner}/{repo}/collaborators/{username}
+  - name: RepositoriesService.License
+    operations:
+      - GET /repos/{owner}/{repo}/license
+  - name: RepositoriesService.List
+    operations:
+      - GET /user/repos
+      - GET /users/{username}/repos
+  - name: RepositoriesService.ListAll
+    operations:
+      - GET /repositories
+  - name: RepositoriesService.ListAllTopics
+    operations:
+      - GET /repos/{owner}/{repo}/topics
+  - name: RepositoriesService.ListAppRestrictions
+    operations:
+      - GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps
+  - name: RepositoriesService.ListApps
+    operations:
+      - GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps
+  - name: RepositoriesService.ListAutolinks
+    operations:
+      - GET /repos/{owner}/{repo}/autolinks
+  - name: RepositoriesService.ListBranches
+    operations:
+      - GET /repos/{owner}/{repo}/branches
+  - name: RepositoriesService.ListBranchesHeadCommit
+    operations:
+      - GET /repos/{owner}/{repo}/commits/{commit_sha}/branches-where-head
+  - name: RepositoriesService.ListByOrg
+    operations:
+      - GET /orgs/{org}/repos
+  - name: RepositoriesService.ListCodeFrequency
+    operations:
+      - GET /repos/{owner}/{repo}/stats/code_frequency
+  - name: RepositoriesService.ListCollaborators
+    operations:
+      - GET /repos/{owner}/{repo}/collaborators
+  - name: RepositoriesService.ListComments
+    operations:
+      - GET /repos/{owner}/{repo}/comments
+  - name: RepositoriesService.ListCommitActivity
+    operations:
+      - GET /repos/{owner}/{repo}/stats/commit_activity
+  - name: RepositoriesService.ListCommitComments
+    operations:
+      - GET /repos/{owner}/{repo}/commits/{commit_sha}/comments
+  - name: RepositoriesService.ListCommits
+    operations:
+      - GET /repos/{owner}/{repo}/commits
+  - name: RepositoriesService.ListContributors
+    operations:
+      - GET /repos/{owner}/{repo}/contributors
+  - name: RepositoriesService.ListContributorsStats
+    operations:
+      - GET /repos/{owner}/{repo}/stats/contributors
+  - name: RepositoriesService.ListDeploymentBranchPolicies
+    operations:
+      - GET /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies
+  - name: RepositoriesService.ListDeploymentStatuses
+    operations:
+      - GET /repos/{owner}/{repo}/deployments/{deployment_id}/statuses
+  - name: RepositoriesService.ListDeployments
+    operations:
+      - GET /repos/{owner}/{repo}/deployments
+  - name: RepositoriesService.ListEnvironments
+    operations:
+      - GET /repos/{owner}/{repo}/environments
+  - name: RepositoriesService.ListForks
+    operations:
+      - GET /repos/{owner}/{repo}/forks
+  - name: RepositoriesService.ListHookDeliveries
+    operations:
+      - GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries
+  - name: RepositoriesService.ListHooks
+    operations:
+      - GET /repos/{owner}/{repo}/hooks
+  - name: RepositoriesService.ListInvitations
+    operations:
+      - GET /repos/{owner}/{repo}/invitations
+  - name: RepositoriesService.ListKeys
+    operations:
+      - GET /repos/{owner}/{repo}/keys
+  - name: RepositoriesService.ListLanguages
+    operations:
+      - GET /repos/{owner}/{repo}/languages
+  - name: RepositoriesService.ListPagesBuilds
+    operations:
+      - GET /repos/{owner}/{repo}/pages/builds
+  - name: RepositoriesService.ListParticipation
+    operations:
+      - GET /repos/{owner}/{repo}/stats/participation
+  - name: RepositoriesService.ListPreReceiveHooks
+    operations:
+      - GET /repos/{owner}/{repo}/pre-receive-hooks
+  - name: RepositoriesService.ListProjects
+    operations:
+      - GET /repos/{owner}/{repo}/projects
+  - name: RepositoriesService.ListPunchCard
+    operations:
+      - GET /repos/{owner}/{repo}/stats/punch_card
+  - name: RepositoriesService.ListReleaseAssets
+    operations:
+      - GET /repos/{owner}/{repo}/releases/{release_id}/assets
+  - name: RepositoriesService.ListReleases
+    operations:
+      - GET /repos/{owner}/{repo}/releases
+  - name: RepositoriesService.ListRequiredStatusChecksContexts
+    operations:
+      - GET /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks/contexts
+  - name: RepositoriesService.ListStatuses
+    operations:
+      - GET /repos/{owner}/{repo}/commits/{ref}/statuses
+  - name: RepositoriesService.ListTagProtection
+    operations:
+      - GET /repos/{owner}/{repo}/tags/protection
+  - name: RepositoriesService.ListTags
+    operations:
+      - GET /repos/{owner}/{repo}/tags
+  - name: RepositoriesService.ListTeamRestrictions
+    operations:
+      - GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams
+  - name: RepositoriesService.ListTeams
+    operations:
+      - GET /repos/{owner}/{repo}/teams
+  - name: RepositoriesService.ListTrafficClones
+    operations:
+      - GET /repos/{owner}/{repo}/traffic/clones
+  - name: RepositoriesService.ListTrafficPaths
+    operations:
+      - GET /repos/{owner}/{repo}/traffic/popular/paths
+  - name: RepositoriesService.ListTrafficReferrers
+    operations:
+      - GET /repos/{owner}/{repo}/traffic/popular/referrers
+  - name: RepositoriesService.ListTrafficViews
+    operations:
+      - GET /repos/{owner}/{repo}/traffic/views
+  - name: RepositoriesService.ListUserRestrictions
+    operations:
+      - GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users
+  - name: RepositoriesService.Merge
+    operations:
+      - POST /repos/{owner}/{repo}/merges
+  - name: RepositoriesService.MergeUpstream
+    operations:
+      - POST /repos/{owner}/{repo}/merge-upstream
+  - name: RepositoriesService.OptionalSignaturesOnProtectedBranch
+    operations:
+      - DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures
+  - name: RepositoriesService.PingHook
+    operations:
+      - POST /repos/{owner}/{repo}/hooks/{hook_id}/pings
+  - name: RepositoriesService.RedeliverHookDelivery
+    operations:
+      - POST /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}/attempts
+  - name: RepositoriesService.RemoveAdminEnforcement
+    operations:
+      - DELETE /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins
+  - name: RepositoriesService.RemoveAppRestrictions
+    operations:
+      - DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps
+  - name: RepositoriesService.RemoveBranchProtection
+    operations:
+      - DELETE /repos/{owner}/{repo}/branches/{branch}/protection
+  - name: RepositoriesService.RemoveCollaborator
+    operations:
+      - DELETE /repos/{owner}/{repo}/collaborators/{username}
+  - name: RepositoriesService.RemovePullRequestReviewEnforcement
+    operations:
+      - DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews
+  - name: RepositoriesService.RemoveRequiredStatusChecks
+    operations:
+      - DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks
+  - name: RepositoriesService.RemoveTeamRestrictions
+    operations:
+      - DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams
+  - name: RepositoriesService.RemoveUserRestrictions
+    operations:
+      - DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users
+  - name: RepositoriesService.RenameBranch
+    operations:
+      - POST /repos/{owner}/{repo}/branches/{branch}/rename
+  - name: RepositoriesService.ReplaceAllTopics
+    operations:
+      - PUT /repos/{owner}/{repo}/topics
+  - name: RepositoriesService.ReplaceAppRestrictions
+    operations:
+      - PUT /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps
+  - name: RepositoriesService.ReplaceTeamRestrictions
+    operations:
+      - PUT /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/teams
+  - name: RepositoriesService.ReplaceUserRestrictions
+    operations:
+      - PUT /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users
+  - name: RepositoriesService.RequestPageBuild
+    operations:
+      - POST /repos/{owner}/{repo}/pages/builds
+  - name: RepositoriesService.RequireSignaturesOnProtectedBranch
+    operations:
+      - POST /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures
+  - name: RepositoriesService.Subscribe
+    operations:
+      - POST /hub
+  - name: RepositoriesService.TestHook
+    operations:
+      - POST /repos/{owner}/{repo}/hooks/{hook_id}/tests
+  - name: RepositoriesService.Transfer
+    operations:
+      - POST /repos/{owner}/{repo}/transfer
+  - name: RepositoriesService.Unsubscribe
+    operations:
+      - POST /hub
+  - name: RepositoriesService.UpdateBranchProtection
+    operations:
+      - PUT /repos/{owner}/{repo}/branches/{branch}/protection
+  - name: RepositoriesService.UpdateComment
+    operations:
+      - PATCH /repos/{owner}/{repo}/comments/{comment_id}
+  - name: RepositoriesService.UpdateDeploymentBranchPolicy
+    operations:
+      - PUT /repos/{owner}/{repo}/environments/{environment_name}/deployment-branch-policies/{branch_policy_id}
+  - name: RepositoriesService.UpdateFile
+    operations:
+      - PUT /repos/{owner}/{repo}/contents/{path}
+  - name: RepositoriesService.UpdateInvitation
+    operations:
+      - PATCH /repos/{owner}/{repo}/invitations/{invitation_id}
+  - name: RepositoriesService.UpdatePages
+    operations:
+      - PUT /repos/{owner}/{repo}/pages
+  - name: RepositoriesService.UpdatePreReceiveHook
+    operations:
+      - PATCH /repos/{owner}/{repo}/pre-receive-hooks/{pre_receive_hook_id}
+  - name: RepositoriesService.UpdatePullRequestReviewEnforcement
+    operations:
+      - PATCH /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews
+  - name: RepositoriesService.UpdateRequiredStatusChecks
+    operations:
+      - PATCH /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks
+  - name: RepositoriesService.UpdateRuleset
+    operations:
+      - PUT /repos/{owner}/{repo}/rulesets/{ruleset_id}
+  - name: RepositoriesService.UploadReleaseAsset
+    operations:
+      - POST /repos/{owner}/{repo}/releases/{release_id}/assets
+  - name: SCIMService.DeleteSCIMUserFromOrg
+    operations:
+      - DELETE /scim/v2/organizations/{org}/Users/{scim_user_id}
+  - name: SCIMService.GetSCIMProvisioningInfoForUser
+    operations:
+      - GET /scim/v2/organizations/{org}/Users/{scim_user_id}
+  - name: SCIMService.ListSCIMProvisionedIdentities
+    operations:
+      - GET /scim/v2/organizations/{org}/Users
+  - name: SCIMService.ProvisionAndInviteSCIMUser
+    operations:
+      - POST /scim/v2/organizations/{org}/Users
+  - name: SCIMService.UpdateAttributeForSCIMUser
+    operations:
+      - PATCH /scim/v2/organizations/{org}/Users/{scim_user_id}
+  - name: SCIMService.UpdateProvisionedOrgMembership
+    operations:
+      - PUT /scim/v2/organizations/{org}/Users/{scim_user_id}
+  - name: SearchService.Code
+    operations:
+      - GET /search/code
+  - name: SearchService.Commits
+    operations:
+      - GET /search/commits
+  - name: SearchService.Issues
+    operations:
+      - GET /search/issues
+  - name: SearchService.Labels
+    operations:
+      - GET /search/labels
+  - name: SearchService.Repositories
+    operations:
+      - GET /search/repositories
+  - name: SearchService.Topics
+    operations:
+      - GET /search/topics
+  - name: SearchService.Users
+    operations:
+      - GET /search/users
+  - name: SecretScanningService.GetAlert
+    operations:
+      - GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}
+  - name: SecretScanningService.ListAlertsForEnterprise
+    operations:
+      - GET /enterprises/{enterprise}/secret-scanning/alerts
+  - name: SecretScanningService.ListAlertsForOrg
+    operations:
+      - GET /orgs/{org}/secret-scanning/alerts
+  - name: SecretScanningService.ListAlertsForRepo
+    operations:
+      - GET /repos/{owner}/{repo}/secret-scanning/alerts
+  - name: SecretScanningService.ListLocationsForAlert
+    operations:
+      - GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations
+  - name: SecretScanningService.UpdateAlert
+    operations:
+      - PATCH /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}
+  - name: SecurityAdvisoriesService.RequestCVE
+    operations:
+      - POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/cve
+  - name: TeamsService.AddTeamMembershipByID
+    operations:
+      - PUT /orgs/{org}/teams/{team_slug}/memberships/{username}
+  - name: TeamsService.AddTeamMembershipBySlug
+    operations:
+      - PUT /orgs/{org}/teams/{team_slug}/memberships/{username}
+  - name: TeamsService.AddTeamProjectByID
+    operations:
+      - PUT /orgs/{org}/teams/{team_slug}/projects/{project_id}
+  - name: TeamsService.AddTeamProjectBySlug
+    operations:
+      - PUT /orgs/{org}/teams/{team_slug}/projects/{project_id}
+  - name: TeamsService.AddTeamRepoByID
+    operations:
+      - PUT /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}
+  - name: TeamsService.AddTeamRepoBySlug
+    operations:
+      - PUT /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}
+  - name: TeamsService.CreateCommentByID
+    operations:
+      - POST /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments
+  - name: TeamsService.CreateCommentBySlug
+    operations:
+      - POST /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments
+  - name: TeamsService.CreateDiscussionByID
+    operations:
+      - POST /orgs/{org}/teams/{team_slug}/discussions
+  - name: TeamsService.CreateDiscussionBySlug
+    operations:
+      - POST /orgs/{org}/teams/{team_slug}/discussions
+  - name: TeamsService.CreateOrUpdateIDPGroupConnectionsByID
+    operations:
+      - PATCH /orgs/{org}/teams/{team_slug}/team-sync/group-mappings
+  - name: TeamsService.CreateOrUpdateIDPGroupConnectionsBySlug
+    operations:
+      - PATCH /orgs/{org}/teams/{team_slug}/team-sync/group-mappings
+  - name: TeamsService.CreateTeam
+    operations:
+      - POST /orgs/{org}/teams
+  - name: TeamsService.DeleteCommentByID
+    operations:
+      - DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}
+  - name: TeamsService.DeleteCommentBySlug
+    operations:
+      - DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}
+  - name: TeamsService.DeleteDiscussionByID
+    operations:
+      - DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}
+  - name: TeamsService.DeleteDiscussionBySlug
+    operations:
+      - DELETE /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}
+  - name: TeamsService.DeleteTeamByID
+    operations:
+      - DELETE /orgs/{org}/teams/{team_slug}
+  - name: TeamsService.DeleteTeamBySlug
+    operations:
+      - DELETE /orgs/{org}/teams/{team_slug}
+  - name: TeamsService.EditCommentByID
+    operations:
+      - PATCH /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}
+  - name: TeamsService.EditCommentBySlug
+    operations:
+      - PATCH /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}
+  - name: TeamsService.EditDiscussionByID
+    operations:
+      - PATCH /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}
+  - name: TeamsService.EditDiscussionBySlug
+    operations:
+      - PATCH /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}
+  - name: TeamsService.EditTeamByID
+    operations:
+      - PATCH /orgs/{org}/teams/{team_slug}
+  - name: TeamsService.EditTeamBySlug
+    operations:
+      - PATCH /orgs/{org}/teams/{team_slug}
+  - name: TeamsService.GetCommentByID
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}
+  - name: TeamsService.GetCommentBySlug
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments/{comment_number}
+  - name: TeamsService.GetDiscussionByID
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}
+  - name: TeamsService.GetDiscussionBySlug
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}
+  - name: TeamsService.GetExternalGroup
+    operations:
+      - GET /orgs/{org}/external-group/{group_id}
+  - name: TeamsService.GetTeamByID
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}
+  - name: TeamsService.GetTeamBySlug
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}
+  - name: TeamsService.GetTeamMembershipByID
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/members
+  - name: TeamsService.GetTeamMembershipBySlug
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/memberships/{username}
+  - name: TeamsService.IsTeamRepoByID
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}
+  - name: TeamsService.IsTeamRepoBySlug
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}
+  - name: TeamsService.ListChildTeamsByParentID
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/teams
+  - name: TeamsService.ListChildTeamsByParentSlug
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/teams
+  - name: TeamsService.ListCommentsByID
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments
+  - name: TeamsService.ListCommentsBySlug
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/discussions/{discussion_number}/comments
+  - name: TeamsService.ListDiscussionsByID
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/discussions
+  - name: TeamsService.ListDiscussionsBySlug
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/discussions
+  - name: TeamsService.ListExternalGroups
+    operations:
+      - GET /orgs/{org}/external-groups
+  - name: TeamsService.ListExternalGroupsForTeamBySlug
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/external-groups
+  - name: TeamsService.ListIDPGroupsForTeamByID
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/team-sync/group-mappings
+  - name: TeamsService.ListIDPGroupsForTeamBySlug
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/team-sync/group-mappings
+  - name: TeamsService.ListIDPGroupsInOrganization
+    operations:
+      - GET /orgs/{org}/team-sync/groups
+  - name: TeamsService.ListPendingTeamInvitationsByID
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/invitations
+  - name: TeamsService.ListPendingTeamInvitationsBySlug
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/invitations
+  - name: TeamsService.ListTeamMembersByID
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/members
+  - name: TeamsService.ListTeamMembersBySlug
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/members
+  - name: TeamsService.ListTeamProjectsByID
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/projects
+  - name: TeamsService.ListTeamProjectsBySlug
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/projects
+  - name: TeamsService.ListTeamReposByID
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/repos
+  - name: TeamsService.ListTeamReposBySlug
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/repos
+  - name: TeamsService.ListTeams
+    operations:
+      - GET /orgs/{org}/teams
+  - name: TeamsService.ListUserTeams
+    operations:
+      - GET /user/teams
+  - name: TeamsService.RemoveConnectedExternalGroup
+    operations:
+      - DELETE /orgs/{org}/teams/{team_slug}/external-groups
+  - name: TeamsService.RemoveTeamMembershipByID
+    operations:
+      - DELETE /orgs/{org}/teams/{team_slug}/memberships/{username}
+  - name: TeamsService.RemoveTeamMembershipBySlug
+    operations:
+      - DELETE /orgs/{org}/teams/{team_slug}/memberships/{username}
+  - name: TeamsService.RemoveTeamProjectByID
+    operations:
+      - DELETE /orgs/{org}/teams/{team_slug}/projects/{project_id}
+  - name: TeamsService.RemoveTeamProjectBySlug
+    operations:
+      - DELETE /orgs/{org}/teams/{team_slug}/projects/{project_id}
+  - name: TeamsService.RemoveTeamRepoByID
+    operations:
+      - DELETE /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}
+  - name: TeamsService.RemoveTeamRepoBySlug
+    operations:
+      - DELETE /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}
+  - name: TeamsService.ReviewTeamProjectsByID
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/projects/{project_id}
+  - name: TeamsService.ReviewTeamProjectsBySlug
+    operations:
+      - GET /orgs/{org}/teams/{team_slug}/projects/{project_id}
+  - name: TeamsService.UpdateConnectedExternalGroup
+    operations:
+      - PATCH /orgs/{org}/teams/{team_slug}/external-groups
+  - name: UsersService.AcceptInvitation
+    operations:
+      - PATCH /user/repository_invitations/{invitation_id}
+  - name: UsersService.AddEmails
+    operations:
+      - POST /user/emails
+  - name: UsersService.BlockUser
+    operations:
+      - PUT /user/blocks/{username}
+  - name: UsersService.CreateGPGKey
+    operations:
+      - POST /user/gpg_keys
+  - name: UsersService.CreateKey
+    operations:
+      - POST /user/keys
+  - name: UsersService.CreateProject
+    operations:
+      - POST /user/projects
+  - name: UsersService.CreateSSHSigningKey
+    operations:
+      - POST /user/ssh_signing_keys
+  - name: UsersService.DeclineInvitation
+    operations:
+      - DELETE /user/repository_invitations/{invitation_id}
+  - name: UsersService.DeleteEmails
+    operations:
+      - DELETE /user/emails
+  - name: UsersService.DeleteGPGKey
+    operations:
+      - DELETE /user/gpg_keys/{gpg_key_id}
+  - name: UsersService.DeleteKey
+    operations:
+      - DELETE /user/keys/{key_id}
+  - name: UsersService.DeletePackage
+    operations:
+      - DELETE /user/packages/{package_type}/{package_name}
+      - DELETE /users/{username}/packages/{package_type}/{package_name}
+  - name: UsersService.DeleteSSHSigningKey
+    operations:
+      - DELETE /user/ssh_signing_keys/{ssh_signing_key_id}
+  - name: UsersService.DemoteSiteAdmin
+    operations:
+      - DELETE /users/{username}/site_admin
+  - name: UsersService.Edit
+    operations:
+      - PATCH /user
+  - name: UsersService.Follow
+    operations:
+      - PUT /user/following/{username}
+  - name: UsersService.Get
+    operations:
+      - GET /user
+      - GET /users/{username}
+  - name: UsersService.GetGPGKey
+    operations:
+      - GET /user/gpg_keys/{gpg_key_id}
+  - name: UsersService.GetHovercard
+    operations:
+      - GET /users/{username}/hovercard
+  - name: UsersService.GetKey
+    operations:
+      - GET /user/keys/{key_id}
+  - name: UsersService.GetPackage
+    operations:
+      - GET /user/packages/{package_type}/{package_name}
+      - GET /users/{username}/packages/{package_type}/{package_name}
+  - name: UsersService.GetSSHSigningKey
+    operations:
+      - GET /user/ssh_signing_keys/{ssh_signing_key_id}
+  - name: UsersService.IsBlocked
+    operations:
+      - GET /user/blocks/{username}
+  - name: UsersService.IsFollowing
+    operations:
+      - GET /user/following/{username}
+      - GET /users/{username}/following/{target_user}
+  - name: UsersService.ListAll
+    operations:
+      - GET /users
+  - name: UsersService.ListBlockedUsers
+    operations:
+      - GET /user/blocks
+  - name: UsersService.ListEmails
+    operations:
+      - GET /user/emails
+  - name: UsersService.ListFollowers
+    operations:
+      - GET /user/followers
+      - GET /users/{username}/followers
+  - name: UsersService.ListFollowing
+    operations:
+      - GET /user/following
+      - GET /users/{username}/following
+  - name: UsersService.ListGPGKeys
+    operations:
+      - GET /user/gpg_keys
+      - GET /users/{username}/gpg_keys
+  - name: UsersService.ListInvitations
+    operations:
+      - GET /user/repository_invitations
+  - name: UsersService.ListKeys
+    operations:
+      - GET /user/keys
+      - GET /users/{username}/keys
+  - name: UsersService.ListPackages
+    operations:
+      - GET /user/packages
+      - GET /users/{username}/packages
+  - name: UsersService.ListProjects
+    operations:
+      - GET /users/{username}/projects
+  - name: UsersService.ListSSHSigningKeys
+    operations:
+      - GET /user/ssh_signing_keys
+      - GET /users/{username}/ssh_signing_keys
+  - name: UsersService.PackageDeleteVersion
+    operations:
+      - DELETE /user/packages/{package_type}/{package_name}/versions/{package_version_id}
+      - DELETE /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}
+  - name: UsersService.PackageGetAllVersions
+    operations:
+      - GET /user/packages/{package_type}/{package_name}/versions
+      - GET /users/{username}/packages/{package_type}/{package_name}/versions
+  - name: UsersService.PackageGetVersion
+    operations:
+      - GET /user/packages/{package_type}/{package_name}/versions/{package_version_id}
+      - GET /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}
+  - name: UsersService.PackageRestoreVersion
+    operations:
+      - POST /user/packages/{package_type}/{package_name}/versions/{package_version_id}/restore
+      - POST /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore
+  - name: UsersService.PromoteSiteAdmin
+    operations:
+      - PUT /users/{username}/site_admin
+  - name: UsersService.RestorePackage
+    operations:
+      - POST /user/packages/{package_type}/{package_name}/restore
+      - POST /users/{username}/packages/{package_type}/{package_name}/restore
+  - name: UsersService.SetEmailVisibility
+    operations:
+      - PATCH /user/email/visibility
+  - name: UsersService.Suspend
+    operations:
+      - PUT /users/{username}/suspended
+  - name: UsersService.UnblockUser
+    operations:
+      - DELETE /user/blocks/{username}
+  - name: UsersService.Unfollow
+    operations:
+      - DELETE /user/following/{username}
+  - name: UsersService.Unsuspend
+    operations:
+      - DELETE /users/{username}/suspended
 undocumented_methods:
   - AppsService.FindRepositoryInstallationByID
   - Client.ListServiceHooks

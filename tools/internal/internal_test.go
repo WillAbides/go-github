@@ -10,6 +10,23 @@ import (
 	"golang.org/x/tools/txtar"
 )
 
+func TestCanonical(t *testing.T) {
+	meta, err := LoadMetadataFile("../../metadata.yaml")
+	require.NoError(t, err)
+	err = meta.CanonizeMethodOperations()
+	require.NoError(t, err)
+	err = meta.SaveFile("../../metadata.yaml")
+	require.NoError(t, err)
+}
+
+//func TestPopMethods(t *testing.T) {
+//	meta, err := LoadMetadataFile("../../metadata.yaml")
+//	require.NoError(t, err)
+//	meta.Methods = meta.GetMethods()
+//	err = meta.SaveFile("../../metadata.yaml")
+//	require.NoError(t, err)
+//}
+
 func extractTxtar(t *testing.T, filename string) string {
 	t.Helper()
 	a, err := txtar.ParseFile(filepath.FromSlash(filename))

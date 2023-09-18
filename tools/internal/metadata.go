@@ -8,6 +8,7 @@ package internal
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"go/ast"
 	"go/format"
 	"go/parser"
@@ -25,10 +26,6 @@ import (
 	"golang.org/x/exp/maps"
 	"gopkg.in/yaml.v3"
 )
-
-type OperationDesc struct {
-	DocumentationURL string `yaml:"documentation_url,omitempty" json:"documentation_url,omitempty"`
-}
 
 type Operation struct {
 	Name             string   `yaml:"name,omitempty" json:"name,omitempty"`
@@ -79,12 +76,17 @@ func parseID(id string) (verb, url string) {
 	return verb, url
 }
 
+type Method struct {
+	Name    string   `yaml:"name" json:"name"`
+	OpNames []string `yaml:"operations,omitempty" json:"operations,omitempty"`
+}
+
 type Metadata struct {
-	MethodOperations    map[string][]string `yaml:"method_operations,omitempty"`
-	UndocumentedMethods []string     `yaml:"undocumented_methods,omitempty"`
-	ManualOps           []*Operation `yaml:"operations"`
-	OverrideOps         []*Operation `yaml:"operation_overrides"`
-	OpenapiOps          []*Operation `yaml:"openapi_operations"`
+	Methods             []*Method           `yaml:"methods,omitempty" json:"methods,omitempty"`
+	UndocumentedMethods []string            `yaml:"undocumented_methods,omitempty"`
+	ManualOps           []*Operation        `yaml:"operations"`
+	OverrideOps         []*Operation        `yaml:"operation_overrides"`
+	OpenapiOps          []*Operation        `yaml:"openapi_operations"`
 
 	mu          sync.Mutex
 	resolvedOps map[string]*Operation
@@ -127,26 +129,28 @@ func (m *Metadata) Operations() []*Operation {
 	return ops
 }
 
-func LoadMetadataFile(filename string, opFile *Metadata) (errOut error) {
-	f, err := os.Open(filename)
+func LoadMetadataFile(filename string) (*Metadata, error) {
+	b, err := os.ReadFile(filename)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	defer func() {
-		e := f.Close()
-		if errOut == nil {
-			errOut = e
-		}
-	}()
-	return yaml.NewDecoder(f).Decode(opFile)
+	var meta Metadata
+	err = yaml.Unmarshal(b, &meta)
+	if err != nil {
+		return nil, err
+	}
+	return &meta, nil
 }
 
 func (m *Metadata) SaveFile(filename string) (errOut error) {
 	sortOperations(m.ManualOps)
 	sortOperations(m.OverrideOps)
 	sortOperations(m.OpenapiOps)
-	for i := range m.MethodOperations {
-		sort.Strings(m.MethodOperations[i])
+	sort.Slice(m.Methods, func(i, j int) bool {
+		return m.Methods[i].Name < m.Methods[j].Name
+	})
+	for _, method := range m.Methods {
+		sort.Strings(method.OpNames)
 	}
 	f, err := os.Create(filename)
 	if err != nil {
@@ -188,19 +192,19 @@ func (m *Metadata) addOperation(filename string, descID, docURL string) {
 		return
 	}
 	m.OpenapiOps = append(m.OpenapiOps, &Operation{
-		Name:         descID,
-		OpenAPIFiles: []string{filename},
+		Name:             descID,
+		OpenAPIFiles:     []string{filename},
 		DocumentationURL: docURL,
 	})
 }
 
 // OperationMethods returns a list methods that are mapped to the given operation id.
-func (m *Metadata) OperationMethods(opID string) []string {
+func (m *Metadata) OperationMethods(opName string) []string {
 	var methods []string
-	for method, methodOpIDs := range m.MethodOperations {
-		for _, methodOpID := range methodOpIDs {
-			if methodOpID == opID {
-				methods = append(methods, method)
+	for _, method := range m.Methods {
+		for _, methodOpName := range method.OpNames {
+			if methodOpName == opName {
+				methods = append(methods, method.Name)
 			}
 		}
 	}
@@ -212,12 +216,33 @@ func (m *Metadata) getOperation(name string) *Operation {
 	return m.resolvedOps[name]
 }
 
-func (m *Metadata) operationsForMethod(method string) []*Operation {
-	if m.MethodOperations == nil {
+func (m *Metadata) getOperationByNormalizedName(name string) *Operation {
+	m.resolve()
+	norm := normalizedName(name)
+	for n := range m.resolvedOps {
+		if normalizedName(n) == norm {
+			return m.resolvedOps[n]
+		}
+	}
+	return nil
+}
+
+func (m *Metadata) getMethod(name string) *Method {
+	for _, method := range m.Methods {
+		if method.Name == name {
+			return method
+		}
+	}
+	return nil
+}
+
+func (m *Metadata) operationsForMethod(methodName string) []*Operation {
+	method := m.getMethod(methodName)
+	if method == nil {
 		return nil
 	}
 	var operations []*Operation
-	for _, name := range m.MethodOperations[method] {
+	for _, name := range method.OpNames {
 		op := m.getOperation(name)
 		if op != nil {
 			operations = append(operations, op)
@@ -225,6 +250,20 @@ func (m *Metadata) operationsForMethod(method string) []*Operation {
 	}
 	sortOperations(operations)
 	return operations
+}
+
+func (m *Metadata) CanonizeMethodOperations() error {
+	for _, method := range m.Methods {
+		for i := range method.OpNames {
+			opName := method.OpNames[i]
+			op := m.getOperationByNormalizedName(opName)
+			if op == nil {
+				return fmt.Errorf("operation %q not found", opName)
+			}
+			method.OpNames[i] = op.Name
+		}
+	}
+	return nil
 }
 
 func (m *Metadata) UpdateFromGithub(ctx context.Context, client contentsClient, ref string) error {

@@ -45,12 +45,11 @@ func (c *rootCmd) metadata() (string, *internal.Metadata, error) {
 		}
 		filename = filepath.Join(dir, "metadata.yaml")
 	}
-	var meta internal.Metadata
-	err := internal.LoadMetadataFile(filename, &meta)
+	meta, err := internal.LoadMetadataFile(filename)
 	if err != nil {
 		return "", nil, err
 	}
-	return filename, &meta, nil
+	return filename, meta, nil
 }
 
 func (c *rootCmd) githubDir() (string, error) {
