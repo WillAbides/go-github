@@ -19,14 +19,6 @@ func TestCanonical(t *testing.T) {
 	require.NoError(t, err)
 }
 
-//func TestPopMethods(t *testing.T) {
-//	meta, err := LoadMetadataFile("../../metadata.yaml")
-//	require.NoError(t, err)
-//	meta.Methods = meta.GetMethods()
-//	err = meta.SaveFile("../../metadata.yaml")
-//	require.NoError(t, err)
-//}
-
 func extractTxtar(t *testing.T, filename string) string {
 	t.Helper()
 	a, err := txtar.ParseFile(filepath.FromSlash(filename))
@@ -52,11 +44,9 @@ func TestFoo(t *testing.T) {
 	getBlob := methodsMap["GitService.GetBlob"]
 	require.NotNil(t, getBlob)
 	require.Equal(t, "GET", getBlob.httpMethod)
-	//"CreateWorkflowDispatchEventByFileName"
 	create := methodsMap["ActionsService.CreateWorkflowDispatchEventByFileName"]
 	require.NotNil(t, create)
 	require.Equal(t, "ActionsService.createWorkflowDispatchEvent", create.helper)
-	//require.Equal(t, "POST", create.httpMethod)
 
 }
 

@@ -33,6 +33,14 @@ type Operation struct {
 	OpenAPIFiles     []string `yaml:"openapi_files,omitempty" json:"openapi_files,omitempty"`
 }
 
+func (o *Operation) clone() *Operation {
+	return &Operation{
+		Name:             o.Name,
+		DocumentationURL: o.DocumentationURL,
+		OpenAPIFiles:     append([]string{}, o.OpenAPIFiles...),
+	}
+}
+
 func sortOperations(ops []*Operation) {
 	sort.Slice(ops, func(i, j int) bool {
 		leftVerb, leftURL := parseID(ops[i].Name)
@@ -100,21 +108,22 @@ func (m *Metadata) resolve() {
 	}
 	m.resolvedOps = map[string]*Operation{}
 	for _, op := range m.OpenapiOps {
-		m.resolvedOps[op.Name] = op
+		m.resolvedOps[op.Name] = op.clone()
 	}
 	for _, op := range m.ManualOps {
-		m.resolvedOps[op.Name] = op
+		m.resolvedOps[op.Name] = op.clone()
 	}
-	for _, op := range m.OverrideOps {
-		_, ok := m.resolvedOps[op.Name]
+	for _, override := range m.OverrideOps {
+		override = override.clone()
+		_, ok := m.resolvedOps[override.Name]
 		if !ok {
-			m.resolvedOps[op.Name] = op
+			m.resolvedOps[override.Name] = override
 		}
-		if op.DocumentationURL != "" {
-			m.resolvedOps[op.Name].DocumentationURL = op.DocumentationURL
+		if override.DocumentationURL != "" {
+			m.resolvedOps[override.Name].DocumentationURL = override.DocumentationURL
 		}
-		if len(op.OpenAPIFiles) > 0 {
-			m.resolvedOps[op.Name].OpenAPIFiles = op.OpenAPIFiles
+		if len(override.OpenAPIFiles) > 0 {
+			m.resolvedOps[override.Name].OpenAPIFiles = override.OpenAPIFiles
 		}
 	}
 }
