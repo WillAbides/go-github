@@ -43,10 +43,8 @@ func TestFoo(t *testing.T) {
 	}
 	getBlob := methodsMap["GitService.GetBlob"]
 	require.NotNil(t, getBlob)
-	require.Equal(t, "GET", getBlob.httpMethod)
 	create := methodsMap["ActionsService.CreateWorkflowDispatchEventByFileName"]
 	require.NotNil(t, create)
-	require.Equal(t, "ActionsService.createWorkflowDispatchEvent", create.helper)
 }
 
 func TestBar(t *testing.T) {
@@ -59,5 +57,5 @@ func TestBar(t *testing.T) {
 	}
 	method, ok := methodsMap["MarketplaceService.GetPlanAccountForAccount"]
 	require.True(t, ok)
-	fmt.Println(method.urls)
+	fmt.Println(method.name())
 }

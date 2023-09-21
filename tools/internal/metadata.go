@@ -364,30 +364,17 @@ var (
 
 func updateDocsLinksForNode(metadata *Metadata, n ast.Node) bool {
 	fn, ok := n.(*ast.FuncDecl)
-	if !ok || !fn.Name.IsExported() {
+	if !ok {
 		return true
 	}
-	methodName := fn.Name.Name
-
-	// Get the method's receiver. It can be either an identifier or a pointer to an identifier.
-	// This assumes all receivers are named and we don't have something like: `func (Client) Foo()`.
-	receiverType := ""
-	if fn.Recv != nil {
-		switch x := fn.Recv.List[0].Type.(type) {
-		case *ast.Ident:
-			receiverType = x.Name
-		case *ast.StarExpr:
-			receiverType = x.X.(*ast.Ident).Name
-		}
-	}
-	if !ast.IsExported(receiverType) {
+	sm := serviceMethodFromNode(n)
+	if sm == nil {
 		return true
 	}
 
 	linksMap := map[string]struct{}{}
 	undocMap := map[string]bool{}
-	fullMethodName := strings.Join([]string{receiverType, methodName}, ".")
-	ops := metadata.operationsForMethod(fullMethodName)
+	ops := metadata.operationsForMethod(sm.name())
 	for _, op := range ops {
 		if op.DocumentationURL == "" {
 			undocMap[op.Name] = true
@@ -452,7 +439,7 @@ func updateDocsLinksForNode(metadata *Metadata, n ast.Node) bool {
 		)
 	}
 	for _, opName := range undocumentedOps {
-		line := fmt.Sprintf("// Note: %s uses the undocumented GitHub API endpoint %q.", methodName, opName)
+		line := fmt.Sprintf("// Note: %s uses the undocumented GitHub API endpoint %q.", sm.methodName, opName)
 		fnComments = append(fnComments, &ast.Comment{Text: line})
 	}
 	if len(docLinks)+len(undocumentedOps) > 0 {

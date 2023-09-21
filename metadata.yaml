@@ -637,27 +637,6 @@ methods:
   - name: ChecksService.UpdateCheckRun
     operations:
       - PATCH /repos/{owner}/{repo}/check-runs/{check_run_id}
-  - name: Client.APIMeta
-    operations:
-      - GET /meta
-  - name: Client.GetCodeOfConduct
-    operations:
-      - GET /codes_of_conduct/{key}
-  - name: Client.ListCodesOfConduct
-    operations:
-      - GET /codes_of_conduct
-  - name: Client.ListEmojis
-    operations:
-      - GET /emojis
-  - name: Client.Markdown
-    operations:
-      - POST /markdown
-  - name: Client.Octocat
-    operations:
-      - GET /octocat
-  - name: Client.Zen
-    operations:
-      - GET /zen
   - name: CodeScanningService.DeleteAnalysis
     operations:
       - DELETE /repos/{owner}/{repo}/code-scanning/analyses/{analysis_id}
@@ -700,6 +679,12 @@ methods:
   - name: CodeScanningService.UploadSarif
     operations:
       - POST /repos/{owner}/{repo}/code-scanning/sarifs
+  - name: CodesOfConductService.Get
+    operations:
+      - GET /codes_of_conduct/{key}
+  - name: CodesOfConductService.List
+    operations:
+      - GET /codes_of_conduct
   - name: CodespacesService.AddSelectedRepoToOrgSecret
     operations:
       - PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}
@@ -841,6 +826,9 @@ methods:
   - name: DependencyGraphService.GetSBOM
     operations:
       - GET /repos/{owner}/{repo}/dependency-graph/sbom
+  - name: EmojisService.List
+    operations:
+      - GET /emojis
   - name: EnterpriseService.AddOrganizationAccessRunnerGroup
     operations:
       - PUT /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations/{org_id}
@@ -1162,6 +1150,9 @@ methods:
   - name: LicensesService.List
     operations:
       - GET /licenses
+  - name: MarkdownService.Render
+    operations:
+      - POST /markdown
   - name: MarketplaceService.GetPlanAccountForAccount
     operations:
       - GET /marketplace_listing/accounts/{account_id}
@@ -1178,6 +1169,15 @@ methods:
     operations:
       - GET /marketplace_listing/plans
       - GET /marketplace_listing/stubbed/plans
+  - name: MetaService.APIMeta
+    operations:
+      - GET /meta
+  - name: MetaService.Octocat
+    operations:
+      - GET /octocat
+  - name: MetaService.Zen
+    operations:
+      - GET /zen
   - name: MigrationService.CancelImport
     operations:
       - DELETE /repos/{owner}/{repo}/import
