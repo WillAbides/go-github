@@ -31,6 +31,10 @@ for dir in $MOD_DIRS; do
   ) || FAILED=1
 done
 
+echo validating metadata.yaml
+script/metadata.sh validate || FAILED=1
+
+echo validating generated files
 script/generate.sh --check || FAILED=1
 
 if [ -n "$FAILED" ]; then

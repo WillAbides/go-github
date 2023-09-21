@@ -89,11 +89,10 @@ type Method struct {
 }
 
 type Metadata struct {
-	Methods             []*Method    `yaml:"methods,omitempty" json:"methods,omitempty"`
-	UndocumentedMethods []string     `yaml:"undocumented_methods,omitempty"`
-	ManualOps           []*Operation `yaml:"operations"`
-	OverrideOps         []*Operation `yaml:"operation_overrides"`
-	OpenapiOps          []*Operation `yaml:"openapi_operations"`
+	Methods     []*Method    `yaml:"methods,omitempty"`
+	ManualOps   []*Operation `yaml:"operations"`
+	OverrideOps []*Operation `yaml:"operation_overrides"`
+	OpenapiOps  []*Operation `yaml:"openapi_operations"`
 
 	mu          sync.Mutex
 	resolvedOps map[string]*Operation
@@ -235,6 +234,19 @@ func (m *Metadata) getOperationByNormalizedName(name string) *Operation {
 	return nil
 }
 
+func (m *Metadata) getOperationsWithNormalizedName(name string) []*Operation {
+	m.resolve()
+	var result []*Operation
+	norm := normalizedOpName(name)
+	for n := range m.resolvedOps {
+		if normalizedOpName(n) == norm {
+			result = append(result, m.resolvedOps[n])
+		}
+	}
+	sortOperations(result)
+	return result
+}
+
 func (m *Metadata) getMethod(name string) *Method {
 	for _, method := range m.Methods {
 		if method.Name == name {
@@ -264,11 +276,22 @@ func (m *Metadata) CanonizeMethodOperations() error {
 	for _, method := range m.Methods {
 		for i := range method.OpNames {
 			opName := method.OpNames[i]
-			op := m.getOperationByNormalizedName(opName)
-			if op == nil {
-				return fmt.Errorf("operation %q not found", opName)
+			if m.getOperation(opName) != nil {
+				continue
 			}
-			method.OpNames[i] = op.Name
+			ops := m.getOperationsWithNormalizedName(opName)
+			switch len(ops) {
+			case 0:
+				return fmt.Errorf("method %q has an operation that can not be canonized to any defined name: %s", method.Name, opName)
+			case 1:
+				method.OpNames[i] = ops[0].Name
+			default:
+				candidateList := ""
+				for _, op := range ops {
+					candidateList += "\n    " + op.Name
+				}
+				return fmt.Errorf("method %q has an operation that can be canonized to multiple defined names:\n  operation: %s\n  matches: %s", method.Name, opName, candidateList)
+			}
 		}
 	}
 	return nil

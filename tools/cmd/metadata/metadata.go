@@ -23,6 +23,7 @@ var helpVars = kong.Vars{
 	"format_help":     `Format metadata.yaml.`,
 	"validate_help":   `Validate that metadata.yaml is consistent with source code.`,
 	"unused_ops_help": `List operations in metadata.yaml that don't have any associated go methods'.`,
+	"canonize_help":   `Update metadata.yaml to use canonical operation names.`,
 }
 
 type rootCmd struct {
@@ -34,6 +35,7 @@ type rootCmd struct {
 	Format         formatCmd         `kong:"cmd,help=${format_help}"`
 	Validate       validateCmd       `kong:"cmd,help=${validate_help}"`
 	UnusedOps      unusedOpsCmd      `kong:"cmd,help=${unused_ops_help}"`
+	Canonize       canonizeCmd       `kong:"cmd,help=${canonize_help}"`
 }
 
 func (c *rootCmd) metadata() (string, *internal.Metadata, error) {
@@ -167,6 +169,20 @@ func (c *unusedOpsCmd) Run(root *rootCmd) error {
 		fmt.Println("")
 	}
 	return nil
+}
+
+type canonizeCmd struct{}
+
+func (c *canonizeCmd) Run(root *rootCmd) error {
+	filename, meta, err := root.metadata()
+	if err != nil {
+		return err
+	}
+	err = meta.CanonizeMethodOperations()
+	if err != nil {
+		return err
+	}
+	return meta.SaveFile(filename)
 }
 
 func main() {
