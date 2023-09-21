@@ -63,7 +63,6 @@ func validateMethodsExist(dir string, meta *Metadata) ([]string, error) {
 	return result, nil
 }
 
-
 // missingMethods returns the set from methods that do not exist in the github package.
 func missingMethods(dir string, methods []string) ([]string, error) {
 	var result []string
@@ -82,7 +81,6 @@ func missingMethods(dir string, methods []string) ([]string, error) {
 	}
 	return result, nil
 }
-
 
 // getUndocumentedMethods returns a list of methods that are not mapped to any operation in metadata.yaml
 func getUndocumentedMethods(dir string, meta *Metadata) ([]*serviceMethod, error) {

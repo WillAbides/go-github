@@ -276,7 +276,6 @@ func (b *bodyData) parseBodyInspect(body *ast.BlockStmt) error {
 						}
 					}
 				}
-
 			}
 		}
 		return true

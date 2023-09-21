@@ -23,8 +23,6 @@ import (
 	"strings"
 	"sync"
 
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 	"gopkg.in/yaml.v3"
 )
 
@@ -387,17 +385,19 @@ func updateDocsLinksForNode(metadata *Metadata, n ast.Node) bool {
 	}
 
 	linksMap := map[string]struct{}{}
-	var undocumentedOps []string
+	undocMap := map[string]bool{}
 	fullMethodName := strings.Join([]string{receiverType, methodName}, ".")
 	ops := metadata.operationsForMethod(fullMethodName)
 	for _, op := range ops {
 		if op.DocumentationURL == "" {
-			if !slices.Contains(undocumentedOps, op.Name) {
-				undocumentedOps = append(undocumentedOps, op.Name)
-			}
+			undocMap[op.Name] = true
 			continue
 		}
 		linksMap[op.DocumentationURL] = struct{}{}
+	}
+	var undocumentedOps []string
+	for op := range undocMap {
+		undocumentedOps = append(undocumentedOps, op)
 	}
 	sort.Strings(undocumentedOps)
 
@@ -437,7 +437,10 @@ func updateDocsLinksForNode(metadata *Metadata, n ast.Node) bool {
 		fnComments = append(fnComments, &ast.Comment{Text: "//"})
 	}
 
-	docLinks := maps.Keys(linksMap)
+	var docLinks []string
+	for link := range linksMap {
+		docLinks = append(docLinks, link)
+	}
 	sort.Strings(docLinks)
 
 	for _, dl := range docLinks {
@@ -456,20 +459,6 @@ func updateDocsLinksForNode(metadata *Metadata, n ast.Node) bool {
 		fn.Doc.List = fnComments
 		return true
 	}
-	//if len(docLinks) == 0 {
-	//	method := metadata.getMethod(fullMethodName)
-	//	var opURLs []string
-	//	for _, opName := range method.OpNames {
-	//		_, opURL := parseOpName(opName)
-	//		if !slices.Contains(opURLs, opURL) {
-	//			opURLs = append(opURLs, opURL)
-	//		}
-	//	}
-	//	sort.Strings(opURLs)
-	//	for _, opURL := range opURLs {
-	//		line := fmt.Sprintf("// GitHub API docs: https://docs.github.com/rest/reference/%s", opURL)
-	//	}
-	//}
 	return true
 }
 
