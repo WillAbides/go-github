@@ -80,8 +80,9 @@ func (c *updateMetadataCmd) Run(root *rootCmd) error {
 	if token == "" {
 		return fmt.Errorf("GITHUB_TOKEN environment variable must be set to a GitHub personal access token with the public_repo scope")
 	}
-	client := github.NewClient(nil).WithAuthToken(token).Repositories
-	err = meta.UpdateFromGithub(ctx, client, c.Ref)
+	client := github.NewClient(nil).WithAuthToken(token)
+
+	err = meta.UpdateFromGithub(ctx, client.Repositories, c.Ref)
 	if err != nil {
 		return err
 	}

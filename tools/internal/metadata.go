@@ -92,6 +92,7 @@ type Metadata struct {
 	Methods     []*Method    `yaml:"methods,omitempty"`
 	ManualOps   []*Operation `yaml:"operations"`
 	OverrideOps []*Operation `yaml:"operation_overrides"`
+	GitCommit   string       `yaml:"openapi_commit"`
 	OpenapiOps  []*Operation `yaml:"openapi_operations"`
 
 	mu          sync.Mutex
@@ -223,17 +224,6 @@ func (m *Metadata) getOperation(name string) *Operation {
 	return m.resolvedOps[name]
 }
 
-func (m *Metadata) getOperationByNormalizedName(name string) *Operation {
-	m.resolve()
-	norm := normalizedOpName(name)
-	for n := range m.resolvedOps {
-		if normalizedOpName(n) == norm {
-			return m.resolvedOps[n]
-		}
-	}
-	return nil
-}
-
 func (m *Metadata) getOperationsWithNormalizedName(name string) []*Operation {
 	m.resolve()
 	var result []*Operation
@@ -298,7 +288,14 @@ func (m *Metadata) CanonizeMethodOperations() error {
 }
 
 func (m *Metadata) UpdateFromGithub(ctx context.Context, client contentsClient, ref string) error {
-	descs, err := getDescriptions(ctx, client, ref)
+	commit, resp, err := client.GetCommit(ctx, descriptionsOwnerName, descriptionsRepoName, ref, nil)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("unexpected status code: %s", resp.Status)
+	}
+	descs, err := getDescriptions(ctx, client, commit.GetSHA())
 	if err != nil {
 		return err
 	}
@@ -318,6 +315,7 @@ func (m *Metadata) UpdateFromGithub(ctx context.Context, client contentsClient, 
 		}
 	}
 	sortOperations(m.OpenapiOps)
+	m.GitCommit = commit.GetSHA()
 	return nil
 }
 

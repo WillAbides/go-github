@@ -7,8 +7,10 @@ package internal
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 
@@ -17,10 +19,26 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestFoo2(t *testing.T) {
+	ctx := context.Background()
+	client := github.NewClient(nil).WithAuthToken(os.Getenv("GITHUB_TOKEN"))
+	//ref, resp, err := client.Git.GetRef(ctx, "github", "rest-api-description", "heads/main")
+	//ref, resp, err := client.Git.GetRef(ctx, "github", "rest-api-description", "heads/main")
+	//assert.NoError(t, err)
+	//assert.Equal(t, 200, resp.StatusCode)
+	//fmt.Println(ref.GetObject())
+	commit, resp, err := client.Repositories.GetCommit(ctx, "github", "rest-api-description", "main", nil)
+	assert.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode)
+	fmt.Println(commit.GetSHA())
+
+}
+
 type dummyContentsClient struct {
 	t                *testing.T
 	downloadContents func(ctx context.Context, owner, repo, filepath string, opts *github.RepositoryContentGetOptions) (io.ReadCloser, *github.Response, error)
 	getContents      func(ctx context.Context, owner, repo, path string, opts *github.RepositoryContentGetOptions) (*github.RepositoryContent, []*github.RepositoryContent, *github.Response, error)
+	getCommit        func(ctx context.Context, owner, repo, sha string, opts *github.ListOptions) (*github.RepositoryCommit, *github.Response, error)
 }
 
 func (d dummyContentsClient) DownloadContents(ctx context.Context, owner, repo, filepath string, opts *github.RepositoryContentGetOptions) (io.ReadCloser, *github.Response, error) {
@@ -31,6 +49,11 @@ func (d dummyContentsClient) DownloadContents(ctx context.Context, owner, repo, 
 func (d dummyContentsClient) GetContents(ctx context.Context, owner, repo, path string, opts *github.RepositoryContentGetOptions) (*github.RepositoryContent, []*github.RepositoryContent, *github.Response, error) {
 	d.t.Helper()
 	return d.getContents(ctx, owner, repo, path, opts)
+}
+
+func (d dummyContentsClient) GetCommit(ctx context.Context, owner, repo, sha string, opts *github.ListOptions) (*github.RepositoryCommit, *github.Response, error) {
+	d.t.Helper()
+	return d.getCommit(ctx, owner, repo, sha, opts)
 }
 
 func TestGetDescriptions(t *testing.T) {
