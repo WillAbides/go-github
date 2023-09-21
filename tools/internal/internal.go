@@ -68,37 +68,26 @@ func isGoGithubRoot(dir string) (bool, error) {
 	return base == "github.com/google/go-github", nil
 }
 
-type serviceMethod struct {
-	receiverType string
-	methodName   string
-}
-
-func (m *serviceMethod) name() string {
-	return fmt.Sprintf("%s.%s", m.receiverType, m.methodName)
-}
-
-func getServiceMethods(dir string) ([]*serviceMethod, error) {
+func getServiceMethods(dir string) ([]string, error) {
 	dirEntries, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
 	}
-	var serviceMethods []*serviceMethod
+	var serviceMethods []string
 	for _, filename := range dirEntries {
-		var sm []*serviceMethod
+		var sm []string
 		sm, err = getServiceMethodsFromFile(filepath.Join(dir, filename.Name()))
 		if err != nil {
 			return nil, err
 		}
 		serviceMethods = append(serviceMethods, sm...)
 	}
-	sort.Slice(serviceMethods, func(i, j int) bool {
-		return serviceMethods[i].name() < serviceMethods[j].name()
-	})
+	sort.Strings(serviceMethods)
 	return serviceMethods, nil
 }
 
 // getServiceMethodsFromFile returns the service methods in filename.
-func getServiceMethodsFromFile(filename string) ([]*serviceMethod, error) {
+func getServiceMethodsFromFile(filename string) ([]string, error) {
 	if !strings.HasSuffix(filename, ".go") ||
 		strings.HasSuffix(filename, "_test.go") {
 		return nil, nil
@@ -114,10 +103,10 @@ func getServiceMethodsFromFile(filename string) ([]*serviceMethod, error) {
 	if f.Name.Name != "github" {
 		return nil, nil
 	}
-	var serviceMethods []*serviceMethod
+	var serviceMethods []string
 	ast.Inspect(f, func(n ast.Node) bool {
 		sm := serviceMethodFromNode(n)
-		if sm == nil {
+		if sm == "" {
 			return true
 		}
 		serviceMethods = append(serviceMethods, sm)
@@ -126,28 +115,25 @@ func getServiceMethodsFromFile(filename string) ([]*serviceMethod, error) {
 	return serviceMethods, nil
 }
 
-func serviceMethodFromNode(node ast.Node) *serviceMethod {
+func serviceMethodFromNode(node ast.Node) string {
 	decl, ok := node.(*ast.FuncDecl)
 	if !ok || decl.Recv == nil || len(decl.Recv.List) != 1 {
-		return nil
+		return ""
 	}
 	recv := decl.Recv.List[0]
 	se, ok := recv.Type.(*ast.StarExpr)
 	if !ok {
-		return nil
+		return ""
 	}
 	id, ok := se.X.(*ast.Ident)
 	if !ok {
-		return nil
+		return ""
 	}
 
 	// We only want exported methods on exported types where the type name ends in "Service".
 	if !id.IsExported() || !decl.Name.IsExported() || !strings.HasSuffix(id.Name, "Service") {
-		return nil
+		return ""
 	}
 
-	return &serviceMethod{
-		receiverType: id.Name,
-		methodName:   decl.Name.Name,
-	}
+	return id.Name + "." + decl.Name.Name
 }

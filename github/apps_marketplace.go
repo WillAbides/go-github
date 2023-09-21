@@ -92,11 +92,8 @@ type MarketplacePurchaseAccount struct {
 // GitHub API docs: https://docs.github.com/rest/apps/marketplace#list-plans
 // GitHub API docs: https://docs.github.com/rest/apps/marketplace#list-plans-stubbed
 func (s *MarketplaceService) ListPlans(ctx context.Context, opts *ListOptions) ([]*MarketplacePlan, *Response, error) {
-	u := "marketplace_listing/plans"
-	if s.Stubbed {
-		u = "marketplace_listing/stubbed/plans"
-	}
-	u, err := addOptions(u, opts)
+	uri := s.marketplaceURI("plans")
+	u, err := addOptions(uri, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -120,11 +117,8 @@ func (s *MarketplaceService) ListPlans(ctx context.Context, opts *ListOptions) (
 // GitHub API docs: https://docs.github.com/rest/apps/marketplace#list-accounts-for-a-plan
 // GitHub API docs: https://docs.github.com/rest/apps/marketplace#list-accounts-for-a-plan-stubbed
 func (s *MarketplaceService) ListPlanAccountsForPlan(ctx context.Context, planID int64, opts *ListOptions) ([]*MarketplacePlanAccount, *Response, error) {
-	u := fmt.Sprintf("marketplace_listing/plans/%v/accounts", planID)
-	if s.Stubbed {
-		u = fmt.Sprintf("marketplace_listing/stubbed/plans/%v/accounts", planID)
-	}
-	u, err := addOptions(u, opts)
+	uri := s.marketplaceURI(fmt.Sprintf("plans/%v/accounts", planID))
+	u, err := addOptions(uri, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -148,12 +142,9 @@ func (s *MarketplaceService) ListPlanAccountsForPlan(ctx context.Context, planID
 // GitHub API docs: https://docs.github.com/rest/apps/marketplace#get-a-subscription-plan-for-an-account
 // GitHub API docs: https://docs.github.com/rest/apps/marketplace#get-a-subscription-plan-for-an-account-stubbed
 func (s *MarketplaceService) GetPlanAccountForAccount(ctx context.Context, accountID int64) (*MarketplacePlanAccount, *Response, error) {
-	u := fmt.Sprintf("marketplace_listing/accounts/%v", accountID)
-	if s.Stubbed {
-		u = fmt.Sprintf("marketplace_listing/stubbed/accounts/%v", accountID)
-	}
+	uri := s.marketplaceURI(fmt.Sprintf("accounts/%v", accountID))
 
-	req, err := s.client.NewRequest("GET", u, nil)
+	req, err := s.client.NewRequest("GET", uri, nil)
 	if err != nil {
 		return nil, nil, err
 	}

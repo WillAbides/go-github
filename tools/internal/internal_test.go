@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -37,25 +36,12 @@ func TestFoo(t *testing.T) {
 	methods, err := getServiceMethods(dir)
 	require.NoError(t, err)
 	require.Equal(t, 2, len(methods))
-	methodsMap := map[string]*serviceMethod{}
+	methodsMap := map[string]string{}
 	for _, m := range methods {
-		methodsMap[m.name()] = m
+		methodsMap[m] = m
 	}
 	getBlob := methodsMap["GitService.GetBlob"]
-	require.NotNil(t, getBlob)
+	require.NotEmpty(t, getBlob)
 	create := methodsMap["ActionsService.CreateWorkflowDispatchEventByFileName"]
-	require.NotNil(t, create)
-}
-
-func TestBar(t *testing.T) {
-	dir := "../../github"
-	methods, err := getServiceMethods(dir)
-	require.NoError(t, err)
-	methodsMap := map[string]*serviceMethod{}
-	for _, m := range methods {
-		methodsMap[m.name()] = m
-	}
-	method, ok := methodsMap["MarketplaceService.GetPlanAccountForAccount"]
-	require.True(t, ok)
-	fmt.Println(method.name())
+	require.NotEmpty(t, create)
 }

@@ -368,13 +368,13 @@ func updateDocsLinksForNode(metadata *Metadata, n ast.Node) bool {
 		return true
 	}
 	sm := serviceMethodFromNode(n)
-	if sm == nil {
+	if sm == "" {
 		return true
 	}
 
 	linksMap := map[string]struct{}{}
 	undocMap := map[string]bool{}
-	ops := metadata.operationsForMethod(sm.name())
+	ops := metadata.operationsForMethod(sm)
 	for _, op := range ops {
 		if op.DocumentationURL == "" {
 			undocMap[op.Name] = true
@@ -438,8 +438,9 @@ func updateDocsLinksForNode(metadata *Metadata, n ast.Node) bool {
 			},
 		)
 	}
+	_, methodName, _ := strings.Cut(sm, ".")
 	for _, opName := range undocumentedOps {
-		line := fmt.Sprintf("// Note: %s uses the undocumented GitHub API endpoint %q.", sm.methodName, opName)
+		line := fmt.Sprintf("// Note: %s uses the undocumented GitHub API endpoint %q.", methodName, opName)
 		fnComments = append(fnComments, &ast.Comment{Text: line})
 	}
 	if len(docLinks)+len(undocumentedOps) > 0 {
