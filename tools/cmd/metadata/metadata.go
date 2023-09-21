@@ -106,7 +106,7 @@ func (c *formatCmd) Run(root *rootCmd) error {
 	return meta.SaveFile(filename)
 }
 
-type validateCmd struct{
+type validateCmd struct {
 	CheckGithub bool `kong:"help='Check that metadata.yaml is consistent with the OpenAPI descriptions in github.com/github/rest-api-description.'"`
 }
 

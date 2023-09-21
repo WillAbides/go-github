@@ -326,7 +326,7 @@ func (m *Metadata) UpdateFromGithub(ctx context.Context, client contentsClient, 
 		return err
 	}
 	if !operationsEqual(m.OpenapiOps, ops) {
-		m.OpenapiOps, err = getOpsFromGithub(ctx, client, ref)
+		m.OpenapiOps = ops
 		m.GitCommit = commit.GetSHA()
 	}
 	return nil

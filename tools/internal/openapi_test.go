@@ -7,10 +7,8 @@ package internal
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"strings"
 	"testing"
 
@@ -18,21 +16,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-func TestFoo2(t *testing.T) {
-	ctx := context.Background()
-	client := github.NewClient(nil).WithAuthToken(os.Getenv("GITHUB_TOKEN"))
-	//ref, resp, err := client.Git.GetRef(ctx, "github", "rest-api-description", "heads/main")
-	//ref, resp, err := client.Git.GetRef(ctx, "github", "rest-api-description", "heads/main")
-	//assert.NoError(t, err)
-	//assert.Equal(t, 200, resp.StatusCode)
-	//fmt.Println(ref.GetObject())
-	commit, resp, err := client.Repositories.GetCommit(ctx, "github", "rest-api-description", "main", nil)
-	assert.NoError(t, err)
-	assert.Equal(t, 200, resp.StatusCode)
-	fmt.Println(commit.GetSHA())
-
-}
 
 type dummyContentsClient struct {
 	t                *testing.T
