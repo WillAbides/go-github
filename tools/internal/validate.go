@@ -6,6 +6,7 @@
 package internal
 
 import (
+	"context"
 	"fmt"
 )
 
@@ -32,6 +33,20 @@ func ValidateMetadata(dir string, meta *Metadata) ([]string, error) {
 	result = validateMetadataMethods(result, meta, serviceMethods)
 	result = validateOperations(result, meta)
 	return result, nil
+}
+
+// ValidateGitCommit validates that building meta.OpenapiOps from the commit at meta.GitCommit
+// results in the same operations as meta.OpenapiOps.
+func ValidateGitCommit(ctx context.Context, client contentsClient, meta *Metadata) (string, error) {
+	ops, err := getOpsFromGithub(ctx, client, meta.GitCommit)
+	if err != nil {
+		return "", err
+	}
+	if !operationsEqual(ops, meta.OpenapiOps) {
+		msg := fmt.Sprintf("openapi_operations does not match operations from git commit %s", meta.GitCommit)
+		return msg, nil
+	}
+	return "", nil
 }
 
 func validateMetadataMethods(result []string, meta *Metadata, serviceMethods []string) []string {

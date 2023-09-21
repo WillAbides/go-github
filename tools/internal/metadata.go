@@ -32,12 +32,39 @@ type Operation struct {
 	OpenAPIFiles     []string `yaml:"openapi_files,omitempty" json:"openapi_files,omitempty"`
 }
 
+func (o *Operation) equal(other *Operation) bool {
+	if o.Name != other.Name || o.DocumentationURL != other.DocumentationURL {
+		return false
+	}
+	if len(o.OpenAPIFiles) != len(other.OpenAPIFiles) {
+		return false
+	}
+	for i := range o.OpenAPIFiles {
+		if o.OpenAPIFiles[i] != other.OpenAPIFiles[i] {
+			return false
+		}
+	}
+	return true
+}
+
 func (o *Operation) clone() *Operation {
 	return &Operation{
 		Name:             o.Name,
 		DocumentationURL: o.DocumentationURL,
 		OpenAPIFiles:     append([]string{}, o.OpenAPIFiles...),
 	}
+}
+
+func operationsEqual(a, b []*Operation) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if !a[i].equal(b[i]) {
+			return false
+		}
+	}
+	return true
 }
 
 func sortOperations(ops []*Operation) {
@@ -175,32 +202,31 @@ func (m *Metadata) SaveFile(filename string) (errOut error) {
 	return enc.Encode(m)
 }
 
-func (m *Metadata) addOperation(filename string, descID, docURL string) {
-	normDescID := normalizedOpName(descID)
-	for _, op := range m.OpenapiOps {
-		if normDescID != normalizedOpName(op.Name) {
+func addOperation(ops []*Operation, filename, opName, docURL string) []*Operation {
+	for _, op := range ops {
+		if opName != op.Name {
 			continue
 		}
 		if len(op.OpenAPIFiles) == 0 {
 			op.OpenAPIFiles = append(op.OpenAPIFiles, filename)
 			op.DocumentationURL = docURL
-			return
+			return ops
 		}
 		// just append to files, but only add the first ghes file
 		if !strings.Contains(filename, "/ghes") {
 			op.OpenAPIFiles = append(op.OpenAPIFiles, filename)
-			return
+			return ops
 		}
 		for _, f := range op.OpenAPIFiles {
 			if strings.Contains(f, "/ghes") {
-				return
+				return ops
 			}
 		}
 		op.OpenAPIFiles = append(op.OpenAPIFiles, filename)
-		return
+		return ops
 	}
-	m.OpenapiOps = append(m.OpenapiOps, &Operation{
-		Name:             descID,
+	return append(ops, &Operation{
+		Name:             opName,
 		OpenAPIFiles:     []string{filename},
 		DocumentationURL: docURL,
 	})
@@ -295,27 +321,14 @@ func (m *Metadata) UpdateFromGithub(ctx context.Context, client contentsClient, 
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("unexpected status code: %s", resp.Status)
 	}
-	descs, err := getDescriptions(ctx, client, commit.GetSHA())
+	ops, err := getOpsFromGithub(ctx, client, ref)
 	if err != nil {
 		return err
 	}
-	for _, op := range m.OpenapiOps {
-		op.OpenAPIFiles = op.OpenAPIFiles[:0]
+	if !operationsEqual(m.OpenapiOps, ops) {
+		m.OpenapiOps, err = getOpsFromGithub(ctx, client, ref)
+		m.GitCommit = commit.GetSHA()
 	}
-	for _, desc := range descs {
-		for p, pathItem := range desc.description.Paths {
-			for method, op := range pathItem.Operations() {
-				docURL := ""
-				if op.ExternalDocs != nil {
-					docURL = op.ExternalDocs.URL
-				}
-				id := method + " " + p
-				m.addOperation(desc.filename, id, docURL)
-			}
-		}
-	}
-	sortOperations(m.OpenapiOps)
-	m.GitCommit = commit.GetSHA()
 	return nil
 }
 

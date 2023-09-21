@@ -66,6 +66,14 @@ func (c *rootCmd) githubDir() (string, error) {
 	return dir, nil
 }
 
+func githubClient() (*github.Client, error) {
+	token := os.Getenv("GITHUB_TOKEN")
+	if token == "" {
+		return nil, fmt.Errorf("GITHUB_TOKEN environment variable must be set to a GitHub personal access token with the public_repo scope")
+	}
+	return github.NewClient(nil).WithAuthToken(token), nil
+}
+
 type updateMetadataCmd struct {
 	Ref string `kong:"default='main',help='git ref to pull OpenAPI descriptions from'"`
 }
@@ -76,11 +84,10 @@ func (c *updateMetadataCmd) Run(root *rootCmd) error {
 	if err != nil {
 		return err
 	}
-	token := os.Getenv("GITHUB_TOKEN")
-	if token == "" {
-		return fmt.Errorf("GITHUB_TOKEN environment variable must be set to a GitHub personal access token with the public_repo scope")
+	client, err := githubClient()
+	if err != nil {
+		return err
 	}
-	client := github.NewClient(nil).WithAuthToken(token)
 
 	err = meta.UpdateFromGithub(ctx, client.Repositories, c.Ref)
 	if err != nil {
@@ -99,9 +106,12 @@ func (c *formatCmd) Run(root *rootCmd) error {
 	return meta.SaveFile(filename)
 }
 
-type validateCmd struct{}
+type validateCmd struct{
+	CheckGithub bool `kong:"help='Check that metadata.yaml is consistent with the OpenAPI descriptions in github.com/github/rest-api-description.'"`
+}
 
 func (c *validateCmd) Run(root *rootCmd) error {
+	ctx := context.Background()
 	githubDir, err := root.githubDir()
 	if err != nil {
 		return err
@@ -113,6 +123,20 @@ func (c *validateCmd) Run(root *rootCmd) error {
 	issues, err := internal.ValidateMetadata(githubDir, meta)
 	if err != nil {
 		return err
+	}
+	// don't waste time checking github if there are already issues
+	if c.CheckGithub && len(issues) == 0 {
+		client, err := githubClient()
+		if err != nil {
+			return err
+		}
+		msg, err := internal.ValidateGitCommit(ctx, client.Repositories, meta)
+		if err != nil {
+			return err
+		}
+		if msg != "" {
+			issues = append(issues, msg)
+		}
 	}
 	if len(issues) == 0 {
 		return nil

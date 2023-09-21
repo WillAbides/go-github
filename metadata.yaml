@@ -1169,7 +1169,7 @@ methods:
     operations:
       - GET /marketplace_listing/plans
       - GET /marketplace_listing/stubbed/plans
-  - name: MetaService.APIMeta
+  - name: MetaService.Get
     operations:
       - GET /meta
   - name: MetaService.Octocat

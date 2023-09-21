@@ -39,6 +39,27 @@ type contentsClient interface {
 	GetCommit(ctx context.Context, owner, repo, sha string, opts *github.ListOptions) (*github.RepositoryCommit, *github.Response, error)
 }
 
+func getOpsFromGithub(ctx context.Context, client contentsClient, gitRef string) ([]*Operation, error) {
+	descs, err := getDescriptions(ctx, client, gitRef)
+	if err != nil {
+		return nil, err
+	}
+	var ops []*Operation
+	for _, desc := range descs {
+		for p, pathItem := range desc.description.Paths {
+			for method, op := range pathItem.Operations() {
+				docURL := ""
+				if op.ExternalDocs != nil {
+					docURL = op.ExternalDocs.URL
+				}
+				ops = addOperation(ops, desc.filename, method+" "+p, docURL)
+			}
+		}
+	}
+	sortOperations(ops)
+	return ops, nil
+}
+
 func (o *openapiFile) loadDescription(ctx context.Context, client contentsClient, gitRef string) error {
 	contents, resp, err := client.DownloadContents(
 		ctx,
