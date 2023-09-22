@@ -294,6 +294,8 @@ func (s *AppsService) CreateInstallationToken(ctx context.Context, id int64, opt
 
 // CreateAttachment creates a new attachment on user comment containing a url.
 //
+// TODO: Find GitHub API docs.
+//
 // GitHub API docs: https://docs.github.com/enterprise-server@3.3/rest/reference/apps#create-a-content-attachment
 func (s *AppsService) CreateAttachment(ctx context.Context, contentReferenceID int64, title, body string) (*Attachment, *Response, error) {
 	u := fmt.Sprintf("content_references/%v/attachments", contentReferenceID)

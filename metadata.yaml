@@ -679,12 +679,6 @@ methods:
   - name: CodeScanningService.UploadSarif
     operations:
       - POST /repos/{owner}/{repo}/code-scanning/sarifs
-  - name: CodesOfConductService.Get
-    operations:
-      - GET /codes_of_conduct/{key}
-  - name: CodesOfConductService.List
-    operations:
-      - GET /codes_of_conduct
   - name: CodespacesService.AddSelectedRepoToOrgSecret
     operations:
       - PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}
@@ -826,9 +820,6 @@ methods:
   - name: DependencyGraphService.GetSBOM
     operations:
       - GET /repos/{owner}/{repo}/dependency-graph/sbom
-  - name: EmojisService.List
-    operations:
-      - GET /emojis
   - name: EnterpriseService.AddOrganizationAccessRunnerGroup
     operations:
       - PUT /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations/{org_id}
@@ -1150,9 +1141,6 @@ methods:
   - name: LicensesService.List
     operations:
       - GET /licenses
-  - name: MarkdownService.Render
-    operations:
-      - POST /markdown
   - name: MarketplaceService.GetPlanAccountForAccount
     operations:
       - GET /marketplace_listing/accounts/{account_id}
@@ -1169,15 +1157,6 @@ methods:
     operations:
       - GET /marketplace_listing/plans
       - GET /marketplace_listing/stubbed/plans
-  - name: MetaService.Get
-    operations:
-      - GET /meta
-  - name: MetaService.Octocat
-    operations:
-      - GET /octocat
-  - name: MetaService.Zen
-    operations:
-      - GET /zen
   - name: MigrationService.CancelImport
     operations:
       - DELETE /repos/{owner}/{repo}/import
