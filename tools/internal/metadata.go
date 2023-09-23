@@ -369,22 +369,25 @@ func UpdateDocLinks(meta *Metadata, dir string) error {
 // updateDocsLinksInFile updates in the code comments in content with doc urls from metadata.
 func updateDocsLinksInFile(metadata *Metadata, content []byte) ([]byte, error) {
 	fset := token.NewFileSet()
-	node, err := parser.ParseFile(fset, "", content, parser.ParseComments)
+	file, err := parser.ParseFile(fset, "", content, parser.ParseComments)
 	if err != nil {
 		return nil, err
 	}
+	cmap := ast.NewCommentMap(fset, file, file.Comments)
 
 	// ignore files where package is not github
-	if node.Name.Name != "github" {
+	if file.Name.Name != "github" {
 		return content, nil
 	}
 
-	ast.Inspect(node, func(n ast.Node) bool {
-		return updateDocsLinksForNode(metadata, n)
+	ast.Inspect(file, func(n ast.Node) bool {
+		return updateDocsLinksForNode(metadata, cmap, n)
 	})
 
+	file.Comments = cmap.Filter(file).Comments()
+
 	var buf bytes.Buffer
-	err = printer.Fprint(&buf, fset, node)
+	err = printer.Fprint(&buf, fset, file)
 	if err != nil {
 		return nil, err
 	}
@@ -396,7 +399,7 @@ var (
 	emptyLineRE = regexp.MustCompile(`^\s*(//\s*)$`)
 )
 
-func updateDocsLinksForNode(metadata *Metadata, n ast.Node) bool {
+func updateDocsLinksForNode(metadata *Metadata, cmap ast.CommentMap, n ast.Node) bool {
 	fn, ok := n.(*ast.FuncDecl)
 	if !ok {
 		return true
@@ -422,20 +425,32 @@ func updateDocsLinksForNode(metadata *Metadata, n ast.Node) bool {
 	}
 	sort.Strings(undocumentedOps)
 
-	// create copy of comment group with non-matching doc links removed
-	if fn.Doc == nil {
-		fn.Doc = &ast.CommentGroup{}
+	// Find the group that comes before the function
+	var group *ast.CommentGroup
+	for _, g := range cmap[fn] {
+		if g.End() == fn.Pos()-1 {
+			group = g
+		}
 	}
-	fnComments := make([]*ast.Comment, 0, len(fn.Doc.List))
+
+	// If there is no group, create one
+	if group == nil {
+		group = &ast.CommentGroup{
+			List: []*ast.Comment{{Text: "//", Slash: fn.Pos() - 1}},
+		}
+		cmap[fn] = append(cmap[fn], group)
+	}
+
 	skipSpacer := false
-	for _, comment := range fn.Doc.List {
+	var newList []*ast.Comment
+	for _, comment := range group.List {
 		if strings.Contains(comment.Text, "uses the undocumented GitHub API endpoint") {
 			skipSpacer = true
 			continue
 		}
 		match := docLineRE.FindStringSubmatch(comment.Text)
 		if match == nil {
-			fnComments = append(fnComments, comment)
+			newList = append(newList, comment)
 			continue
 		}
 		matchesLink := false
@@ -448,17 +463,17 @@ func updateDocsLinksForNode(metadata *Metadata, n ast.Node) bool {
 			}
 		}
 		if matchesLink {
-			fnComments = append(fnComments, comment)
+			newList = append(newList, comment)
 		}
 	}
+	group.List = newList
 
 	// add an empty line before adding doc links
-	if len(linksMap)+len(undocumentedOps) > 0 &&
-		!skipSpacer &&
-		len(fnComments) > 0 &&
-		!emptyLineRE.MatchString(fnComments[len(fnComments)-1].Text) {
-		fnComments = append(fnComments, &ast.Comment{Text: "//"})
-	}
+	//if !skipSpacer {
+	//	group.List = append(group.List, &ast.Comment{Text: "//"})
+	//}
+	_ = skipSpacer
+	//group.List = append(group.List, &ast.Comment{Text: "//"})
 
 	var docLinks []string
 	for link := range linksMap {
@@ -467,8 +482,8 @@ func updateDocsLinksForNode(metadata *Metadata, n ast.Node) bool {
 	sort.Strings(docLinks)
 
 	for _, dl := range docLinks {
-		fnComments = append(
-			fnComments,
+		group.List = append(
+			group.List,
 			&ast.Comment{
 				Text: "// GitHub API docs: " + normalizeDocURLPath(dl),
 			},
@@ -477,18 +492,12 @@ func updateDocsLinksForNode(metadata *Metadata, n ast.Node) bool {
 	_, methodName, _ := strings.Cut(sm, ".")
 	for _, opName := range undocumentedOps {
 		line := fmt.Sprintf("// Note: %s uses the undocumented GitHub API endpoint %q.", methodName, opName)
-		fnComments = append(fnComments, &ast.Comment{Text: line})
+		group.List = append(group.List, &ast.Comment{Text: line})
 	}
-	// Make sure new comment block is at least as long as the old one to prevent blank lines between the comment block
-	// and function declaration.
-	for len(fn.Doc.List) > len(fnComments) {
-		fnComments = append(fnComments, &ast.Comment{Text: "//"})
+	group.List[0].Slash = fn.Pos() - 1
+	for i := 1; i < len(group.List); i++ {
+		group.List[i].Slash = token.NoPos
 	}
-	if len(docLinks)+len(undocumentedOps) > 0 {
-		fn.Doc.List = fnComments
-		return true
-	}
-	fn.Doc = &ast.CommentGroup{List: fnComments}
 	return true
 }
 

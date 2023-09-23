@@ -1,4 +1,4 @@
-package internal
+package main
 
 import (
 	"io/fs"
@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
 
 func copyDir(dst, src string) error {
 	dst, err := filepath.Abs(dst)
@@ -74,14 +75,25 @@ func checkGoldenDir(t *testing.T, got string) bool {
 	return !failed
 }
 
-func TestFoo(t *testing.T) {
-	srcDir := filepath.FromSlash("testdata/updatedocs")
+func Test_updateUrlsCmd(t *testing.T) {
 	tmpDir := t.TempDir()
-	err := copyDir(tmpDir, srcDir)
+	err := copyDir(tmpDir, filepath.FromSlash("testdata/updatedocs"))
 	require.NoError(t, err)
-	meta, err := LoadMetadataFile(filepath.Join(tmpDir, "metadata.yaml"))
-	require.NoError(t, err)
-	err = UpdateDocLinks(meta, tmpDir)
+	cmd := rootCmd{
+		Filename: filepath.Join(tmpDir, "metadata.yaml"),
+		GithubDir: filepath.Join(tmpDir, "github"),
+	}
+	err = cmd.UpdateUrls.Run(&cmd)
 	require.NoError(t, err)
 	checkGoldenDir(t, tmpDir)
+}
+
+func Test_validateCmd(t *testing.T) {
+	srcDir := filepath.FromSlash("testdata/updatedocs")
+	cmd := rootCmd{
+		Filename: filepath.Join(srcDir, "metadata.yaml"),
+		GithubDir: filepath.Join(srcDir, "github"),
+	}
+	err := cmd.Validate.Run(&cmd)
+	require.NoError(t, err)
 }
