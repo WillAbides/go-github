@@ -453,7 +453,9 @@ func updateDocsLinksForNode(metadata *Metadata, n ast.Node) bool {
 	}
 
 	// add an empty line before adding doc links
-	if len(linksMap)+len(undocumentedOps) > 0 && !skipSpacer &&
+	if len(linksMap)+len(undocumentedOps) > 0 &&
+		!skipSpacer &&
+		len(fnComments) > 0 &&
 		!emptyLineRE.MatchString(fnComments[len(fnComments)-1].Text) {
 		fnComments = append(fnComments, &ast.Comment{Text: "//"})
 	}
@@ -477,10 +479,16 @@ func updateDocsLinksForNode(metadata *Metadata, n ast.Node) bool {
 		line := fmt.Sprintf("// Note: %s uses the undocumented GitHub API endpoint %q.", methodName, opName)
 		fnComments = append(fnComments, &ast.Comment{Text: line})
 	}
+	// Make sure new comment block is at least as long as the old one to prevent blank lines between the comment block
+	// and function declaration.
+	for len(fn.Doc.List) > len(fnComments) {
+		fnComments = append(fnComments, &ast.Comment{Text: "//"})
+	}
 	if len(docLinks)+len(undocumentedOps) > 0 {
 		fn.Doc.List = fnComments
 		return true
 	}
+	fn.Doc = &ast.CommentGroup{List: fnComments}
 	return true
 }
 
