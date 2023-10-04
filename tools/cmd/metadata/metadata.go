@@ -110,7 +110,7 @@ type validateCmd struct {
 	CheckGithub bool `kong:"help='Check that metadata.yaml is consistent with the OpenAPI descriptions in github.com/github/rest-api-description.'"`
 }
 
-func (c *validateCmd) Run(root *rootCmd) error {
+func (c *validateCmd) Run(k *kong.Context, root *rootCmd) error {
 	ctx := context.Background()
 	githubDir, err := root.githubDir()
 	if err != nil {
@@ -142,7 +142,7 @@ func (c *validateCmd) Run(root *rootCmd) error {
 		return nil
 	}
 	for _, issue := range issues {
-		fmt.Fprintln(os.Stderr, issue)
+		fmt.Fprintln(k.Stderr, issue)
 	}
 	return fmt.Errorf("found %d issues in %s", len(issues), filename)
 }
@@ -211,8 +211,19 @@ func (c *canonizeCmd) Run(root *rootCmd) error {
 }
 
 func main() {
+	err := run(os.Args[1:], []kong.Option{helpVars})
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
+
+func run(args []string, opts []kong.Option) error {
 	var cmd rootCmd
-	k := kong.Parse(&cmd, helpVars)
-	err := k.Run()
-	k.FatalIfErrorf(err)
+	parser, err := kong.New(&cmd, opts...)
+	if err != nil {
+		return err
+	}
+	k, err := parser.Parse(args)
+	return k.Run()
 }

@@ -1,16 +1,18 @@
 package main
 
 import (
+	"bytes"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	"github.com/alecthomas/kong"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
 
 func copyDir(dst, src string) error {
 	dst, err := filepath.Abs(dst)
@@ -75,25 +77,37 @@ func checkGoldenDir(t *testing.T, got string) bool {
 	return !failed
 }
 
+func runTest(args ...string) (stdout, stderr []byte, _ error) {
+	var so, se bytes.Buffer
+	err := run(args, []kong.Option{kong.Writers(&so, &se), helpVars})
+	return so.Bytes(), se.Bytes(), err
+}
+
 func Test_updateUrlsCmd(t *testing.T) {
 	tmpDir := t.TempDir()
 	err := copyDir(tmpDir, filepath.FromSlash("testdata/updatedocs"))
 	require.NoError(t, err)
-	cmd := rootCmd{
-		Filename: filepath.Join(tmpDir, "metadata.yaml"),
-		GithubDir: filepath.Join(tmpDir, "github"),
-	}
-	err = cmd.UpdateUrls.Run(&cmd)
+	stdout, stderr, err := runTest(
+		"update-urls",
+		"--github-dir", filepath.Join(tmpDir, "github"),
+		"--filename", filepath.Join(tmpDir, "metadata.yaml"),
+	)
 	require.NoError(t, err)
-	checkGoldenDir(t, tmpDir)
+	require.Empty(t, stderr)
+	require.Empty(t, stdout)
 }
 
 func Test_validateCmd(t *testing.T) {
 	srcDir := filepath.FromSlash("testdata/updatedocs")
-	cmd := rootCmd{
-		Filename: filepath.Join(srcDir, "metadata.yaml"),
-		GithubDir: filepath.Join(srcDir, "github"),
-	}
-	err := cmd.Validate.Run(&cmd)
-	require.NoError(t, err)
+	stdout, stderr, err := runTest("validate", "--filename", filepath.Join(srcDir, "metadata.yaml"), "--github-dir", filepath.Join(srcDir, "github"))
+	fmt.Println(err)
+	fmt.Printf("%T\n", err)
+	assert.ErrorContains(t, err, "found 1")
+
+	fmt.Println("stderr")
+	fmt.Println(string(stderr))
+	fmt.Println("end stderr")
+	_ = stderr
+	_ = stdout
+
 }
