@@ -22,9 +22,10 @@ func Test_updateUrlsCmd(t *testing.T) {
 func Test_validateCmd(t *testing.T) {
 	t.Run("invalid", func(t *testing.T) {
 		res := runTest(t, "testdata/validate_invalid", "validate")
-		res.assertErr("found 2 issues in")
+		res.assertErr("found 3 issues in")
 		res.assertOutput("", `
 Method AService.MissingFromMetadata does not exist in metadata.yaml. Please add it.
+Method AService.Get has operation which is does not use the canonical name. You may be able to automatically fix this by running 'script/metadata.sh canonize': GET /a/{a_id_noncanonical}.
 Name in override_operations does not exist in operations or openapi_operations: GET /fake/{a_id}
 `)
 	})
@@ -42,40 +43,6 @@ func Test_canonizeCmd(t *testing.T) {
 	res.assertNoErr()
 	res.checkGolden()
 }
-
-func assertEqualStrings(t *testing.T, want, got string) {
-	t.Helper()
-	diff := cmp.Diff(want, got)
-	if diff != "" {
-		t.Error(diff)
-	}
-}
-
-func assertNilError(t *testing.T, err error) {
-	t.Helper()
-	if err != nil {
-		t.Error(err)
-	}
-}
-
-func assertErrorContains(t *testing.T, want string, err error) {
-	t.Helper()
-	if err == nil {
-		t.Error("expected error")
-		return
-	}
-	if !strings.Contains(err.Error(), want) {
-		t.Errorf("expected error to contain %q, got %q", want, err.Error())
-	}
-}
-
-func assertError(t *testing.T, err error) {
-	t.Helper()
-	if err == nil {
-		t.Error("expected error")
-	}
-}
-
 
 func copyDir(dst, src string) error {
 	dst, err := filepath.Abs(dst)
@@ -191,4 +158,37 @@ func runTest(t *testing.T, srcDir string, args ...string) testRun {
 	args = append([]string{"--working-dir", srcDir}, args...)
 	res.err = run(args, []kong.Option{kong.Writers(&res.stdOut, &res.stdErr), dv, helpVars})
 	return res
+}
+
+func assertEqualStrings(t *testing.T, want, got string) {
+	t.Helper()
+	diff := cmp.Diff(want, got)
+	if diff != "" {
+		t.Error(diff)
+	}
+}
+
+func assertNilError(t *testing.T, err error) {
+	t.Helper()
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func assertErrorContains(t *testing.T, want string, err error) {
+	t.Helper()
+	if err == nil {
+		t.Error("expected error")
+		return
+	}
+	if !strings.Contains(err.Error(), want) {
+		t.Errorf("expected error to contain %q, got %q", want, err.Error())
+	}
+}
+
+func assertError(t *testing.T, err error) {
+	t.Helper()
+	if err == nil {
+		t.Error("expected error")
+	}
 }

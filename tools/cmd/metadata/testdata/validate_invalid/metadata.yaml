@@ -1,7 +1,7 @@
 methods:
   - name: AService.Get
     operations:
-      - GET /a/{a_id}
+      - GET /a/{a_id_noncanonical}
   - name: AService.Undocumented
     operations:
       - GET /undocumented/{undocumented_id}
