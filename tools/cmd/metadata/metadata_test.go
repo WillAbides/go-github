@@ -24,10 +24,11 @@ func Test_updateUrlsCmd(t *testing.T) {
 func Test_validateCmd(t *testing.T) {
 	t.Run("invalid", func(t *testing.T) {
 		res := runTest(t, "testdata/validate_invalid", "validate")
-		res.assertErr("found 3 issues in")
+		res.assertErr("found 4 issues in")
 		res.assertOutput("", `
 Method AService.MissingFromMetadata does not exist in metadata.yaml. Please add it.
 Method AService.Get has operation which is does not use the canonical name. You may be able to automatically fix this by running 'script/metadata.sh canonize': GET /a/{a_id_noncanonical}.
+Name in override_operations does not exist in operations or openapi_operations: GET /a/{a_id_noncanonical2}
 Name in override_operations does not exist in operations or openapi_operations: GET /fake/{a_id}
 `)
 		res.checkGolden()
@@ -43,6 +44,13 @@ Name in override_operations does not exist in operations or openapi_operations: 
 
 func Test_canonizeCmd(t *testing.T) {
 	res := runTest(t, "testdata/canonize", "canonize")
+	res.assertOutput("", "")
+	res.assertNoErr()
+	res.checkGolden()
+}
+
+func Test_formatCmd(t *testing.T) {
+	res := runTest(t, "testdata/format", "format")
 	res.assertOutput("", "")
 	res.assertNoErr()
 	res.checkGolden()
