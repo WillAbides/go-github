@@ -33,7 +33,6 @@ func copyDir(dst, src string) error {
 }
 
 func checkGoldenDir(t *testing.T, got string) bool {
-	t.Helper()
 	golden := filepath.Join("testdata", "golden", t.Name())
 	if os.Getenv("UPDATE_GOLDEN") != "" {
 		err := os.RemoveAll(golden)
@@ -46,7 +45,6 @@ func checkGoldenDir(t *testing.T, got string) bool {
 
 	failed := false
 	err := filepath.Walk(golden, func(wantPath string, info fs.FileInfo, err error) error {
-		t.Helper()
 		if err != nil {
 			return err
 		}
@@ -74,14 +72,30 @@ func checkGoldenDir(t *testing.T, got string) bool {
 	return !failed
 }
 
+func setupGoldenTest(t *testing.T, srcDir string) (workDir string, check func()) {
+	t.Helper()
+	workDir = t.TempDir()
+	err := copyDir(workDir, srcDir)
+	require.NoError(t, err)
+	return workDir, func() {
+		checkGoldenDir(t, workDir)
+	}
+}
+
 func TestUpdateDocs(t *testing.T) {
-	srcDir := filepath.FromSlash("testdata/updatedocs")
-	tmpDir := t.TempDir()
-	err := copyDir(tmpDir, srcDir)
+	workDir, check := setupGoldenTest(t, filepath.FromSlash("testdata/updatedocs"))
+	meta, err := LoadMetadataFile(filepath.Join(workDir, "metadata.yaml"))
 	require.NoError(t, err)
-	meta, err := LoadMetadataFile(filepath.Join(tmpDir, "metadata.yaml"))
+	err = UpdateDocLinks(meta, workDir)
 	require.NoError(t, err)
-	err = UpdateDocLinks(meta, tmpDir)
+	check()
+}
+
+func TestMetadata_CanonizeMethodOperations(t *testing.T) {
+	workDir, check := setupGoldenTest(t, filepath.FromSlash("testdata/canonize"))
+	meta, err := LoadMetadataFile(filepath.Join(workDir, "metadata.yaml"))
 	require.NoError(t, err)
-	checkGoldenDir(t, tmpDir)
+	err = meta.CanonizeMethodOperations()
+	require.NoError(t, err)
+	check()
 }
