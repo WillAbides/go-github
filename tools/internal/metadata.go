@@ -117,10 +117,10 @@ type Method struct {
 
 type Metadata struct {
 	Methods     []*Method    `yaml:"methods,omitempty"`
-	ManualOps   []*Operation `yaml:"operations"`
-	OverrideOps []*Operation `yaml:"operation_overrides"`
-	GitCommit   string       `yaml:"openapi_commit"`
-	OpenapiOps  []*Operation `yaml:"openapi_operations"`
+	ManualOps   []*Operation `yaml:"operations,omitempty"`
+	OverrideOps []*Operation `yaml:"operation_overrides,omitempty"`
+	GitCommit   string       `yaml:"openapi_commit,omitempty"`
+	OpenapiOps  []*Operation `yaml:"openapi_operations,omitempty"`
 
 	mu          sync.Mutex
 	resolvedOps map[string]*Operation

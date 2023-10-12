@@ -26,8 +26,13 @@ var helpVars = kong.Vars{
 	"canonize_help":   `Update metadata.yaml to use canonical operation names.`,
 }
 
+var defaultVars = kong.Vars{
+	"workingdir_default": ".",
+	"ref_default":        "main",
+}
+
 type rootCmd struct {
-	WorkingDir     string            `kong:"short=C,default='.',help='Working directory. Must be within a go-github root.'"`
+	WorkingDir     string            `kong:"short=C,default=${workingdir_default},help='Working directory. Must be within a go-github root.'"`
 	Filename       string            `kong:"help='Path to metadata.yaml. Defaults to <go-github-root>/metadata.yaml.'"`
 	GithubDir      string            `kong:"help='Path to the github package. Defaults to <go-github-root>/github.'"`
 	UpdateMetadata updateMetadataCmd `kong:"cmd,help=${update_help}"`
@@ -41,11 +46,7 @@ type rootCmd struct {
 func (c *rootCmd) metadata() (string, *internal.Metadata, error) {
 	filename := c.Filename
 	if filename == "" {
-		dir, err := internal.ProjRootDir(c.WorkingDir)
-		if err != nil {
-			return "", nil, err
-		}
-		filename = filepath.Join(dir, "metadata.yaml")
+		filename = filepath.Join(c.WorkingDir, "metadata.yaml")
 	}
 	meta, err := internal.LoadMetadataFile(filename)
 	if err != nil {
@@ -57,11 +58,7 @@ func (c *rootCmd) metadata() (string, *internal.Metadata, error) {
 func (c *rootCmd) githubDir() (string, error) {
 	dir := c.GithubDir
 	if dir == "" {
-		githubDir, err := internal.ProjRootDir(c.WorkingDir)
-		if err != nil {
-			return "", err
-		}
-		dir = filepath.Join(githubDir, "github")
+		dir = filepath.Join(c.WorkingDir, "github")
 	}
 	return dir, nil
 }
@@ -75,7 +72,7 @@ func githubClient() (*github.Client, error) {
 }
 
 type updateMetadataCmd struct {
-	Ref string `kong:"default='main',help='git ref to pull OpenAPI descriptions from'"`
+	Ref string `kong:"default=${ref_default},help='git ref to pull OpenAPI descriptions from'"`
 }
 
 func (c *updateMetadataCmd) Run(root *rootCmd) error {
@@ -211,7 +208,7 @@ func (c *canonizeCmd) Run(root *rootCmd) error {
 }
 
 func main() {
-	err := run(os.Args[1:], []kong.Option{helpVars})
+	err := run(os.Args[1:], []kong.Option{helpVars, defaultVars})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
