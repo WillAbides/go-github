@@ -395,8 +395,7 @@ func updateDocsLinksInFile(metadata *Metadata, content []byte) ([]byte, error) {
 }
 
 var (
-	docLineRE   = regexp.MustCompile(`(?i)\s*(//\s*)?GitHub\s+API\s+docs:\s*(https?://\S+)`)
-	emptyLineRE = regexp.MustCompile(`^\s*(//\s*)$`)
+	docLineRE = regexp.MustCompile(`(?i)\s*(//\s*)?GitHub\s+API\s+docs:\s*(https?://\S+)`)
 )
 
 func updateDocsLinksForNode(metadata *Metadata, cmap ast.CommentMap, n ast.Node) bool {
@@ -469,11 +468,9 @@ func updateDocsLinksForNode(metadata *Metadata, cmap ast.CommentMap, n ast.Node)
 	group.List = newList
 
 	// add an empty line before adding doc links
-	//if !skipSpacer {
-	//	group.List = append(group.List, &ast.Comment{Text: "//"})
-	//}
-	_ = skipSpacer
-	//group.List = append(group.List, &ast.Comment{Text: "//"})
+	if !skipSpacer {
+		group.List = append(group.List, &ast.Comment{Text: "//"})
+	}
 
 	var docLinks []string
 	for link := range linksMap {

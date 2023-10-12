@@ -74,7 +74,7 @@ func checkGoldenDir(t *testing.T, got string) bool {
 	return !failed
 }
 
-func TestFoo(t *testing.T) {
+func TestUpdateDocs(t *testing.T) {
 	srcDir := filepath.FromSlash("testdata/updatedocs")
 	tmpDir := t.TempDir()
 	err := copyDir(tmpDir, srcDir)
