@@ -140,11 +140,11 @@ func (m *Metadata) resolve() {
 		m.resolvedOps[op.Name] = op.clone()
 	}
 	for _, override := range m.OverrideOps {
-		override = override.clone()
 		_, ok := m.resolvedOps[override.Name]
 		if !ok {
-			m.resolvedOps[override.Name] = override
+			continue
 		}
+		override = override.clone()
 		if override.DocumentationURL != "" {
 			m.resolvedOps[override.Name].DocumentationURL = override.DocumentationURL
 		}
