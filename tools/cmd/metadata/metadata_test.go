@@ -51,7 +51,7 @@ Name in override_operations does not exist in operations or openapi_operations: 
 
 func TestUpdateMetadata(t *testing.T) {
 	testServer := newTestServer(t, "main", map[string]interface{}{
-		"api.github.com/api.github.com.json":  openapi3.T{
+		"api.github.com/api.github.com.json": openapi3.T{
 			OpenAPI: "3.0.0",
 			Info: &openapi3.Info{
 				Title: "GitHub.com",
@@ -101,9 +101,8 @@ func Test_formatCmd(t *testing.T) {
 
 func updateGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 	t.Helper()
-	err := os.RemoveAll(goldenDir)
-	assertNilError(t, err)
-	err = filepath.WalkDir(resultDir, func(path string, d fs.DirEntry, err error) error {
+	assertNilError(t, os.RemoveAll(goldenDir))
+	assertNilError(t, filepath.WalkDir(resultDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil || d.IsDir() {
 			return err
 		}
@@ -113,6 +112,9 @@ func updateGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 		if err != nil {
 			if os.IsNotExist(err) {
 				err = os.MkdirAll(filepath.Dir(filepath.Join(goldenDir, relName)), d.Type())
+				if err != nil {
+					return err
+				}
 				return copyFile(path, filepath.Join(goldenDir, relName))
 			}
 			return err
@@ -129,7 +131,7 @@ func updateGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 			return nil
 		}
 		return copyFile(path, filepath.Join(goldenDir, relName))
-	})
+	}))
 }
 
 func checkGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {

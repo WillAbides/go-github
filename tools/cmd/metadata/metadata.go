@@ -56,14 +56,6 @@ func (c *rootCmd) metadata() (string, *internal.Metadata, error) {
 	return filename, meta, nil
 }
 
-func (c *rootCmd) githubDir() (string, error) {
-	dir := c.GithubDir
-	if dir == "" {
-		dir = filepath.Join(c.WorkingDir, "github")
-	}
-	return dir, nil
-}
-
 func githubClient(apiURL string) (*github.Client, error) {
 	token := os.Getenv("GITHUB_TOKEN")
 	if token == "" {
@@ -110,10 +102,7 @@ type validateCmd struct {
 
 func (c *validateCmd) Run(k *kong.Context, root *rootCmd) error {
 	ctx := context.Background()
-	githubDir, err := root.githubDir()
-	if err != nil {
-		return err
-	}
+	githubDir := filepath.Join(root.WorkingDir, "github")
 	filename, meta, err := root.metadata()
 	if err != nil {
 		return err
@@ -148,10 +137,7 @@ func (c *validateCmd) Run(k *kong.Context, root *rootCmd) error {
 type updateUrlsCmd struct{}
 
 func (c *updateUrlsCmd) Run(root *rootCmd) error {
-	githubDir, err := root.githubDir()
-	if err != nil {
-		return err
-	}
+	githubDir := filepath.Join(root.WorkingDir, "github")
 	_, meta, err := root.metadata()
 	if err != nil {
 		return err
@@ -223,5 +209,8 @@ func run(args []string, opts []kong.Option) error {
 		return err
 	}
 	k, err := parser.Parse(args)
+	if err != nil {
+		return err
+	}
 	return k.Run()
 }
