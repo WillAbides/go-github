@@ -300,7 +300,7 @@ func runTest(t *testing.T, srcDir string, args ...string) testRun {
 		workDir: t.TempDir(),
 		srcDir:  srcDir,
 	}
-	err := copyDir(res.workDir, filepath.FromSlash(srcDir))
+	err := copyDir(res.workDir, srcDir)
 	if err != nil {
 		t.Error(err)
 		return res
