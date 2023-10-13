@@ -189,6 +189,7 @@ func checkGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 	}
 	assertNilError(t, filepath.Walk(origDir, func(wantPath string, info fs.FileInfo, err error) error {
 		relPath := strings.TrimPrefix(wantPath, origDir)
+		fmt.Println("relPath", relPath)
 		if err != nil || info.IsDir() || checked[relPath] {
 			return err
 		}
