@@ -2,16 +2,21 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/fs"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/alecthomas/kong"
+	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-github/v55/github"
 )
 
 func Test_updateUrlsCmd(t *testing.T) {
@@ -40,6 +45,114 @@ Name in override_operations does not exist in operations or openapi_operations: 
 		res.assertNoErr()
 		res.checkGolden()
 	})
+}
+
+type testRequest struct {
+	url        string
+	resp       interface{}
+	statusCode int
+}
+
+func testMux(requests []testRequest) *http.ServeMux {
+	mux := http.NewServeMux()
+	for i := range requests {
+		i := i
+		req := requests[i]
+		mux.HandleFunc(req.url, func(w http.ResponseWriter, r *http.Request) {
+			if req.statusCode != 0 {
+				w.WriteHeader(req.statusCode)
+			}
+			var err error
+			switch resp := req.resp.(type) {
+			case string:
+				_, err = io.WriteString(w, resp)
+			case nil:
+				// do nothing
+			default:
+				err = json.NewEncoder(w).Encode(resp)
+			}
+			if err != nil {
+				panic(err)
+			}
+		})
+	}
+	return mux
+}
+
+func updateMux(mux *http.ServeMux, endpoint string, statusCode int, resp interface{}) {
+	mux.HandleFunc(endpoint, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(statusCode)
+		var err error
+		switch rt := resp.(type) {
+		case string:
+			_, err = io.WriteString(w, rt)
+		case nil:
+			// do nothing
+		default:
+			err = json.NewEncoder(w).Encode(rt)
+		}
+		if err != nil {
+			panic(err)
+		}
+	})
+}
+
+func TestUpdateMetadata(t *testing.T) {
+	mux := http.NewServeMux()
+	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mux.ServeHTTP(w, r)
+	}))
+	defer testServer.Close()
+	updateMux(mux, "/api/v3/repos/github/rest-api-description/commits/main", 200, github.RepositoryCommit{SHA: github.String("s")})
+	updateMux(mux, "/api/v3/repos/github/rest-api-description/contents/descriptions", 200, []*github.RepositoryContent{
+		{Name: github.String("api.github.com")},
+		{Name: github.String("ghec")},
+	})
+	updateMux(mux, "/api/v3/repos/github/rest-api-description/contents/descriptions/api.github.com", 200, []*github.RepositoryContent{
+		{
+			Name: github.String("api.github.com.json"),
+			DownloadURL: github.String(testServer.URL + "/dl/api.github.com.json"),
+		},
+	})
+	updateMux(mux, "/api/v3/repos/github/rest-api-description/contents/descriptions/ghec", 200, []*github.RepositoryContent{
+		{
+			Name: github.String("ghec.json"),
+			DownloadURL: github.String(testServer.URL + "/dl/ghec.json"),
+		},
+	})
+	updateMux(mux, "/dl/api.github.com.json", 200, openapi3.T{
+		OpenAPI: "3.0.0",
+		Info: &openapi3.Info{
+			Title:   "GitHub.com",
+		},
+		Paths: openapi3.Paths{
+			"/a/{a_id}": &openapi3.PathItem{
+				Get: &openapi3.Operation{},
+			},
+		},
+	})
+	updateMux(mux, "/dl/ghec.json", 200, openapi3.T{
+		OpenAPI: "3.0.0",
+		Info: &openapi3.Info{
+			Title:   "GitHub.com",
+		},
+		Paths: openapi3.Paths{
+			"/a/b/{a_id}": &openapi3.PathItem{
+				Get: &openapi3.Operation{
+					ExternalDocs: &openapi3.ExternalDocs{
+						URL: "https://docs.github.com/rest/reference/a",
+					},
+				},
+			},
+		},
+	})
+	ghURL := testServer.URL
+	fmt.Println("ghURL", ghURL)
+	t.Setenv("GITHUB_TOKEN", "faketoken")
+	res := runTest(t, "testdata/updatemetadata", "update-metadata", "--github-url", ghURL)
+	res.assertOutput("", "")
+	res.assertNoErr()
+	res.checkGolden()
 }
 
 func Test_canonizeCmd(t *testing.T) {

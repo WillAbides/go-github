@@ -35,6 +35,7 @@ type rootCmd struct {
 	WorkingDir     string            `kong:"short=C,default=${workingdir_default},help='Working directory. Must be within a go-github root.'"`
 	Filename       string            `kong:"help='Path to metadata.yaml. Defaults to <go-github-root>/metadata.yaml.'"`
 	GithubDir      string            `kong:"help='Path to the github package. Defaults to <go-github-root>/github.'"`
+	GithubURL      string            `kong:"hidden,default='https://api.github.com'"`
 	UpdateMetadata updateMetadataCmd `kong:"cmd,help=${update_help}"`
 	UpdateUrls     updateUrlsCmd     `kong:"cmd,help='Update documentation URLs in the Go source files in the github directory to match the urls in the metadata file.'"`
 	Format         formatCmd         `kong:"cmd,help=${format_help}"`
@@ -63,12 +64,12 @@ func (c *rootCmd) githubDir() (string, error) {
 	return dir, nil
 }
 
-func githubClient() (*github.Client, error) {
+func githubClient(apiURL string) (*github.Client, error) {
 	token := os.Getenv("GITHUB_TOKEN")
 	if token == "" {
 		return nil, fmt.Errorf("GITHUB_TOKEN environment variable must be set to a GitHub personal access token with the public_repo scope")
 	}
-	return github.NewClient(nil).WithAuthToken(token), nil
+	return github.NewClient(nil).WithAuthToken(token).WithEnterpriseURLs(apiURL, "")
 }
 
 type updateMetadataCmd struct {
@@ -81,7 +82,7 @@ func (c *updateMetadataCmd) Run(root *rootCmd) error {
 	if err != nil {
 		return err
 	}
-	client, err := githubClient()
+	client, err := githubClient(root.GithubURL)
 	if err != nil {
 		return err
 	}
@@ -123,7 +124,7 @@ func (c *validateCmd) Run(k *kong.Context, root *rootCmd) error {
 	}
 	// don't waste time checking github if there are already issues
 	if c.CheckGithub && len(issues) == 0 {
-		client, err := githubClient()
+		client, err := githubClient(root.GithubURL)
 		if err != nil {
 			return err
 		}
