@@ -8,6 +8,13 @@ package internal
 import (
 	"context"
 	"fmt"
+	"go/ast"
+	"go/parser"
+	"go/token"
+	"os"
+	"path/filepath"
+	"sort"
+	"strings"
 )
 
 // ValidateMetadata returns a list of issues with the metadata file. An error means
@@ -142,4 +149,51 @@ func validateOperations(result []string, meta *Metadata) []string {
 		}
 	}
 	return result
+}
+
+func getServiceMethods(dir string) ([]string, error) {
+	dirEntries, err := os.ReadDir(dir)
+	if err != nil {
+		return nil, err
+	}
+	var serviceMethods []string
+	for _, filename := range dirEntries {
+		var sm []string
+		sm, err = getServiceMethodsFromFile(filepath.Join(dir, filename.Name()))
+		if err != nil {
+			return nil, err
+		}
+		serviceMethods = append(serviceMethods, sm...)
+	}
+	sort.Strings(serviceMethods)
+	return serviceMethods, nil
+}
+
+// getServiceMethodsFromFile returns the service methods in filename.
+func getServiceMethodsFromFile(filename string) ([]string, error) {
+	if !strings.HasSuffix(filename, ".go") ||
+		strings.HasSuffix(filename, "_test.go") {
+		return nil, nil
+	}
+
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, filename, nil, parser.ParseComments)
+	if err != nil {
+		return nil, err
+	}
+
+	// Only look at the github package
+	if f.Name.Name != "github" {
+		return nil, nil
+	}
+	var serviceMethods []string
+	ast.Inspect(f, func(n ast.Node) bool {
+		sm := serviceMethodFromNode(n)
+		if sm == "" {
+			return true
+		}
+		serviceMethods = append(serviceMethods, sm)
+		return false
+	})
+	return serviceMethods, nil
 }

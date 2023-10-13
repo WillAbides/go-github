@@ -546,3 +546,26 @@ func stripURLQuery(u string) string {
 	p.RawQuery = ""
 	return p.String()
 }
+
+func serviceMethodFromNode(node ast.Node) string {
+	decl, ok := node.(*ast.FuncDecl)
+	if !ok || decl.Recv == nil || len(decl.Recv.List) != 1 {
+		return ""
+	}
+	recv := decl.Recv.List[0]
+	se, ok := recv.Type.(*ast.StarExpr)
+	if !ok {
+		return ""
+	}
+	id, ok := se.X.(*ast.Ident)
+	if !ok {
+		return ""
+	}
+
+	// We only want exported methods on exported types where the type name ends in "Service".
+	if !id.IsExported() || !decl.Name.IsExported() || !strings.HasSuffix(id.Name, "Service") {
+		return ""
+	}
+
+	return id.Name + "." + decl.Name.Name
+}

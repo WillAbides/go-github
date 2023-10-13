@@ -8,7 +8,9 @@ import (
 	"io/fs"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -19,14 +21,14 @@ import (
 	"github.com/google/go-github/v55/github"
 )
 
-func Test_updateUrlsCmd(t *testing.T) {
-	res := runTest(t, "testdata/updatedocs", "update-urls")
+func TestUpdateURLs(t *testing.T) {
+	res := runTest(t, "testdata/update-urls", "update-urls")
 	res.assertOutput("", "")
 	res.assertNoErr()
 	res.checkGolden()
 }
 
-func Test_validateCmd(t *testing.T) {
+func TestValidate(t *testing.T) {
 	t.Run("invalid", func(t *testing.T) {
 		res := runTest(t, "testdata/validate_invalid", "validate")
 		res.assertErr("found 4 issues in")
@@ -47,109 +49,37 @@ Name in override_operations does not exist in operations or openapi_operations: 
 	})
 }
 
-type testRequest struct {
-	url        string
-	resp       interface{}
-	statusCode int
-}
-
-func testMux(requests []testRequest) *http.ServeMux {
-	mux := http.NewServeMux()
-	for i := range requests {
-		i := i
-		req := requests[i]
-		mux.HandleFunc(req.url, func(w http.ResponseWriter, r *http.Request) {
-			if req.statusCode != 0 {
-				w.WriteHeader(req.statusCode)
-			}
-			var err error
-			switch resp := req.resp.(type) {
-			case string:
-				_, err = io.WriteString(w, resp)
-			case nil:
-				// do nothing
-			default:
-				err = json.NewEncoder(w).Encode(resp)
-			}
-			if err != nil {
-				panic(err)
-			}
-		})
-	}
-	return mux
-}
-
-func updateMux(mux *http.ServeMux, endpoint string, statusCode int, resp interface{}) {
-	mux.HandleFunc(endpoint, func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(statusCode)
-		var err error
-		switch rt := resp.(type) {
-		case string:
-			_, err = io.WriteString(w, rt)
-		case nil:
-			// do nothing
-		default:
-			err = json.NewEncoder(w).Encode(rt)
-		}
-		if err != nil {
-			panic(err)
-		}
-	})
-}
-
 func TestUpdateMetadata(t *testing.T) {
-	mux := http.NewServeMux()
-	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		mux.ServeHTTP(w, r)
-	}))
-	defer testServer.Close()
-	updateMux(mux, "/api/v3/repos/github/rest-api-description/commits/main", 200, github.RepositoryCommit{SHA: github.String("s")})
-	updateMux(mux, "/api/v3/repos/github/rest-api-description/contents/descriptions", 200, []*github.RepositoryContent{
-		{Name: github.String("api.github.com")},
-		{Name: github.String("ghec")},
-	})
-	updateMux(mux, "/api/v3/repos/github/rest-api-description/contents/descriptions/api.github.com", 200, []*github.RepositoryContent{
-		{
-			Name: github.String("api.github.com.json"),
-			DownloadURL: github.String(testServer.URL + "/dl/api.github.com.json"),
-		},
-	})
-	updateMux(mux, "/api/v3/repos/github/rest-api-description/contents/descriptions/ghec", 200, []*github.RepositoryContent{
-		{
-			Name: github.String("ghec.json"),
-			DownloadURL: github.String(testServer.URL + "/dl/ghec.json"),
-		},
-	})
-	updateMux(mux, "/dl/api.github.com.json", 200, openapi3.T{
-		OpenAPI: "3.0.0",
-		Info: &openapi3.Info{
-			Title:   "GitHub.com",
-		},
-		Paths: openapi3.Paths{
-			"/a/{a_id}": &openapi3.PathItem{
-				Get: &openapi3.Operation{},
+	testServer := newTestServer(t, "main", map[string]interface{}{
+		"api.github.com/api.github.com.json":  openapi3.T{
+			OpenAPI: "3.0.0",
+			Info: &openapi3.Info{
+				Title: "GitHub.com",
+			},
+			Paths: openapi3.Paths{
+				"/a/{a_id}": &openapi3.PathItem{
+					Get: &openapi3.Operation{},
+				},
 			},
 		},
-	})
-	updateMux(mux, "/dl/ghec.json", 200, openapi3.T{
-		OpenAPI: "3.0.0",
-		Info: &openapi3.Info{
-			Title:   "GitHub.com",
-		},
-		Paths: openapi3.Paths{
-			"/a/b/{a_id}": &openapi3.PathItem{
-				Get: &openapi3.Operation{
-					ExternalDocs: &openapi3.ExternalDocs{
-						URL: "https://docs.github.com/rest/reference/a",
+		"ghec/ghec.json": openapi3.T{
+			OpenAPI: "3.0.0",
+			Info: &openapi3.Info{
+				Title: "GitHub.com",
+			},
+			Paths: openapi3.Paths{
+				"/a/b/{a_id}": &openapi3.PathItem{
+					Get: &openapi3.Operation{
+						ExternalDocs: &openapi3.ExternalDocs{
+							URL: "https://docs.github.com/rest/reference/a",
+						},
 					},
 				},
 			},
 		},
 	})
-	ghURL := testServer.URL
-	fmt.Println("ghURL", ghURL)
-	t.Setenv("GITHUB_TOKEN", "faketoken")
-	res := runTest(t, "testdata/updatemetadata", "update-metadata", "--github-url", ghURL)
+
+	res := runTest(t, "testdata/update-metadata", "update-metadata", "--github-url", testServer.URL)
 	res.assertOutput("", "")
 	res.assertNoErr()
 	res.checkGolden()
@@ -336,6 +266,59 @@ func runTest(t *testing.T, srcDir string, args ...string) testRun {
 	defaultVars["workingdir_default"] = res.workDir
 	res.err = run(args, []kong.Option{kong.Writers(&res.stdOut, &res.stdErr), defaultVars, helpVars})
 	return res
+}
+
+func newTestServer(t *testing.T, ref string, files map[string]interface{}) *httptest.Server {
+	t.Helper()
+	jsonHandler := func(wantQuery url.Values, val interface{}) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			gotQuery := r.URL.Query()
+			queryDiff := cmp.Diff(wantQuery, gotQuery)
+			if queryDiff != "" {
+				t.Errorf("query mismatch for %s (-want +got):\n%s", r.URL.Path, queryDiff)
+			}
+			w.WriteHeader(200)
+			err := json.NewEncoder(w).Encode(val)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+	repoPath := "/api/v3/repos/github/rest-api-description"
+	emptyQuery := url.Values{}
+	refQuery := url.Values{"ref": []string{ref}}
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	mux.HandleFunc(
+		path.Join(repoPath, "commits", ref),
+		jsonHandler(emptyQuery, &github.RepositoryCommit{SHA: github.String("s")}),
+	)
+	var descriptionsContent []*github.RepositoryContent
+	for name, content := range files {
+		descriptionsContent = append(descriptionsContent, &github.RepositoryContent{
+			Name: github.String(path.Base(path.Dir(name))),
+		})
+		mux.HandleFunc(
+			path.Join(repoPath, "contents/descriptions", path.Dir(name)),
+			jsonHandler(refQuery, []*github.RepositoryContent{
+				{
+					Name:        github.String(path.Base(name)),
+					DownloadURL: github.String(server.URL + "/dl/" + name),
+				},
+			}),
+		)
+		mux.HandleFunc(
+			path.Join("/dl", name),
+			jsonHandler(emptyQuery, content),
+		)
+	}
+	mux.HandleFunc(
+		path.Join(repoPath, "contents/descriptions"),
+		jsonHandler(refQuery, descriptionsContent),
+	)
+	t.Cleanup(server.Close)
+	t.Setenv("GITHUB_TOKEN", "fake token")
+	return server
 }
 
 func assertEqualStrings(t *testing.T, want, got string) {
