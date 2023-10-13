@@ -2754,7 +2754,7 @@ operation_overrides:
     documentation_url: https://docs.github.com/rest/pages/pages#request-a-github-pages-build
   - name: GET /repos/{owner}/{repo}/pages/builds/{build_id}
     documentation_url: https://docs.github.com/rest/pages/pages#get-github-pages-build
-openapi_commit: b8dafbe912a3be421d21346faa2b29bf15e6f84d
+openapi_commit: c86f07e1ca0d543d0b8fc7591991b02767e02deb
 openapi_operations:
   - name: GET /
     documentation_url: https://docs.github.com/rest/meta/meta#github-api-root
@@ -4750,6 +4750,41 @@ openapi_operations:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+  - name: GET /orgs/{org}/properties/schema
+    documentation_url: https://docs.github.com/rest/orgs/properties#get-all-custom-properties-for-an-organization
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
+  - name: PATCH /orgs/{org}/properties/schema
+    documentation_url: https://docs.github.com/rest/orgs/properties#create-or-update-custom-properties-for-an-organization
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
+  - name: DELETE /orgs/{org}/properties/schema/{custom_property_name}
+    documentation_url: https://docs.github.com/rest/orgs/properties#remove-a-custom-property-for-an-organization
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
+  - name: GET /orgs/{org}/properties/schema/{custom_property_name}
+    documentation_url: https://docs.github.com/rest/orgs/properties#get-a-custom-property-for-an-organization
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
+  - name: PUT /orgs/{org}/properties/schema/{custom_property_name}
+    documentation_url: https://docs.github.com/rest/orgs/properties#create-or-update-a-custom-property-for-an-organization
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
+  - name: GET /orgs/{org}/properties/values
+    documentation_url: https://docs.github.com/rest/orgs/properties#list-custom-property-values-for-organization-repositories
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
+  - name: PATCH /orgs/{org}/properties/values
+    documentation_url: https://docs.github.com/rest/orgs/properties#create-or-update-custom-property-values-for-organization-repositories
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
   - name: GET /orgs/{org}/public_members
     documentation_url: https://docs.github.com/rest/orgs/members#list-public-organization-members
     openapi_files:
@@ -4798,6 +4833,16 @@ openapi_operations:
       - descriptions/ghec/ghec.json
   - name: POST /orgs/{org}/rulesets
     documentation_url: https://docs.github.com/rest/orgs/rules#create-an-organization-repository-ruleset
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
+  - name: GET /orgs/{org}/rulesets/rule-suites
+    documentation_url: https://docs.github.com/rest/orgs/rule-suites#list-organization-rule-suites
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
+  - name: GET /orgs/{org}/rulesets/rule-suites/{rule_suite_id}
+    documentation_url: https://docs.github.com/rest/orgs/rule-suites#get-an-organization-rule-suite
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
@@ -5532,6 +5577,11 @@ openapi_operations:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+  - name: POST /repos/{owner}/{repo}/actions/runs/{run_id}/force-cancel
+    documentation_url: https://docs.github.com/rest/actions/workflow-runs#force-cancel-a-workflow-run
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
   - name: GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs
     documentation_url: https://docs.github.com/rest/actions/workflow-jobs#list-jobs-for-a-workflow-run
     openapi_files:
@@ -6117,6 +6167,11 @@ openapi_operations:
       - descriptions/ghec/ghec.json
   - name: GET /repos/{owner}/{repo}/codespaces/new
     documentation_url: https://docs.github.com/rest/codespaces/codespaces#get-default-attributes-for-a-codespace
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
+  - name: GET /repos/{owner}/{repo}/codespaces/permissions_check
+    documentation_url: https://docs.github.com/rest/codespaces/codespaces#check-if-permissions-defined-by-a-devcontainer-have-been-accepted-by-the-authenticated-user
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
@@ -7174,6 +7229,11 @@ openapi_operations:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
+  - name: GET /repos/{owner}/{repo}/properties/values
+    documentation_url: https://docs.github.com/rest/repos/properties#get-all-custom-property-values-for-a-repository
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
   - name: GET /repos/{owner}/{repo}/pulls
     documentation_url: https://docs.github.com/rest/pulls/pulls#list-pull-requests
     openapi_files:
@@ -7483,6 +7543,16 @@ openapi_operations:
       - descriptions/ghec/ghec.json
   - name: POST /repos/{owner}/{repo}/rulesets
     documentation_url: https://docs.github.com/rest/repos/rules#create-a-repository-ruleset
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
+  - name: GET /repos/{owner}/{repo}/rulesets/rule-suites
+    documentation_url: https://docs.github.com/rest/repos/rule-suites#list-repository-rule-suites
+    openapi_files:
+      - descriptions/api.github.com/api.github.com.json
+      - descriptions/ghec/ghec.json
+  - name: GET /repos/{owner}/{repo}/rulesets/rule-suites/{rule_suite_id}
+    documentation_url: https://docs.github.com/rest/repos/rule-suites#get-a-repository-rule-suite
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
