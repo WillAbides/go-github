@@ -2343,7 +2343,7 @@ methods:
       - GET /repos/{owner}/{repo}/security-advisories
   - name: SecurityAdvisoriesService.ListRepositorySecurityAdvisoriesForOrg
     operations:
-      - GET /repos/{owner}/{repo}/security-advisories
+      - GET /orgs/{org}/security-advisories
   - name: SecurityAdvisoriesService.RequestCVE
     operations:
       - POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/cve
