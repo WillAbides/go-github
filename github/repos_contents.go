@@ -318,7 +318,7 @@ const (
 //
 // GitHub API docs: https://docs.github.com/rest/repos/contents#download-a-repository-archive-tar
 // GitHub API docs: https://docs.github.com/rest/repos/contents#download-a-repository-archive-zip
-func (s *RepositoriesService) GetArchiveLink(ctx context.Context, owner, repo string, archiveformat ArchiveFormat, opts *RepositoryContentGetOptions, followRedirects bool) (*url.URL, *Response, error) {
+func (s *RepositoriesService) GetArchiveLink(ctx context.Context, owner, repo string, archiveformat ArchiveFormat, opts *RepositoryContentGetOptions, maxRedirects int) (*url.URL, *Response, error) {
 	u := fmt.Sprintf("repos/%s/%s/%s", owner, repo, archiveformat)
 	if opts != nil && opts.Ref != "" {
 		u += fmt.Sprintf("/%s", opts.Ref)
