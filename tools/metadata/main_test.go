@@ -26,6 +26,12 @@ import (
 	"github.com/google/go-github/v56/github"
 )
 
+func TestHelp(t *testing.T) {
+	res := runTest(t, "testdata/update-urls", "-h")
+	res.assertNoErr()
+	res.checkGolden()
+}
+
 func TestUpdateURLs(t *testing.T) {
 	res := runTest(t, "testdata/update-urls", "update-urls")
 	res.assertOutput("", "")
