@@ -1,4 +1,7 @@
 methods:
+  - name: ActionsService.AddEnabledOrgInEnterprise
+    operations:
+      - PUT /enterprises/{enterprise}/actions/permissions/organizations/{org}
   - name: ActionsService.AddEnabledReposInOrg
     operations:
       - PUT /orgs/{org}/actions/permissions/repositories/{repository_id}
@@ -110,6 +113,18 @@ methods:
   - name: ActionsService.DownloadArtifact
     operations:
       - GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/{archive_format}
+  - name: ActionsService.EditActionsAllowed
+    operations:
+      - PUT /orgs/{org}/actions/permissions/selected-actions
+  - name: ActionsService.EditActionsAllowedInEnterprise
+    operations:
+      - PUT /enterprises/{enterprise}/actions/permissions/selected-actions
+  - name: ActionsService.EditActionsPermissions
+    operations:
+      - PUT /orgs/{org}/actions/permissions
+  - name: ActionsService.EditActionsPermissionsInEnterprise
+    operations:
+      - PUT /enterprises/{enterprise}/actions/permissions
   - name: ActionsService.EnableWorkflowByFileName
     operations:
       - PUT /repos/{owner}/{repo}/actions/workflows/{workflow_id}/enable
@@ -122,6 +137,18 @@ methods:
   - name: ActionsService.GenerateRepoJITConfig
     operations:
       - POST /repos/{owner}/{repo}/actions/runners/generate-jitconfig
+  - name: ActionsService.GetActionsAllowed
+    operations:
+      - GET /orgs/{org}/actions/permissions/selected-actions
+  - name: ActionsService.GetActionsAllowedInEnterprise
+    operations:
+      - GET /enterprises/{enterprise}/actions/permissions/selected-actions
+  - name: ActionsService.GetActionsPermissions
+    operations:
+      - GET /orgs/{org}/actions/permissions
+  - name: ActionsService.GetActionsPermissionsInEnterprise
+    operations:
+      - GET /enterprises/{enterprise}/actions/permissions
   - name: ActionsService.GetArtifact
     operations:
       - GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}
@@ -221,6 +248,9 @@ methods:
   - name: ActionsService.ListCaches
     operations:
       - GET /repos/{owner}/{repo}/actions/caches
+  - name: ActionsService.ListEnabledOrgsInEnterprise
+    operations:
+      - GET /enterprises/{enterprise}/actions/permissions/organizations
   - name: ActionsService.ListEnabledReposInOrg
     operations:
       - GET /orgs/{org}/actions/permissions/repositories
@@ -299,7 +329,10 @@ methods:
   - name: ActionsService.PendingDeployments
     operations:
       - POST /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments
-  - name: ActionsService.RemoveEnabledRepoInOrg
+  - name: ActionsService.RemoveEnabledOrgInEnterprise
+    operations:
+      - DELETE /enterprises/{enterprise}/actions/permissions/organizations/{org}
+  - name: ActionsService.RemoveEnabledReposInOrg
     operations:
       - DELETE /orgs/{org}/actions/permissions/repositories/{repository_id}
   - name: ActionsService.RemoveOrganizationRunner
@@ -332,6 +365,9 @@ methods:
   - name: ActionsService.RerunWorkflowByID
     operations:
       - POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun
+  - name: ActionsService.SetEnabledOrgsInEnterprise
+    operations:
+      - PUT /enterprises/{enterprise}/actions/permissions/organizations
   - name: ActionsService.SetEnabledReposInOrg
     operations:
       - PUT /orgs/{org}/actions/permissions/repositories
@@ -532,6 +568,9 @@ methods:
   - name: AppsService.ListHookDeliveries
     operations:
       - GET /app/hook/deliveries
+  - name: AppsService.ListInstallationRequests
+    operations:
+      - GET /app/installation-requests
   - name: AppsService.ListInstallations
     operations:
       - GET /app/installations
@@ -679,6 +718,12 @@ methods:
   - name: CodeScanningService.UploadSarif
     operations:
       - POST /repos/{owner}/{repo}/code-scanning/sarifs
+  - name: CodesOfConductService.Get
+    operations:
+      - GET /codes_of_conduct/{key}
+  - name: CodesOfConductService.List
+    operations:
+      - GET /codes_of_conduct
   - name: CodespacesService.AddSelectedRepoToOrgSecret
     operations:
       - PUT /orgs/{org}/codespaces/secrets/{secret_name}/repositories/{repository_id}
@@ -820,6 +865,9 @@ methods:
   - name: DependencyGraphService.GetSBOM
     operations:
       - GET /repos/{owner}/{repo}/dependency-graph/sbom
+  - name: EmojisService.List
+    operations:
+      - GET /emojis
   - name: EnterpriseService.AddOrganizationAccessRunnerGroup
     operations:
       - PUT /enterprises/{enterprise}/actions/runner-groups/{runner_group_id}/organizations/{org_id}
@@ -1141,6 +1189,9 @@ methods:
   - name: LicensesService.List
     operations:
       - GET /licenses
+  - name: MarkdownService.Render
+    operations:
+      - POST /markdown
   - name: MarketplaceService.GetPlanAccountForAccount
     operations:
       - GET /marketplace_listing/accounts/{account_id}
@@ -1157,6 +1208,15 @@ methods:
     operations:
       - GET /marketplace_listing/plans
       - GET /marketplace_listing/stubbed/plans
+  - name: MetaService.Get
+    operations:
+      - GET /meta
+  - name: MetaService.Octocat
+    operations:
+      - GET /octocat
+  - name: MetaService.Zen
+    operations:
+      - GET /zen
   - name: MigrationService.CancelImport
     operations:
       - DELETE /repos/{owner}/{repo}/import
@@ -2278,6 +2338,12 @@ methods:
   - name: SecretScanningService.UpdateAlert
     operations:
       - PATCH /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}
+  - name: SecurityAdvisoriesService.ListRepositorySecurityAdvisories
+    operations:
+      - GET /repos/{owner}/{repo}/security-advisories
+  - name: SecurityAdvisoriesService.ListRepositorySecurityAdvisoriesForOrg
+    operations:
+      - GET /repos/{owner}/{repo}/security-advisories
   - name: SecurityAdvisoriesService.RequestCVE
     operations:
       - POST /repos/{owner}/{repo}/security-advisories/{ghsa_id}/cve
