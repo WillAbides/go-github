@@ -219,6 +219,7 @@ func copyDir(dst, src string) error {
 			return err
 		}
 		dstPath := filepath.Join(dst, strings.TrimPrefix(srcPath, src))
+		fmt.Printf("copying %s to %s\n", srcPath, dstPath)
 		err = copyFile(srcPath, dstPath)
 		return err
 	})
