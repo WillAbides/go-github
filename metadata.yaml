@@ -1,7 +1,7 @@
 methods:
   - name: ActionsService.AddEnabledOrgInEnterprise
     operations:
-      - PUT /enterprises/{enterprise}/actions/permissions/organizations/{org}
+      - PUT /enterprises/{enterprise}/actions/permissions/organizations/{org_id}
   - name: ActionsService.AddEnabledReposInOrg
     operations:
       - PUT /orgs/{org}/actions/permissions/repositories/{repository_id}
@@ -331,7 +331,7 @@ methods:
       - POST /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments
   - name: ActionsService.RemoveEnabledOrgInEnterprise
     operations:
-      - DELETE /enterprises/{enterprise}/actions/permissions/organizations/{org}
+      - DELETE /enterprises/{enterprise}/actions/permissions/organizations/{org_id}
   - name: ActionsService.RemoveEnabledReposInOrg
     operations:
       - DELETE /orgs/{org}/actions/permissions/repositories/{repository_id}
