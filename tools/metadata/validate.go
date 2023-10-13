@@ -3,7 +3,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package internal
+package main
 
 import (
 	"context"
@@ -15,9 +15,11 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/google/go-github/v56/github"
 )
 
-// ValidateMetadata returns a list of issues with the metadata file. An error means
+// validateMetadata returns a list of issues with the metadata file. An error means
 // there was an error validating the file, not that there are issues with the file.
 //
 // validations:
@@ -30,7 +32,7 @@ import (
 //   - All operations mapped from a method must exist in either ManualOps or OpenAPIOps
 //   - No operations are duplicated between ManualOps and OpenAPIOps
 //   - All operations in OverrideOps must exist in either ManualOps or OpenAPIOps
-func ValidateMetadata(dir string, meta *Metadata) ([]string, error) {
+func validateMetadata(dir string, meta *metadata) ([]string, error) {
 	serviceMethods, err := getServiceMethods(dir)
 	if err != nil {
 		return nil, err
@@ -42,9 +44,9 @@ func ValidateMetadata(dir string, meta *Metadata) ([]string, error) {
 	return result, nil
 }
 
-// ValidateGitCommit validates that building meta.OpenapiOps from the commit at meta.GitCommit
+// validateGitCommit validates that building meta.OpenapiOps from the commit at meta.GitCommit
 // results in the same operations as meta.OpenapiOps.
-func ValidateGitCommit(ctx context.Context, client contentsClient, meta *Metadata) (string, error) {
+func validateGitCommit(ctx context.Context, client *github.Client, meta *metadata) (string, error) {
 	ops, err := getOpsFromGithub(ctx, client, meta.GitCommit)
 	if err != nil {
 		return "", err
@@ -56,7 +58,7 @@ func ValidateGitCommit(ctx context.Context, client contentsClient, meta *Metadat
 	return "", nil
 }
 
-func validateMetadataMethods(result []string, meta *Metadata, serviceMethods []string) []string {
+func validateMetadataMethods(result []string, meta *metadata, serviceMethods []string) []string {
 	smLookup := map[string]bool{}
 	for _, method := range serviceMethods {
 		smLookup[method] = true
@@ -78,7 +80,7 @@ func validateMetadataMethods(result []string, meta *Metadata, serviceMethods []s
 	return result
 }
 
-func validateMetaMethodOperations(result []string, meta *Metadata, method *Method) []string {
+func validateMetaMethodOperations(result []string, meta *metadata, method *method) []string {
 	if len(method.OpNames) == 0 {
 		msg := fmt.Sprintf("Method %s in metadata.yaml does not have any operations.", method.Name)
 		result = append(result, msg)
@@ -105,7 +107,7 @@ func validateMetaMethodOperations(result []string, meta *Metadata, method *Metho
 	return result
 }
 
-func validateServiceMethodsExist(result []string, meta *Metadata, serviceMethods []string) []string {
+func validateServiceMethodsExist(result []string, meta *metadata, serviceMethods []string) []string {
 	for _, method := range serviceMethods {
 		if meta.getMethod(method) == nil {
 			msg := fmt.Sprintf("Method %s does not exist in metadata.yaml. Please add it.", method)
@@ -115,7 +117,7 @@ func validateServiceMethodsExist(result []string, meta *Metadata, serviceMethods
 	return result
 }
 
-func validateOperations(result []string, meta *Metadata) []string {
+func validateOperations(result []string, meta *metadata) []string {
 	names := map[string]bool{}
 	openapiNames := map[string]bool{}
 	overrideNames := map[string]bool{}

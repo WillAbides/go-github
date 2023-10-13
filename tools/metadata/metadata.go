@@ -3,7 +3,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package internal
+package main
 
 import (
 	"bytes"
@@ -23,16 +23,17 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/google/go-github/v56/github"
 	"gopkg.in/yaml.v3"
 )
 
-type Operation struct {
+type operation struct {
 	Name             string   `yaml:"name,omitempty" json:"name,omitempty"`
 	DocumentationURL string   `yaml:"documentation_url,omitempty" json:"documentation_url,omitempty"`
 	OpenAPIFiles     []string `yaml:"openapi_files,omitempty" json:"openapi_files,omitempty"`
 }
 
-func (o *Operation) equal(other *Operation) bool {
+func (o *operation) equal(other *operation) bool {
 	if o.Name != other.Name || o.DocumentationURL != other.DocumentationURL {
 		return false
 	}
@@ -47,15 +48,15 @@ func (o *Operation) equal(other *Operation) bool {
 	return true
 }
 
-func (o *Operation) clone() *Operation {
-	return &Operation{
+func (o *operation) clone() *operation {
+	return &operation{
 		Name:             o.Name,
 		DocumentationURL: o.DocumentationURL,
 		OpenAPIFiles:     append([]string{}, o.OpenAPIFiles...),
 	}
 }
 
-func operationsEqual(a, b []*Operation) bool {
+func operationsEqual(a, b []*operation) bool {
 	if len(a) != len(b) {
 		return false
 	}
@@ -67,7 +68,7 @@ func operationsEqual(a, b []*Operation) bool {
 	return true
 }
 
-func sortOperations(ops []*Operation) {
+func sortOperations(ops []*operation) {
 	sort.Slice(ops, func(i, j int) bool {
 		leftVerb, leftURL := parseOpName(ops[i].Name)
 		rightVerb, rightURL := parseOpName(ops[j].Name)
@@ -110,29 +111,29 @@ func parseOpName(id string) (verb, url string) {
 	return verb, url
 }
 
-type Method struct {
+type method struct {
 	Name    string   `yaml:"name" json:"name"`
 	OpNames []string `yaml:"operations,omitempty" json:"operations,omitempty"`
 }
 
-type Metadata struct {
-	Methods     []*Method    `yaml:"methods,omitempty"`
-	ManualOps   []*Operation `yaml:"operations,omitempty"`
-	OverrideOps []*Operation `yaml:"operation_overrides,omitempty"`
+type metadata struct {
+	Methods     []*method    `yaml:"methods,omitempty"`
+	ManualOps   []*operation `yaml:"operations,omitempty"`
+	OverrideOps []*operation `yaml:"operation_overrides,omitempty"`
 	GitCommit   string       `yaml:"openapi_commit,omitempty"`
-	OpenapiOps  []*Operation `yaml:"openapi_operations,omitempty"`
+	OpenapiOps  []*operation `yaml:"openapi_operations,omitempty"`
 
 	mu          sync.Mutex
-	resolvedOps map[string]*Operation
+	resolvedOps map[string]*operation
 }
 
-func (m *Metadata) resolve() {
+func (m *metadata) resolve() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if m.resolvedOps != nil {
 		return
 	}
-	m.resolvedOps = map[string]*Operation{}
+	m.resolvedOps = map[string]*operation{}
 	for _, op := range m.OpenapiOps {
 		m.resolvedOps[op.Name] = op.clone()
 	}
@@ -154,9 +155,9 @@ func (m *Metadata) resolve() {
 	}
 }
 
-func (m *Metadata) Operations() []*Operation {
+func (m *metadata) operations() []*operation {
 	m.resolve()
-	ops := make([]*Operation, 0, len(m.resolvedOps))
+	ops := make([]*operation, 0, len(m.resolvedOps))
 	for _, op := range m.resolvedOps {
 		ops = append(ops, op)
 	}
@@ -164,12 +165,12 @@ func (m *Metadata) Operations() []*Operation {
 	return ops
 }
 
-func LoadMetadataFile(filename string) (*Metadata, error) {
+func loadMetadataFile(filename string) (*metadata, error) {
 	b, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
-	var meta Metadata
+	var meta metadata
 	err = yaml.Unmarshal(b, &meta)
 	if err != nil {
 		return nil, err
@@ -177,7 +178,7 @@ func LoadMetadataFile(filename string) (*Metadata, error) {
 	return &meta, nil
 }
 
-func (m *Metadata) SaveFile(filename string) (errOut error) {
+func (m *metadata) saveFile(filename string) (errOut error) {
 	sortOperations(m.ManualOps)
 	sortOperations(m.OverrideOps)
 	sortOperations(m.OpenapiOps)
@@ -202,7 +203,7 @@ func (m *Metadata) SaveFile(filename string) (errOut error) {
 	return enc.Encode(m)
 }
 
-func addOperation(ops []*Operation, filename, opName, docURL string) []*Operation {
+func addOperation(ops []*operation, filename, opName, docURL string) []*operation {
 	for _, op := range ops {
 		if opName != op.Name {
 			continue
@@ -225,15 +226,15 @@ func addOperation(ops []*Operation, filename, opName, docURL string) []*Operatio
 		op.OpenAPIFiles = append(op.OpenAPIFiles, filename)
 		return ops
 	}
-	return append(ops, &Operation{
+	return append(ops, &operation{
 		Name:             opName,
 		OpenAPIFiles:     []string{filename},
 		DocumentationURL: docURL,
 	})
 }
 
-// OperationMethods returns a list methods that are mapped to the given operation id.
-func (m *Metadata) OperationMethods(opName string) []string {
+// operationMethods returns a list methods that are mapped to the given operation id.
+func (m *metadata) operationMethods(opName string) []string {
 	var methods []string
 	for _, method := range m.Methods {
 		for _, methodOpName := range method.OpNames {
@@ -245,14 +246,14 @@ func (m *Metadata) OperationMethods(opName string) []string {
 	return methods
 }
 
-func (m *Metadata) getOperation(name string) *Operation {
+func (m *metadata) getOperation(name string) *operation {
 	m.resolve()
 	return m.resolvedOps[name]
 }
 
-func (m *Metadata) getOperationsWithNormalizedName(name string) []*Operation {
+func (m *metadata) getOperationsWithNormalizedName(name string) []*operation {
 	m.resolve()
-	var result []*Operation
+	var result []*operation
 	norm := normalizedOpName(name)
 	for n := range m.resolvedOps {
 		if normalizedOpName(n) == norm {
@@ -263,7 +264,7 @@ func (m *Metadata) getOperationsWithNormalizedName(name string) []*Operation {
 	return result
 }
 
-func (m *Metadata) getMethod(name string) *Method {
+func (m *metadata) getMethod(name string) *method {
 	for _, method := range m.Methods {
 		if method.Name == name {
 			return method
@@ -272,12 +273,12 @@ func (m *Metadata) getMethod(name string) *Method {
 	return nil
 }
 
-func (m *Metadata) operationsForMethod(methodName string) []*Operation {
+func (m *metadata) operationsForMethod(methodName string) []*operation {
 	method := m.getMethod(methodName)
 	if method == nil {
 		return nil
 	}
-	var operations []*Operation
+	var operations []*operation
 	for _, name := range method.OpNames {
 		op := m.getOperation(name)
 		if op != nil {
@@ -288,7 +289,7 @@ func (m *Metadata) operationsForMethod(methodName string) []*Operation {
 	return operations
 }
 
-func (m *Metadata) CanonizeMethodOperations() error {
+func (m *metadata) canonizeMethodOperations() error {
 	for _, method := range m.Methods {
 		for i := range method.OpNames {
 			opName := method.OpNames[i]
@@ -313,8 +314,8 @@ func (m *Metadata) CanonizeMethodOperations() error {
 	return nil
 }
 
-func (m *Metadata) UpdateFromGithub(ctx context.Context, client contentsClient, ref string) error {
-	commit, resp, err := client.GetCommit(ctx, descriptionsOwnerName, descriptionsRepoName, ref, nil)
+func (m *metadata) updateFromGithub(ctx context.Context, client *github.Client, ref string) error {
+	commit, resp, err := client.Repositories.GetCommit(ctx, descriptionsOwnerName, descriptionsRepoName, ref, nil)
 	if err != nil {
 		return err
 	}
@@ -332,8 +333,8 @@ func (m *Metadata) UpdateFromGithub(ctx context.Context, client contentsClient, 
 	return nil
 }
 
-// UpdateDocLinks updates the code comments in dir with doc urls from metadata.
-func UpdateDocLinks(meta *Metadata, dir string) error {
+// updateDocLinks updates the code comments in dir with doc urls from metadata.
+func updateDocLinks(meta *metadata, dir string) error {
 	return filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -367,7 +368,7 @@ func UpdateDocLinks(meta *Metadata, dir string) error {
 }
 
 // updateDocsLinksInFile updates in the code comments in content with doc urls from metadata.
-func updateDocsLinksInFile(metadata *Metadata, content []byte) ([]byte, error) {
+func updateDocsLinksInFile(metadata *metadata, content []byte) ([]byte, error) {
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, "", content, parser.ParseComments)
 	if err != nil {
@@ -398,7 +399,7 @@ var (
 	docLineRE = regexp.MustCompile(`(?i)\s*(//\s*)?GitHub\s+API\s+docs:\s*(https?://\S+)`)
 )
 
-func updateDocsLinksForNode(metadata *Metadata, cmap ast.CommentMap, n ast.Node) bool {
+func updateDocsLinksForNode(metadata *metadata, cmap ast.CommentMap, n ast.Node) bool {
 	fn, ok := n.(*ast.FuncDecl)
 	if !ok {
 		return true

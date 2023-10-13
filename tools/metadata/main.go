@@ -12,10 +12,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"tools/internal"
-
 	"github.com/alecthomas/kong"
-	"github.com/google/go-github/v55/github"
+	"github.com/google/go-github/v56/github"
 )
 
 var helpVars = kong.Vars{
@@ -26,13 +24,8 @@ var helpVars = kong.Vars{
 	"canonize_help":   `Update metadata.yaml to use canonical operation names.`,
 }
 
-var defaultVars = kong.Vars{
-	"workingdir_default": ".",
-	"ref_default":        "main",
-}
-
 type rootCmd struct {
-	WorkingDir     string            `kong:"short=C,default=${workingdir_default},help='Working directory. Must be within a go-github root.'"`
+	WorkingDir     string            `kong:"short=C,default=.,help='Working directory. Must be within a go-github root.'"`
 	Filename       string            `kong:"help='Path to metadata.yaml. Defaults to <go-github-root>/metadata.yaml.'"`
 	GithubDir      string            `kong:"help='Path to the github package. Defaults to <go-github-root>/github.'"`
 	GithubURL      string            `kong:"hidden,default='https://api.github.com'"`
@@ -44,12 +37,12 @@ type rootCmd struct {
 	Canonize       canonizeCmd       `kong:"cmd,help=${canonize_help}"`
 }
 
-func (c *rootCmd) metadata() (string, *internal.Metadata, error) {
+func (c *rootCmd) metadata() (string, *metadata, error) {
 	filename := c.Filename
 	if filename == "" {
 		filename = filepath.Join(c.WorkingDir, "metadata.yaml")
 	}
-	meta, err := internal.LoadMetadataFile(filename)
+	meta, err := loadMetadataFile(filename)
 	if err != nil {
 		return "", nil, err
 	}
@@ -65,7 +58,7 @@ func githubClient(apiURL string) (*github.Client, error) {
 }
 
 type updateMetadataCmd struct {
-	Ref string `kong:"default=${ref_default},help='git ref to pull OpenAPI descriptions from'"`
+	Ref string `kong:"default=main,help='git ref to pull OpenAPI descriptions from'"`
 }
 
 func (c *updateMetadataCmd) Run(root *rootCmd) error {
@@ -79,11 +72,11 @@ func (c *updateMetadataCmd) Run(root *rootCmd) error {
 		return err
 	}
 
-	err = meta.UpdateFromGithub(ctx, client.Repositories, c.Ref)
+	err = meta.updateFromGithub(ctx, client, c.Ref)
 	if err != nil {
 		return err
 	}
-	return meta.SaveFile(filename)
+	return meta.saveFile(filename)
 }
 
 type formatCmd struct{}
@@ -93,7 +86,7 @@ func (c *formatCmd) Run(root *rootCmd) error {
 	if err != nil {
 		return err
 	}
-	return meta.SaveFile(filename)
+	return meta.saveFile(filename)
 }
 
 type validateCmd struct {
@@ -107,7 +100,7 @@ func (c *validateCmd) Run(k *kong.Context, root *rootCmd) error {
 	if err != nil {
 		return err
 	}
-	issues, err := internal.ValidateMetadata(githubDir, meta)
+	issues, err := validateMetadata(githubDir, meta)
 	if err != nil {
 		return err
 	}
@@ -117,7 +110,7 @@ func (c *validateCmd) Run(k *kong.Context, root *rootCmd) error {
 		if err != nil {
 			return err
 		}
-		msg, err := internal.ValidateGitCommit(ctx, client.Repositories, meta)
+		msg, err := validateGitCommit(ctx, client, meta)
 		if err != nil {
 			return err
 		}
@@ -142,7 +135,7 @@ func (c *updateUrlsCmd) Run(root *rootCmd) error {
 	if err != nil {
 		return err
 	}
-	err = internal.UpdateDocLinks(meta, githubDir)
+	err = updateDocLinks(meta, githubDir)
 	return err
 }
 
@@ -155,9 +148,9 @@ func (c *unusedOpsCmd) Run(root *rootCmd) error {
 	if err != nil {
 		return err
 	}
-	var unused []*internal.Operation
-	for _, op := range meta.Operations() {
-		goMethods := meta.OperationMethods(op.Name)
+	var unused []*operation
+	for _, op := range meta.operations() {
+		goMethods := meta.operationMethods(op.Name)
 		if len(goMethods) == 0 {
 			unused = append(unused, op)
 		}
@@ -187,15 +180,15 @@ func (c *canonizeCmd) Run(root *rootCmd) error {
 	if err != nil {
 		return err
 	}
-	err = meta.CanonizeMethodOperations()
+	err = meta.canonizeMethodOperations()
 	if err != nil {
 		return err
 	}
-	return meta.SaveFile(filename)
+	return meta.saveFile(filename)
 }
 
 func main() {
-	err := run(os.Args[1:], []kong.Option{helpVars, defaultVars})
+	err := run(os.Args[1:], nil)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
@@ -204,7 +197,7 @@ func main() {
 
 func run(args []string, opts []kong.Option) error {
 	var cmd rootCmd
-	parser, err := kong.New(&cmd, opts...)
+	parser, err := kong.New(&cmd, append(opts, helpVars)...)
 	if err != nil {
 		return err
 	}

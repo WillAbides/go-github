@@ -74,7 +74,3 @@ jobs:
     - name: Upload coverage to Codecov
       if: ${{ matrix.update-coverage }}
       uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d #v3.1.4
-
-    - name: Validate metadata.yaml
-      working-directory: tools
-      run: go run ./cmd/metadata validate

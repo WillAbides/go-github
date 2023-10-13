@@ -23,7 +23,7 @@ import (
 	"github.com/alecthomas/kong"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-github/v55/github"
+	"github.com/google/go-github/v56/github"
 )
 
 func TestUpdateURLs(t *testing.T) {
@@ -90,14 +90,14 @@ func TestUpdateMetadata(t *testing.T) {
 	res.checkGolden()
 }
 
-func Test_canonizeCmd(t *testing.T) {
+func TestCanonize(t *testing.T) {
 	res := runTest(t, "testdata/canonize", "canonize")
 	res.assertOutput("", "")
 	res.assertNoErr()
 	res.checkGolden()
 }
 
-func Test_formatCmd(t *testing.T) {
+func TestFormat(t *testing.T) {
 	res := runTest(t, "testdata/format", "format")
 	res.assertOutput("", "")
 	res.assertNoErr()
@@ -270,8 +270,10 @@ func runTest(t *testing.T, srcDir string, args ...string) testRun {
 		t.Error(err)
 		return res
 	}
-	defaultVars["workingdir_default"] = res.workDir
-	res.err = run(args, []kong.Option{kong.Writers(&res.stdOut, &res.stdErr), defaultVars, helpVars})
+	res.err = run(
+		append(args, "-C", res.workDir),
+		[]kong.Option{kong.Writers(&res.stdOut, &res.stdErr)},
+	)
 	return res
 }
 

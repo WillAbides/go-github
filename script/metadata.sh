@@ -7,7 +7,7 @@ CDPATH="" cd -- "$(dirname -- "$0")/.."
 REPO_DIR="$(pwd)"
 
 (
-  cd tools/cmd/metadata
+  cd tools/metadata
   go build -o "$REPO_DIR"/bin/metadata
 )
 
