@@ -206,10 +206,12 @@ func checkGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 }
 
 func copyDir(dst, src string) error {
+	fmt.Println("dst", dst)
 	dst, err := filepath.Abs(dst)
 	if err != nil {
 		return err
 	}
+	fmt.Println("abs dst", dst)
 	return filepath.Walk(src, func(srcPath string, info fs.FileInfo, err error) error {
 		if err != nil || info.IsDir() {
 			return err
