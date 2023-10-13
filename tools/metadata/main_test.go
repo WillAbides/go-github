@@ -57,21 +57,50 @@ Name in override_operations does not exist in operations or openapi_operations: 
 func TestUpdateMetadata(t *testing.T) {
 	testServer := newTestServer(t, "main", map[string]interface{}{
 		"api.github.com/api.github.com.json": openapi3.T{
-			OpenAPI: "3.0.0",
-			Info: &openapi3.Info{
-				Title: "GitHub.com",
-			},
 			Paths: openapi3.Paths{
 				"/a/{a_id}": &openapi3.PathItem{
-					Get: &openapi3.Operation{},
+					Get: &openapi3.Operation{
+						ExternalDocs: &openapi3.ExternalDocs{
+							URL: "https://docs.github.com/rest/reference/a",
+						},
+					},
 				},
 			},
 		},
 		"ghec/ghec.json": openapi3.T{
-			OpenAPI: "3.0.0",
-			Info: &openapi3.Info{
-				Title: "GitHub.com",
+			Paths: openapi3.Paths{
+				"/a/b/{a_id}": &openapi3.PathItem{
+					Get: &openapi3.Operation{
+						ExternalDocs: &openapi3.ExternalDocs{
+							URL: "https://docs.github.com/rest/reference/a",
+						},
+					},
+				},
 			},
+		},
+		"ghes-3.9/ghes-3.9.json": openapi3.T{
+			Paths: openapi3.Paths{
+				"/a/b/{a_id}": &openapi3.PathItem{
+					Get: &openapi3.Operation{
+						ExternalDocs: &openapi3.ExternalDocs{
+							URL: "https://docs.github.com/rest/reference/a",
+						},
+					},
+				},
+			},
+		},
+		"ghes-3.10/ghes-3.10.json": openapi3.T{
+			Paths: openapi3.Paths{
+				"/a/b/{a_id}": &openapi3.PathItem{
+					Get: &openapi3.Operation{
+						ExternalDocs: &openapi3.ExternalDocs{
+							URL: "https://docs.github.com/rest/reference/a",
+						},
+					},
+				},
+			},
+		},
+		"ghes-2.22/ghes-2.22.json": openapi3.T{
 			Paths: openapi3.Paths{
 				"/a/b/{a_id}": &openapi3.PathItem{
 					Get: &openapi3.Operation{
@@ -251,11 +280,13 @@ func (r testRun) assertNoErr() {
 
 func (r testRun) assertErr(want string) {
 	r.t.Helper()
-	if want == "" {
-		assertError(r.t, r.err)
+	if r.err == nil {
+		r.t.Error("expected error")
 		return
 	}
-	assertErrorContains(r.t, want, r.err)
+	if !strings.Contains(r.err.Error(), want) {
+		r.t.Errorf("expected error to contain %q, got %q", want, r.err.Error())
+	}
 }
 
 func runTest(t *testing.T, srcDir string, args ...string) testRun {
@@ -362,22 +393,4 @@ func assertNilError(t *testing.T, err error) bool {
 		return false
 	}
 	return true
-}
-
-func assertErrorContains(t *testing.T, want string, err error) {
-	t.Helper()
-	if err == nil {
-		t.Error("expected error")
-		return
-	}
-	if !strings.Contains(err.Error(), want) {
-		t.Errorf("expected error to contain %q, got %q", want, err.Error())
-	}
-}
-
-func assertError(t *testing.T, err error) {
-	t.Helper()
-	if err == nil {
-		t.Error("expected error")
-	}
 }

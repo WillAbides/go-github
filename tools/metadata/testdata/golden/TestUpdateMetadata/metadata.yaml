@@ -11,6 +11,8 @@ openapi_operations:
     documentation_url: https://docs.github.com/rest/reference/a
     openapi_files:
       - descriptions/ghec/ghec.json
+      - descriptions/ghes-3.10/ghes-3.10.json
   - name: GET /a/{a_id}
+    documentation_url: https://docs.github.com/rest/reference/a
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
