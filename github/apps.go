@@ -327,6 +327,8 @@ func (s *AppsService) CreateInstallationToken(ctx context.Context, id int64, opt
 // CreateAttachment creates a new attachment on user comment containing a url.
 //
 // TODO: Find GitHub API docs.
+//
+// GitHub API docs: https://docs.github.com/enterprise-server@3.3/rest/reference/apps#create-a-content-attachment
 func (s *AppsService) CreateAttachment(ctx context.Context, contentReferenceID int64, title, body string) (*Attachment, *Response, error) {
 	u := fmt.Sprintf("content_references/%v/attachments", contentReferenceID)
 	payload := &Attachment{Title: String(title), Body: String(body)}
@@ -363,7 +365,7 @@ func (s *AppsService) FindRepositoryInstallation(ctx context.Context, owner, rep
 
 // FindRepositoryInstallationByID finds the repository's installation information.
 //
-// Note: FindRepositoryInstallationByID uses the undocumented GitHub API endpoint /repositories/:id/installation.
+// Note: FindRepositoryInstallationByID uses the undocumented GitHub API endpoint "GET /repositories/{repository_id}/installation".
 func (s *AppsService) FindRepositoryInstallationByID(ctx context.Context, id int64) (*Installation, *Response, error) {
 	return s.getInstallation(ctx, fmt.Sprintf("repositories/%d/installation", id))
 }
