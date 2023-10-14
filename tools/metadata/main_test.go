@@ -26,8 +26,30 @@ import (
 	"github.com/google/go-github/v56/github"
 )
 
+/*
+
+func runTest(t *testing.T, srcDir string, args ...string) testRun {
+	t.Helper()
+	res := testRun{
+		t:       t,
+		workDir: t.TempDir(),
+		srcDir:  srcDir,
+	}
+	err := copyDir(res.workDir, srcDir)
+	if err != nil {
+		t.Error(err)
+		return res
+	}
+	res.err = run(
+		append(args, "-C", res.workDir),
+		[]kong.Option{kong.Writers(&res.stdOut, &res.stdErr)},
+	)
+	return res
+}
+ */
+
 func TestDebug(t *testing.T) {
-	srcDir := "testdata/update-urls"
+	srcDir := filepath.FromSlash("testdata/update-urls")
 	workDir := t.TempDir()
 	err := copyDir(workDir, srcDir)
 	assertNilError(t, err)
@@ -235,6 +257,9 @@ func checkGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 		return fmt.Errorf("found unexpected file:\n%s", relPath)
 	}))
 }
+
+// C:\Users\RUNNER~1\AppData\Local\Temp\TestDebug1596723467\001\github\a.go
+// C:\Users\RUNNER~1\AppData\Local\Temp\TestDebug1596723467\001\testdata\update-urls\github\a.go
 
 func mustRel(t *testing.T, base, target string) string {
 	t.Helper()
