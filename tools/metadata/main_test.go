@@ -357,6 +357,7 @@ func (r testRun) assertErr(want string) {
 
 func runTest(t *testing.T, srcDir string, args ...string) testRun {
 	t.Helper()
+	srcDir = filepath.FromSlash(srcDir)
 	res := testRun{
 		t:       t,
 		workDir: t.TempDir(),
