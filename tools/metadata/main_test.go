@@ -51,7 +51,7 @@ func runTest(t *testing.T, srcDir string, args ...string) testRun {
 func TestDebug(t *testing.T) {
 	srcDir := filepath.FromSlash("testdata/update-urls")
 	workDir := t.TempDir()
-	err := copyDir(workDir, srcDir)
+	err := copyDir(t, workDir, srcDir)
 	assertNilError(t, err)
 	err = filepath.Walk(workDir, func(path string, info fs.FileInfo, e error) error {
 		fmt.Println("workDir path", path)
@@ -185,7 +185,7 @@ func updateGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 		if err != nil || d.IsDir() {
 			return err
 		}
-		relName := strings.TrimPrefix(path, resultDir)
+		relName := mustRel(t, resultDir, path)
 		origName := filepath.Join(origDir, relName)
 		_, err = os.Stat(origName)
 		if err != nil {
@@ -268,7 +268,7 @@ func mustRel(t *testing.T, base, target string) string {
 	return rel
 }
 
-func copyDir(dst, src string) error {
+func copyDir(t *testing.T, dst, src string) error {
 	fmt.Println("dst", dst)
 	dst, err := filepath.Abs(dst)
 	if err != nil {
@@ -279,7 +279,7 @@ func copyDir(dst, src string) error {
 		if err != nil || info.IsDir() {
 			return err
 		}
-		dstPath := filepath.Join(dst, strings.TrimPrefix(srcPath, src))
+		dstPath := filepath.Join(dst, mustRel(t, src, srcPath))
 		fmt.Printf("copying %s to %s\n", srcPath, dstPath)
 		err = copyFile(srcPath, dstPath)
 		return err
@@ -363,7 +363,7 @@ func runTest(t *testing.T, srcDir string, args ...string) testRun {
 		workDir: t.TempDir(),
 		srcDir:  srcDir,
 	}
-	err := copyDir(res.workDir, srcDir)
+	err := copyDir(t, res.workDir, srcDir)
 	if err != nil {
 		t.Error(err)
 		return res
