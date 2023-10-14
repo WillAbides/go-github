@@ -26,25 +26,6 @@ import (
 	"github.com/google/go-github/v56/github"
 )
 
-/*
-	t.Helper()
-	res := testRun{
-		t:       t,
-		workDir: t.TempDir(),
-		srcDir:  srcDir,
-	}
-	err := copyDir(res.workDir, srcDir)
-	if err != nil {
-		t.Error(err)
-		return res
-	}
-	res.err = run(
-		append(args, "-C", res.workDir),
-		[]kong.Option{kong.Writers(&res.stdOut, &res.stdErr)},
-	)
-	return res
- */
-
 func TestDebug(t *testing.T) {
 	srcDir := "testdata/update-urls"
 	workDir := t.TempDir()
@@ -245,7 +226,7 @@ func checkGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 		if err != nil || info.IsDir() || checked[relPath] {
 			return err
 		}
-		return fmt.Errorf("file %q not found in golden dir", resultPath)
+		return fmt.Errorf("file not found in golden dir:\n%s", resultPath)
 	}))
 }
 
