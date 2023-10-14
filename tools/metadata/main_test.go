@@ -201,7 +201,7 @@ func checkGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 	_, err := os.Stat(goldenDir)
 	if err == nil {
 		assertNilError(t, filepath.Walk(goldenDir, func(wantPath string, info fs.FileInfo, err error) error {
-			relPath := strings.TrimPrefix(wantPath, goldenDir)
+			relPath := mustRel(t, goldenDir, wantPath)
 			fmt.Println("golden relPath", relPath)
 			if err != nil || info.IsDir() {
 				return err
@@ -212,7 +212,7 @@ func checkGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 		}))
 	}
 	assertNilError(t, filepath.Walk(origDir, func(wantPath string, info fs.FileInfo, err error) error {
-		relPath := strings.TrimPrefix(wantPath, origDir)
+		relPath := mustRel(t, origDir, wantPath)
 		fmt.Println("orig relPath", relPath)
 		if err != nil || info.IsDir() || checked[relPath] {
 			return err
@@ -222,7 +222,7 @@ func checkGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 		return nil
 	}))
 	assertNilError(t, filepath.Walk(resultDir, func(resultPath string, info fs.FileInfo, err error) error {
-		relPath := strings.TrimPrefix(resultPath, resultDir)
+		relPath := mustRel(t, resultDir, resultPath)
 		if err != nil || info.IsDir() || checked[relPath] {
 			return err
 		}
@@ -232,8 +232,15 @@ func checkGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 		for k := range checked {
 			fmt.Println("checked", k)
 		}
-		return fmt.Errorf("file not found in golden dir:\n%s", relPath)
+		return fmt.Errorf("found unexpected file:\n%s", relPath)
 	}))
+}
+
+func mustRel(t *testing.T, base, target string) string {
+	t.Helper()
+	rel, err := filepath.Rel(base, target)
+	assertNilError(t, err)
+	return rel
 }
 
 func copyDir(dst, src string) error {
