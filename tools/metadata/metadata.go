@@ -348,6 +348,7 @@ func updateDocLinks(meta *metadata, dir string) error {
 		if err != nil {
 			return err
 		}
+		content = bytes.ReplaceAll(content, []byte("\r\n"), []byte("\n"))
 		updatedContent, err := updateDocsLinksInFile(meta, content)
 		if err != nil {
 			return err
