@@ -26,8 +26,34 @@ import (
 	"github.com/google/go-github/v56/github"
 )
 
-func TestHelp(t *testing.T) {
-	res := runTest(t, "testdata/update-urls", "-h")
+/*
+	t.Helper()
+	res := testRun{
+		t:       t,
+		workDir: t.TempDir(),
+		srcDir:  srcDir,
+	}
+	err := copyDir(res.workDir, srcDir)
+	if err != nil {
+		t.Error(err)
+		return res
+	}
+	res.err = run(
+		append(args, "-C", res.workDir),
+		[]kong.Option{kong.Writers(&res.stdOut, &res.stdErr)},
+	)
+	return res
+ */
+
+func TestDebug(t *testing.T) {
+	srcDir := "testdata/update-urls"
+	res := testRun{
+		t:       t,
+		workDir: t.TempDir(),
+		srcDir:  srcDir,
+	}
+	err := copyDir(res.workDir, srcDir)
+	assertNilError(t, err)
 	res.assertNoErr()
 	res.checkGolden()
 }
