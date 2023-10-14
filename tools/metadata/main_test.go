@@ -442,10 +442,12 @@ func assertEqualFiles(t *testing.T, want, got string) {
 	if !assertNilError(t, err) {
 		return
 	}
+	wantBytes = bytes.ReplaceAll(wantBytes, []byte("\r\n"), []byte("\n"))
 	gotBytes, err := os.ReadFile(got)
 	if !assertNilError(t, err) {
 		return
 	}
+	gotBytes = bytes.ReplaceAll(gotBytes, []byte("\r\n"), []byte("\n"))
 	if bytes.Equal(wantBytes, gotBytes) {
 		return
 	}
