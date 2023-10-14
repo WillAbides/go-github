@@ -47,14 +47,24 @@ import (
 
 func TestDebug(t *testing.T) {
 	srcDir := "testdata/update-urls"
+	workDir := t.TempDir()
+	err := copyDir(workDir, srcDir)
+	assertNilError(t, err)
+	err = filepath.Walk(workDir, func(path string, info fs.FileInfo, e error) error {
+		fmt.Println("workDir path", path)
+		return e
+	})
+	assertNilError(t, err)
+	err = filepath.Walk(srcDir, func(path string, info fs.FileInfo, e error) error {
+		fmt.Println("srcDir path", path)
+		return e
+	})
+	assertNilError(t, err)
 	res := testRun{
 		t:       t,
-		workDir: t.TempDir(),
+		workDir: workDir,
 		srcDir:  srcDir,
 	}
-	err := copyDir(res.workDir, srcDir)
-	assertNilError(t, err)
-	res.assertNoErr()
 	res.checkGolden()
 }
 
