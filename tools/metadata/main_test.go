@@ -26,51 +26,6 @@ import (
 	"github.com/google/go-github/v56/github"
 )
 
-/*
-
-func runTest(t *testing.T, srcDir string, args ...string) testRun {
-	t.Helper()
-	res := testRun{
-		t:       t,
-		workDir: t.TempDir(),
-		srcDir:  srcDir,
-	}
-	err := copyDir(res.workDir, srcDir)
-	if err != nil {
-		t.Error(err)
-		return res
-	}
-	res.err = run(
-		append(args, "-C", res.workDir),
-		[]kong.Option{kong.Writers(&res.stdOut, &res.stdErr)},
-	)
-	return res
-}
- */
-
-func TestDebug(t *testing.T) {
-	srcDir := filepath.FromSlash("testdata/update-urls")
-	workDir := t.TempDir()
-	err := copyDir(t, workDir, srcDir)
-	assertNilError(t, err)
-	err = filepath.Walk(workDir, func(path string, info fs.FileInfo, e error) error {
-		fmt.Println("workDir path", path)
-		return e
-	})
-	assertNilError(t, err)
-	err = filepath.Walk(srcDir, func(path string, info fs.FileInfo, e error) error {
-		fmt.Println("srcDir path", path)
-		return e
-	})
-	assertNilError(t, err)
-	res := testRun{
-		t:       t,
-		workDir: workDir,
-		srcDir:  srcDir,
-	}
-	res.checkGolden()
-}
-
 func TestUpdateURLs(t *testing.T) {
 	res := runTest(t, "testdata/update-urls", "update-urls")
 	res.assertOutput("", "")
@@ -224,7 +179,6 @@ func checkGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 	if err == nil {
 		assertNilError(t, filepath.Walk(goldenDir, func(wantPath string, info fs.FileInfo, err error) error {
 			relPath := mustRel(t, goldenDir, wantPath)
-			fmt.Println("golden relPath", relPath)
 			if err != nil || info.IsDir() {
 				return err
 			}
@@ -235,7 +189,6 @@ func checkGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 	}
 	assertNilError(t, filepath.Walk(origDir, func(wantPath string, info fs.FileInfo, err error) error {
 		relPath := mustRel(t, origDir, wantPath)
-		fmt.Println("orig relPath", relPath)
 		if err != nil || info.IsDir() || checked[relPath] {
 			return err
 		}
@@ -248,18 +201,9 @@ func checkGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 		if err != nil || info.IsDir() || checked[relPath] {
 			return err
 		}
-		b, err := json.MarshalIndent(checked, "", "  ")
-		assertNilError(t, err)
-		fmt.Println(string(b))
-		for k := range checked {
-			fmt.Println("checked", k)
-		}
 		return fmt.Errorf("found unexpected file:\n%s", relPath)
 	}))
 }
-
-// C:\Users\RUNNER~1\AppData\Local\Temp\TestDebug1596723467\001\github\a.go
-// C:\Users\RUNNER~1\AppData\Local\Temp\TestDebug1596723467\001\testdata\update-urls\github\a.go
 
 func mustRel(t *testing.T, base, target string) string {
 	t.Helper()
@@ -274,13 +218,11 @@ func copyDir(t *testing.T, dst, src string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("abs dst", dst)
 	return filepath.Walk(src, func(srcPath string, info fs.FileInfo, err error) error {
 		if err != nil || info.IsDir() {
 			return err
 		}
 		dstPath := filepath.Join(dst, mustRel(t, src, srcPath))
-		fmt.Printf("copying %s to %s\n", srcPath, dstPath)
 		err = copyFile(srcPath, dstPath)
 		return err
 	})
