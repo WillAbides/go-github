@@ -229,6 +229,9 @@ func checkGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 		b, err := json.MarshalIndent(checked, "", "  ")
 		assertNilError(t, err)
 		fmt.Println(string(b))
+		for k := range checked {
+			fmt.Println("checked", k)
+		}
 		return fmt.Errorf("file not found in golden dir:\n%s", relPath)
 	}))
 }
