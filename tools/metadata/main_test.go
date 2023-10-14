@@ -140,7 +140,7 @@ func updateGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 		if err != nil || d.IsDir() {
 			return err
 		}
-		relName := strings.TrimPrefix(path, resultDir)
+		relName := mustRel(t, resultDir, path)
 		origName := filepath.Join(origDir, relName)
 		_, err = os.Stat(origName)
 		if err != nil {
@@ -178,7 +178,7 @@ func checkGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 	_, err := os.Stat(goldenDir)
 	if err == nil {
 		assertNilError(t, filepath.Walk(goldenDir, func(wantPath string, info fs.FileInfo, err error) error {
-			relPath := strings.TrimPrefix(wantPath, goldenDir)
+			relPath := mustRel(t, goldenDir, wantPath)
 			if err != nil || info.IsDir() {
 				return err
 			}
@@ -188,7 +188,7 @@ func checkGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 		}))
 	}
 	assertNilError(t, filepath.Walk(origDir, func(wantPath string, info fs.FileInfo, err error) error {
-		relPath := strings.TrimPrefix(wantPath, origDir)
+		relPath := mustRel(t, origDir, wantPath)
 		if err != nil || info.IsDir() || checked[relPath] {
 			return err
 		}
@@ -197,15 +197,23 @@ func checkGoldenDir(t *testing.T, origDir, resultDir, goldenDir string) {
 		return nil
 	}))
 	assertNilError(t, filepath.Walk(resultDir, func(resultPath string, info fs.FileInfo, err error) error {
-		relPath := strings.TrimPrefix(resultPath, resultDir)
+		relPath := mustRel(t, resultDir, resultPath)
 		if err != nil || info.IsDir() || checked[relPath] {
 			return err
 		}
-		return fmt.Errorf("file %q not found in golden dir", resultPath)
+		return fmt.Errorf("found unexpected file:\n%s", relPath)
 	}))
 }
 
-func copyDir(dst, src string) error {
+func mustRel(t *testing.T, base, target string) string {
+	t.Helper()
+	rel, err := filepath.Rel(base, target)
+	assertNilError(t, err)
+	return rel
+}
+
+func copyDir(t *testing.T, dst, src string) error {
+	fmt.Println("dst", dst)
 	dst, err := filepath.Abs(dst)
 	if err != nil {
 		return err
@@ -214,7 +222,7 @@ func copyDir(dst, src string) error {
 		if err != nil || info.IsDir() {
 			return err
 		}
-		dstPath := filepath.Join(dst, strings.TrimPrefix(srcPath, src))
+		dstPath := filepath.Join(dst, mustRel(t, src, srcPath))
 		err = copyFile(srcPath, dstPath)
 		return err
 	})
@@ -291,12 +299,13 @@ func (r testRun) assertErr(want string) {
 
 func runTest(t *testing.T, srcDir string, args ...string) testRun {
 	t.Helper()
+	srcDir = filepath.FromSlash(srcDir)
 	res := testRun{
 		t:       t,
 		workDir: t.TempDir(),
 		srcDir:  srcDir,
 	}
-	err := copyDir(res.workDir, filepath.FromSlash(srcDir))
+	err := copyDir(t, res.workDir, srcDir)
 	if err != nil {
 		t.Error(err)
 		return res
@@ -375,10 +384,12 @@ func assertEqualFiles(t *testing.T, want, got string) {
 	if !assertNilError(t, err) {
 		return
 	}
+	wantBytes = bytes.ReplaceAll(wantBytes, []byte("\r\n"), []byte("\n"))
 	gotBytes, err := os.ReadFile(got)
 	if !assertNilError(t, err) {
 		return
 	}
+	gotBytes = bytes.ReplaceAll(gotBytes, []byte("\r\n"), []byte("\n"))
 	if bytes.Equal(wantBytes, gotBytes) {
 		return
 	}
