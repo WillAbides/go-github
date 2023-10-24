@@ -5,12 +5,13 @@ import (
 	"os"
 
 	"github.com/alecthomas/kong"
+	"github.com/mgechev/revive/config"
 	"github.com/mgechev/revive/lint"
 	"github.com/mgechev/revive/revivelib"
 )
 
 type rootCmd struct {
-	Format  string   `kong:"enum='ndjson,default',default=default,help='Output format.'"`
+	Format  string   `kong:"enum='github-actions,default',default=default,help='Output format.'"`
 	Include []string `kong:"arg,help='Paths to lint.',default='./...'"`
 }
 
@@ -31,17 +32,24 @@ func (r *rootCmd) Run(k *kong.Context) error {
 	if err != nil {
 		return err
 	}
-	format := r.Format
-	if format == "default" && os.Getenv("GITHUB_ACTIONS") != "" {
-		format = "ndjson"
+	exitStatus := 0
+	if len(failures) > 0 {
+		exitStatus = 1
 	}
-	output, status, err := revive.Format(format, failures)
+	fmter, err := config.GetFormatter("default")
+	if err != nil {
+		return err
+	}
+	if r.Format == "github-actions" || os.Getenv("GITHUB_ACTIONS") != "" {
+		fmter = githubActionsFormatter
+	}
+	output, err := fmter.Format(failures, *emptyConfig)
 	if err != nil {
 		return err
 	}
 	fmt.Fprint(k.Stdout, output)
-	if status != 0 {
-		k.Exit(status)
+	if exitStatus != 0 {
+		k.Exit(exitStatus)
 	}
 	return nil
 }

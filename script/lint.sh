@@ -10,8 +10,6 @@ BIN="$(pwd -P)"/bin
 
 mkdir -p "$BIN"
 
-go -C tools build -o "$BIN"/lint ./lint
-
 # install golangci-lint bin/golangci-lint doesn't exist with the correct version
 if ! "$BIN"/golangci-lint --version 2> /dev/null | grep -q "$GOLANGCI_LINT_VERSION"; then
   GOBIN="$BIN" go install "github.com/golangci/golangci-lint/cmd/golangci-lint@v$GOLANGCI_LINT_VERSION"
@@ -33,9 +31,11 @@ for dir in $MOD_DIRS; do
   ) || FAILED=1
 done
 
+echo running tools/lint
+go -C tools build -o "$BIN"/lint ./lint
 "$BIN"/lint ./github || FAILED=1
 
-#script/generate.sh --check || FAILED=1
+script/generate.sh --check || FAILED=1
 
 if [ -n "$FAILED" ]; then
   exit 1
