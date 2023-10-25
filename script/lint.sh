@@ -33,7 +33,7 @@ MOD_DIRS="$(git ls-files '*go.mod' | xargs dirname | sort)"
 
 echo running tools/lint
 go -C tools build -o "$BIN"/lint ./lint
-"$BIN"/lint ./github/... || true
+"$BIN"/lint ./github/... || FAILED=1
 
 #echo running script/generate.sh --check
 #script/generate.sh --check || FAILED=1
