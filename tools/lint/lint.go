@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/alecthomas/kong"
 	"github.com/mgechev/revive/config"
@@ -36,7 +35,7 @@ func (r *rootCmd) Run(k *kong.Context) error {
 	if err != nil {
 		return err
 	}
-	if r.Format == "github-actions" || os.Getenv("GITHUB_ACTIONS") != "" {
+	if r.Format == "github-actions" {
 		fmter = githubActionsFormatter
 	}
 	output, err := fmter.Format(failures, *emptyConfig)
