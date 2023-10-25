@@ -34,8 +34,8 @@ MOD_DIRS="$(git ls-files '*go.mod' | xargs dirname | sort)"
 echo running tools/lint
 go -C tools build -o "$BIN"/lint ./lint
 "$BIN"/lint ./github || FAILED=1
-echo github/issue_import.go:55:2: This is a test
-echo github/issue_import.go:57:2 This is another test
+#echo github/issue_import.go:55:2: This is a test
+#echo github/issue_import.go:57:2 This is another test
 
 #echo running script/generate.sh --check
 #script/generate.sh --check || FAILED=1

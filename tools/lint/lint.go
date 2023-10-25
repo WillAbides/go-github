@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/alecthomas/kong"
-	"github.com/mgechev/revive/config"
 	"github.com/mgechev/revive/lint"
 	"github.com/mgechev/revive/revivelib"
 )
@@ -30,18 +29,12 @@ func (r *rootCmd) Run(k *kong.Context) error {
 	if err != nil {
 		return err
 	}
-	fmter, err := config.GetFormatter("default")
-	if err != nil {
-		return err
-	}
-	output, err := fmter.Format(failures, *emptyConfig)
+	output, exitCode, err := revive.Format("default", failures)
 	if err != nil {
 		return err
 	}
 	fmt.Fprint(k.Stdout, output)
-	if output != "" {
-		k.Exit(1)
-	}
+	k.Exit(exitCode)
 	return nil
 }
 
