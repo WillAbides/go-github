@@ -2,10 +2,7 @@ module tools
 
 go 1.20
 
-require (
-	github.com/alecthomas/kong v0.8.1
-	github.com/mgechev/revive v1.3.4
-)
+require github.com/mgechev/revive v1.3.4
 
 require (
 	github.com/BurntSushi/toml v1.3.2 // indirect
