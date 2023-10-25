@@ -32,10 +32,6 @@ func (r *rootCmd) Run(k *kong.Context) error {
 	if err != nil {
 		return err
 	}
-	exitStatus := 0
-	if len(failures) > 0 {
-		exitStatus = 1
-	}
 	fmter, err := config.GetFormatter("default")
 	if err != nil {
 		return err
@@ -48,8 +44,8 @@ func (r *rootCmd) Run(k *kong.Context) error {
 		return err
 	}
 	fmt.Fprint(k.Stdout, output)
-	if exitStatus != 0 {
-		k.Exit(exitStatus)
+	if output != "" {
+		k.Exit(1)
 	}
 	return nil
 }
