@@ -35,8 +35,8 @@ echo running tools/lint
 go -C tools build -o "$BIN"/lint ./lint
 "$BIN"/lint ./github/... || FAILED=1
 
-#echo running script/generate.sh --check
-#script/generate.sh --check || FAILED=1
+echo running script/generate.sh --check
+script/generate.sh --check || true
 
 if [ -n "$FAILED" ]; then
   exit 1
