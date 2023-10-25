@@ -21,6 +21,3 @@ require (
 	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/tools v0.14.0 // indirect
 )
-
-// until https://github.com/mgechev/revive/pull/921 is merged
-replace github.com/mgechev/revive => github.com/willabides/revive v0.0.0-20231025002332-4cc2992b0c2d
