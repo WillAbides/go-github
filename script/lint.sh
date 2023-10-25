@@ -17,26 +17,26 @@ fi
 
 MOD_DIRS="$(git ls-files '*go.mod' | xargs dirname | sort)"
 
-#for dir in $MOD_DIRS; do
-#  [ "$dir" = "example/newreposecretwithlibsodium" ] && continue
-#  echo linting "$dir"
-#  (
-#    cd "$dir"
-#    # github actions output when running in an action
-#    if [ -n "$GITHUB_ACTIONS" ]; then
-#      "$BIN"/golangci-lint run --path-prefix "$dir" --out-format github-actions
-#    else
-#      "$BIN"/golangci-lint run --path-prefix "$dir"
-#    fi
-#  ) || FAILED=1
-#done
+for dir in $MOD_DIRS; do
+  [ "$dir" = "example/newreposecretwithlibsodium" ] && continue
+  echo linting "$dir"
+  (
+    cd "$dir"
+    # github actions output when running in an action
+    if [ -n "$GITHUB_ACTIONS" ]; then
+      "$BIN"/golangci-lint run --path-prefix "$dir" --out-format github-actions
+    else
+      "$BIN"/golangci-lint run --path-prefix "$dir"
+    fi
+  ) || FAILED=1
+done
 
 echo running tools/lint
 go -C tools build -o "$BIN"/lint ./lint
 "$BIN"/lint ./github/... || FAILED=1
 
-#echo running script/generate.sh --check
-#script/generate.sh --check || FAILED=1
+echo running script/generate.sh --check
+script/generate.sh --check || FAILED=1
 
 if [ -n "$FAILED" ]; then
   exit 1
