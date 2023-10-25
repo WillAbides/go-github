@@ -10,7 +10,6 @@ import (
 )
 
 type rootCmd struct {
-	Format  string   `kong:"enum='github-actions,default',default=default,help='Output format.'"`
 	Include []string `kong:"arg,help='Paths to lint.',default='./...'"`
 }
 
@@ -34,9 +33,6 @@ func (r *rootCmd) Run(k *kong.Context) error {
 	fmter, err := config.GetFormatter("default")
 	if err != nil {
 		return err
-	}
-	if r.Format == "github-actions" {
-		fmter = githubActionsFormatter
 	}
 	output, err := fmter.Format(failures, *emptyConfig)
 	if err != nil {
