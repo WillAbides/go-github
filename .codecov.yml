@@ -5,3 +5,5 @@ ignore:
   - "scrape"
   # ignore update-urls
   - "update-urls"
+  # ignore tools
+  - "tools"

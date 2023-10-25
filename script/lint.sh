@@ -31,6 +31,11 @@ for dir in $MOD_DIRS; do
   ) || FAILED=1
 done
 
+echo running tools/lint
+go -C tools build -o "$BIN"/lint ./lint
+"$BIN"/lint ./github/... || FAILED=1
+
+echo running script/generate.sh --check
 script/generate.sh --check || FAILED=1
 
 if [ -n "$FAILED" ]; then
