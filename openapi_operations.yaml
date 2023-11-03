@@ -48,7 +48,7 @@ operation_overrides:
     documentation_url: https://docs.github.com/rest/pages/pages#request-a-github-pages-build
   - name: GET /repos/{owner}/{repo}/pages/builds/{build_id}
     documentation_url: https://docs.github.com/rest/pages/pages#get-github-pages-build
-openapi_commit: c86f07e1ca0d543d0b8fc7591991b02767e02deb
+openapi_commit: b43ca4a4061e6c85fdc2f7253ef913de210c7feb
 openapi_operations:
   - name: GET /
     documentation_url: https://docs.github.com/rest/meta/meta#github-api-root
@@ -2045,37 +2045,37 @@ openapi_operations:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
   - name: GET /orgs/{org}/properties/schema
-    documentation_url: https://docs.github.com/rest/orgs/properties#get-all-custom-properties-for-an-organization
+    documentation_url: https://docs.github.com/rest/orgs/custom-properties#get-all-custom-properties-for-an-organization
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
   - name: PATCH /orgs/{org}/properties/schema
-    documentation_url: https://docs.github.com/rest/orgs/properties#create-or-update-custom-properties-for-an-organization
+    documentation_url: https://docs.github.com/rest/orgs/custom-properties#create-or-update-custom-properties-for-an-organization
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
   - name: DELETE /orgs/{org}/properties/schema/{custom_property_name}
-    documentation_url: https://docs.github.com/rest/orgs/properties#remove-a-custom-property-for-an-organization
+    documentation_url: https://docs.github.com/rest/orgs/custom-properties#remove-a-custom-property-for-an-organization
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
   - name: GET /orgs/{org}/properties/schema/{custom_property_name}
-    documentation_url: https://docs.github.com/rest/orgs/properties#get-a-custom-property-for-an-organization
+    documentation_url: https://docs.github.com/rest/orgs/custom-properties#get-a-custom-property-for-an-organization
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
   - name: PUT /orgs/{org}/properties/schema/{custom_property_name}
-    documentation_url: https://docs.github.com/rest/orgs/properties#create-or-update-a-custom-property-for-an-organization
+    documentation_url: https://docs.github.com/rest/orgs/custom-properties#create-or-update-a-custom-property-for-an-organization
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
   - name: GET /orgs/{org}/properties/values
-    documentation_url: https://docs.github.com/rest/orgs/properties#list-custom-property-values-for-organization-repositories
+    documentation_url: https://docs.github.com/rest/orgs/custom-properties#list-custom-property-values-for-organization-repositories
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
   - name: PATCH /orgs/{org}/properties/values
-    documentation_url: https://docs.github.com/rest/orgs/properties#create-or-update-custom-property-values-for-organization-repositories
+    documentation_url: https://docs.github.com/rest/orgs/custom-properties#create-or-update-custom-property-values-for-organization-repositories
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
@@ -3960,73 +3960,73 @@ openapi_operations:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
   - name: GET /repos/{owner}/{repo}/hooks
-    documentation_url: https://docs.github.com/rest/webhooks/repos#list-repository-webhooks
+    documentation_url: https://docs.github.com/rest/repos/webhooks#list-repository-webhooks
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
   - name: POST /repos/{owner}/{repo}/hooks
-    documentation_url: https://docs.github.com/rest/webhooks/repos#create-a-repository-webhook
+    documentation_url: https://docs.github.com/rest/repos/webhooks#create-a-repository-webhook
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
   - name: DELETE /repos/{owner}/{repo}/hooks/{hook_id}
-    documentation_url: https://docs.github.com/rest/webhooks/repos#delete-a-repository-webhook
+    documentation_url: https://docs.github.com/rest/repos/webhooks#delete-a-repository-webhook
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
   - name: GET /repos/{owner}/{repo}/hooks/{hook_id}
-    documentation_url: https://docs.github.com/rest/webhooks/repos#get-a-repository-webhook
+    documentation_url: https://docs.github.com/rest/repos/webhooks#get-a-repository-webhook
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
   - name: PATCH /repos/{owner}/{repo}/hooks/{hook_id}
-    documentation_url: https://docs.github.com/rest/webhooks/repos#update-a-repository-webhook
+    documentation_url: https://docs.github.com/rest/repos/webhooks#update-a-repository-webhook
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
   - name: GET /repos/{owner}/{repo}/hooks/{hook_id}/config
-    documentation_url: https://docs.github.com/rest/webhooks/repo-config#get-a-webhook-configuration-for-a-repository
+    documentation_url: https://docs.github.com/rest/repos/webhooks#get-a-webhook-configuration-for-a-repository
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
   - name: PATCH /repos/{owner}/{repo}/hooks/{hook_id}/config
-    documentation_url: https://docs.github.com/rest/webhooks/repo-config#update-a-webhook-configuration-for-a-repository
+    documentation_url: https://docs.github.com/rest/repos/webhooks#update-a-webhook-configuration-for-a-repository
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
   - name: GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries
-    documentation_url: https://docs.github.com/rest/webhooks/repo-deliveries#list-deliveries-for-a-repository-webhook
+    documentation_url: https://docs.github.com/rest/repos/webhooks#list-deliveries-for-a-repository-webhook
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
   - name: GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}
-    documentation_url: https://docs.github.com/rest/webhooks/repo-deliveries#get-a-delivery-for-a-repository-webhook
+    documentation_url: https://docs.github.com/rest/repos/webhooks#get-a-delivery-for-a-repository-webhook
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
   - name: POST /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}/attempts
-    documentation_url: https://docs.github.com/rest/webhooks/repo-deliveries#redeliver-a-delivery-for-a-repository-webhook
+    documentation_url: https://docs.github.com/rest/repos/webhooks#redeliver-a-delivery-for-a-repository-webhook
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
   - name: POST /repos/{owner}/{repo}/hooks/{hook_id}/pings
-    documentation_url: https://docs.github.com/rest/webhooks/repos#ping-a-repository-webhook
+    documentation_url: https://docs.github.com/rest/repos/webhooks#ping-a-repository-webhook
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
   - name: POST /repos/{owner}/{repo}/hooks/{hook_id}/tests
-    documentation_url: https://docs.github.com/rest/webhooks/repos#test-the-push-repository-webhook
+    documentation_url: https://docs.github.com/rest/repos/webhooks#test-the-push-repository-webhook
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
@@ -4524,7 +4524,7 @@ openapi_operations:
       - descriptions/ghec/ghec.json
       - descriptions/ghes-3.10/ghes-3.10.json
   - name: GET /repos/{owner}/{repo}/properties/values
-    documentation_url: https://docs.github.com/rest/repos/properties#get-all-custom-property-values-for-a-repository
+    documentation_url: https://docs.github.com/rest/repos/custom-properties#get-all-custom-property-values-for-a-repository
     openapi_files:
       - descriptions/api.github.com/api.github.com.json
       - descriptions/ghec/ghec.json
