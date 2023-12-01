@@ -317,11 +317,11 @@ func addOptions(s string, opts interface{}) (string, error) {
 // an http.Client that will perform the authentication for you (such as that
 // provided by the golang.org/x/oauth2 library).
 func NewClient(httpClient *http.Client) *Client {
-	if httpClient == nil {
-		httpClient = &http.Client{}
+	c := &Client{}
+	if httpClient != nil {
+		c.client = &http.Client{}
+		*c.client = *httpClient
 	}
-	httpClient2 := *httpClient
-	c := &Client{client: &httpClient2}
 	c.initialize()
 	return c
 }
