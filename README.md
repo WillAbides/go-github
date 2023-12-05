@@ -84,9 +84,9 @@ For more sample code snippets, head over to the
 
 ### Authentication ###
 
-Use the `WithAuthToken` method to configure your client to authenticate using an
-OAuth token (for example, a [personal access token][]). This is what is needed
-for a majority of use cases aside from GitHub Apps.
+Use the `WithAuthToken` method to configure your client to authenticate using a
+static OAuth token (for example, a [personal access token][]). This is what is
+needed for a majority of use cases aside from GitHub Apps.
 
 ```go
 client := github.NewClient(nil).WithAuthToken("... your access token ...")
@@ -104,13 +104,13 @@ For API methods that require HTTP Basic Authentication, use the
 GitHub Apps authentication can be provided by the [ghinstallation](https://github.com/bradleyfalzon/ghinstallation)
 package.
 
-> **Note**: Most endpoints (ex. [`GET /rate_limit`]) require access token authentication
-> while a few others (ex. [`GET /app/hook/deliveries`]) require [JWT] authentication.
+> **Note**: Most endpoints (ex. [`GET /rate_limit`]) require [authentication as a GitHub App installation]
+> while a few others (ex. [`GET /app/hook/deliveries`]) require [authentication as a GitHub App].
 
 [`GET /rate_limit`]: https://docs.github.com/en/rest/rate-limit#get-rate-limit-status-for-the-authenticated-user
 [`GET /app/hook/deliveries`]: https://docs.github.com/en/rest/apps/webhooks#list-deliveries-for-an-app-webhook
-[JWT]: https://docs.github.com/en/developers/apps/building-github-apps/authenticating-with-github-apps#authenticating-as-a-github-app
-
+[authentication as a GitHub App]: https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/about-authentication-with-a-github-app#authentication-as-a-github-app
+[authentication as a GitHub App installation]: https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/about-authentication-with-a-github-app#authentication-as-an-app-installation
 
 ```go
 import (
@@ -121,20 +121,26 @@ import (
 )
 
 func main() {
-	// Wrap the shared transport for use with the integration ID 1 authenticating with installation ID 99.
-	itr, err := ghinstallation.NewKeyFromFile(http.DefaultTransport, 1, 99, "2016-10-19.private-key.pem")
-
-	// Or for endpoints that require JWT authentication
-	// itr, err := ghinstallation.NewAppsTransportKeyFromFile(http.DefaultTransport, 1, "2016-10-19.private-key.pem")
-
+	keyFile := "path/to/private-key.pem"
+	baseClient := github.NewClient(nil)
+	
+	// appAuth is a github.TokenSource for the app with ID 1234.
+	appAuth, err := ghinstallation.NewAppsTransportKeyFromFile(http.DefaultTransport, 1234, keyFile)
 	if err != nil {
 		// Handle error.
 	}
 
-	// Use installation transport with client.
-	client := github.NewClient(&http.Client{Transport: itr})
+	// use appClient to make requests as app.
+	appClient := baseClient.WithTokenSource(appAuth)
 
-	// Use client...
+	// instAuth is a github.TokenSource for installation ID 5678 of our app.
+	instAuth, err = ghinstallation.NewFromAppsTransport(appAuth, 5678)
+	if err != nil {
+		// Handle error.
+	}
+
+	// use instClient to make requests as app installation.
+	instClient := baseClient.WithTokenSource(instAuth)
 }
 ```
 
