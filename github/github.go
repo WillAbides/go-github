@@ -41,6 +41,7 @@ const (
 	headerRateReset     = "X-RateLimit-Reset"
 	headerOTP           = "X-GitHub-OTP"
 	headerRetryAfter    = "Retry-After"
+	headerAuthorization = "Authorization"
 
 	headerTokenExpiration = "GitHub-Authentication-Token-Expiration"
 
@@ -153,10 +154,25 @@ const (
 
 var errNonNilContext = errors.New("context must be non-nil")
 
+// A TokenSource provides bearer tokens for use in the Authorization header.
+// It is used by Client.WithTokenSource to configure the client.
+// Token will be called on every request with the request's Context.
+type TokenSource interface {
+	Token(context.Context) (string, error)
+}
+
+// staticTokenSource is a simple TokenSource that always returns the same token.
+type staticTokenSource string
+
+func (s staticTokenSource) Token(context.Context) (string, error) {
+	return string(s), nil
+}
+
 // A Client manages communication with the GitHub API.
 type Client struct {
 	clientMu sync.Mutex   // clientMu protects the client during calls that modify the CheckRedirect func.
 	client   *http.Client // HTTP client used to communicate with the API.
+	baseTransport           http.RoundTripper
 
 	// Base URL for API requests. Defaults to the public GitHub API, but can be
 	// set to a domain endpoint to use with GitHub Enterprise. BaseURL should
@@ -168,6 +184,8 @@ type Client struct {
 
 	// User agent used when communicating with the GitHub API.
 	UserAgent string
+
+	tokenSource             TokenSource
 
 	rateMu                  sync.Mutex
 	rateLimits              [categories]Rate // Rate limits for the client as determined by the most recent API calls.
@@ -321,26 +339,24 @@ func NewClient(httpClient *http.Client) *Client {
 	if httpClient != nil {
 		c.client = &http.Client{}
 		*c.client = *httpClient
+		c.baseTransport = httpClient.Transport
 	}
 	c.initialize()
 	return c
 }
 
 // WithAuthToken returns a copy of the client configured to use the provided token for the Authorization header.
+// When token is empty, the returned client will not set the Authorization header.
 func (c *Client) WithAuthToken(token string) *Client {
+	return c.WithTokenSource(staticTokenSource(token))
+}
+
+// WithTokenSource returns a copy of the client configured to use the provided token source for Authorization headers.
+// When source is nil, the returned client will not set the Authorization header.
+func (c *Client) WithTokenSource(source TokenSource) *Client {
 	c2 := c.copy()
 	defer c2.initialize()
-	transport := c2.client.Transport
-	if transport == nil {
-		transport = http.DefaultTransport
-	}
-	c2.client.Transport = roundTripperFunc(
-		func(req *http.Request) (*http.Response, error) {
-			req = req.Clone(req.Context())
-			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
-			return transport.RoundTrip(req)
-		},
-	)
+	c2.tokenSource = source
 	return c2
 }
 
@@ -394,6 +410,7 @@ func (c *Client) initialize() {
 	if c.client == nil {
 		c.client = &http.Client{}
 	}
+	c.client.Transport = roundTripperFunc(c.roundTrip)
 	if c.BaseURL == nil {
 		c.BaseURL, _ = url.Parse(defaultBaseURL)
 	}
@@ -453,6 +470,8 @@ func (c *Client) copy() *Client {
 		BaseURL:                 c.BaseURL,
 		UploadURL:               c.UploadURL,
 		secondaryRateLimitReset: c.secondaryRateLimitReset,
+		tokenSource:             c.tokenSource,
+		baseTransport:           c.baseTransport,
 	}
 	c.clientMu.Unlock()
 	if clone.client == nil {
@@ -462,6 +481,24 @@ func (c *Client) copy() *Client {
 	copy(clone.rateLimits[:], c.rateLimits[:])
 	c.rateMu.Unlock()
 	return &clone
+}
+
+// roundTrip is not exported to prevent it from becoming part of the API that must be stabilized.
+// Otherwise it is functionally an http.RoundTripper.
+func (c *Client) roundTrip(req *http.Request) (*http.Response, error) {
+	if c.tokenSource != nil {
+		token, err := c.tokenSource.Token(req.Context())
+		if err != nil {
+			return nil, fmt.Errorf("could not get token: %v", err)
+		}
+		req = req.Clone(req.Context())
+		req.Header.Set(headerAuthorization, "Bearer "+token)
+	}
+	transport := c.baseTransport
+	if transport == nil {
+		transport = http.DefaultTransport
+	}
+	return transport.RoundTrip(req)
 }
 
 // NewClientWithEnvProxy enhances NewClient with the HttpProxy env.

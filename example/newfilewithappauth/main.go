@@ -13,7 +13,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
 	"github.com/google/go-github/v57/github"
@@ -27,20 +26,17 @@ func main() {
 		log.Fatalf("failed to read pem: %v", err)
 	}
 
-	itr, err := ghinstallation.NewAppsTransport(http.DefaultTransport, 10, privatePem)
+	// create authentication provider for the app
+	appAuth, err := ghinstallation.NewAppsTransport(http.DefaultTransport, 10, privatePem)
 	if err != nil {
 		log.Fatalf("faild to create app transport: %v\n", err)
 	}
-	itr.BaseURL = gitHost
+	appAuth.BaseURL = gitHost
 
-	//create git client with app transport
-	client, err := github.NewClient(
-		&http.Client{
-			Transport: itr,
-			Timeout:   time.Second * 30,
-		},
-	).WithEnterpriseURLs(gitHost, gitHost)
-
+	// create git client with the app auth
+	client, err := github.NewClient(nil).
+		WithTokenSource(appAuth).
+		WithEnterpriseURLs(gitHost, gitHost)
 	if err != nil {
 		log.Fatalf("faild to create git client for app: %v\n", err)
 	}
@@ -57,22 +53,13 @@ func main() {
 		installID = val.GetID()
 	}
 
-	token, _, err := client.Apps.CreateInstallationToken(
-		context.Background(),
-		installID,
-		&github.InstallationTokenOptions{})
-	if err != nil {
-		log.Fatalf("failed to create installation token: %v\n", err)
-	}
+	// create an authentication provider for the installation
+	instAuth := ghinstallation.NewFromAppsTransport(appAuth, installID)
 
-	apiClient, err := github.NewClient(nil).WithAuthToken(
-		token.GetToken(),
-	).WithEnterpriseURLs(gitHost, gitHost)
-	if err != nil {
-		log.Fatalf("failed to create new git client with token: %v\n", err)
-	}
+	// update the client to use the installation auth
+	client = client.WithTokenSource(instAuth)
 
-	_, resp, err := apiClient.Repositories.CreateFile(
+	_, resp, err := client.Repositories.CreateFile(
 		context.Background(),
 		"repoOwner",
 		"sample-repo",
