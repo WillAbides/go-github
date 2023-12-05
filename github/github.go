@@ -346,7 +346,6 @@ func NewClient(httpClient *http.Client) *Client {
 }
 
 // WithAuthToken returns a copy of the client configured to use the provided token for the Authorization header.
-// When token is empty, the returned client will not set the Authorization header.
 func (c *Client) WithAuthToken(token string) *Client {
 	return c.WithTokenSource(staticTokenSource(token))
 }
@@ -463,9 +462,18 @@ func (c *Client) initialize() {
 // copy returns a copy of the current client. It must be initialized before use.
 func (c *Client) copy() *Client {
 	c.clientMu.Lock()
+	httpClient := c.client
+	if httpClient == nil {
+		httpClient = &http.Client{}
+	}
 	// can't use *c here because that would copy mutexes by value.
 	clone := Client{
-		client:                  c.client,
+		client: &http.Client{
+			Transport:     httpClient.Transport,
+			Jar:           httpClient.Jar,
+			CheckRedirect: httpClient.CheckRedirect,
+			Timeout:       httpClient.Timeout,
+		},
 		UserAgent:               c.UserAgent,
 		BaseURL:                 c.BaseURL,
 		UploadURL:               c.UploadURL,
